@@ -1,8 +1,8 @@
-	sdl_guitk - GUI toolkit designed for SDL environnements (GTK-style).
+	sdl2_guitk - GUI toolkit designed for SDL2 environnements (GTK-style).
 
 
 
-  Copyright (C) 2003 Trave Roman
+  Copyright (C) 2003-2015 Trave Roman
 
   sdl_guitk is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -37,22 +37,6 @@ GOALS OF SDL_GuiTK
 	- SLAVE_MODE, initialized on a external surface (integration)
 
 
-WHY SDL_GuiTK ?
----------------
-	The NBNW-project is a multi-player game I develope on SDL. I use
-	GTK for its high-level TK to launch both server and client. But 
-	for protability purposes and efficiency in fullscreen gameplay,
-	I have searched a GUI for SDL. Some are too light, some too big.
-	After tests with ParaGUI (really integrable ???), who have some
-	bugs with GL support on SDL, I decide to code my own separate GUI.
-	I am not a good developer, but an old user of GTK. The namespace
-	and the API design are great: I copy it for the future SDL_GuiTK
-	(SDL Gui ToolKit).
-	In an other way, for the NBNW-project, I need a SLAVE_MODE instead
-	of the SELF_MODE (a la GTK), to initialize SDL_GuiTK on my own 
-	SDL_Surface, blit and push_events on it.
-
-
 DEVEL PLAN
 ----------
 
@@ -81,6 +65,9 @@ DEVEL STATUS
 
 OPENGL INTEGRATION
 ------------------
+
+
+Note: SDL2 portage only support GL context for now.
 
 GL context must be determinated in run-time.
 If no GL found, SDLGuiTK uses 2D-Blit functions on the main surface.
