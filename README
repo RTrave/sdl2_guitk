@@ -1,0 +1,103 @@
+	sdl_guitk - GUI toolkit designed for SDL environnements (GTK-style).
+
+
+
+  Copyright (C) 2003 Trave Roman
+
+  sdl_guitk is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+	- Trave Roman <roman.trave@abadcafe.org>
+
+
+
+GOALS OF SDL_GuiTK
+------------------
+
+ * 	Providing a "light" but extended GUI for the great SDL library.
+	To be fully implemented on SDL, using SDL_ttf for text layout.
+	http://www.libsdl.org
+ *	Providing a powerfull and lisible interface:
+	dynamics of widgets and name-spacing copied from Gtk.
+	(so for docs, see gtk-doc and substitutes gtk_ by SDLGuiTK_)
+	http://www.gtk.org
+ *	Providing two drawing contexts:
+	- SELF_MODE, "a la Gtk" ou "a la paragui"
+	- SLAVE_MODE, initialized on a external surface (integration)
+
+
+WHY SDL_GuiTK ?
+---------------
+	The NBNW-project is a multi-player game I develope on SDL. I use
+	GTK for its high-level TK to launch both server and client. But 
+	for protability purposes and efficiency in fullscreen gameplay,
+	I have searched a GUI for SDL. Some are too light, some too big.
+	After tests with ParaGUI (really integrable ???), who have some
+	bugs with GL support on SDL, I decide to code my own separate GUI.
+	I am not a good developer, but an old user of GTK. The namespace
+	and the API design are great: I copy it for the future SDL_GuiTK
+	(SDL Gui ToolKit).
+	In an other way, for the NBNW-project, I need a SLAVE_MODE instead
+	of the SELF_MODE (a la GTK), to initialize SDL_GuiTK on my own 
+	SDL_Surface, blit and push_events on it.
+
+
+DEVEL PLAN
+----------
+
+ 0.3.0
+ *	Structures and relevant attributes must be OK:
+	widgets:         TextView.
+
+ 0.2.0
+ *	Structures and relevant attributes must be OK:
+	infrastructures: Cursor, Timer, Theme, threated Context.
+	widgets:         Bitmap, DockedWin, Entry.
+
+DEVEL STATUS
+------------
+
+ 0.1.0 (cvs tag: rel-0-1-0)
+ *	Structures and relevant attributes must be OK:
+	infrastructures: Object, Widget, Signal, List.
+	containers:      Container, Misc, Bin.
+	widgets:         Window, Alignment, Box, Label, Button.
+ *	SELF_MODE and SLAVE_MODE context modes are OK.
+ *	Alpha blending OK for Linux and Win32.
+ *	Internal structures attributes proposed:
+	Context, Theme, WM(WindowManager layer).
+
+
+OPENGL INTEGRATION
+------------------
+
+GL context must be determinated in run-time.
+If no GL found, SDLGuiTK uses 2D-Blit functions on the main surface.
+For this purpose, concerned functions are layed by a (*function)().
+They are setted in mysdl.c, when GL detection is done.
+They are:
+	MySDL_MainSurface_clean()		_GL() / _noGL()
+	MySDL_SwapBuffers()			_GL() / _noGL()
+	MyWM_blit2Dsurface()			_GL() / _noGL()
+
+
+THREADED USE
+------------
+
+Like in GTK, a unique mutex protect internal structures.
+Locked an unlocked by:
+	SDLGuiTK_threads_enter()
+	SDLGuiTK_threads_leave()
+
+

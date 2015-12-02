@@ -1,0 +1,21 @@
+Begin3
+Title:		sdl_guitk
+Version:	@VERSION@
+Entered-date:	@ISODATE@
+Description:	GUI toolkit designed for SDL environnements (GTK-style).
+		@configure_input@
+		Please edit sdl_guitk.lsm.in to fix the Keywords and
+		Primary-site entries, add several more lines of
+		description here if appropriate, and to delete these
+		instructions.
+Keywords:	[substitute your keywords here]
+Author: 	abadcafe@free.fr (Trave Roman)
+Maintained-by:	abadcafe@free.fr (Trave Roman)
+Primary-site:	metlab.unc.edu pub/Linux/apps/some/directory
+		31k sdl_guitk-@VERSION@.tar.gz
+		500  sdl_guitk.lsm
+Alternate-site: 
+Original-site:  
+Platforms:      
+Copying-policy:	GNU copyleft
+End

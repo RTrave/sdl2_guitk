@@ -1,0 +1,22 @@
+	sdl_guitk - GUI toolkit designed for SDL environnements (GTK-style).
+
+
+
+
+Linux
+-----
+ *	Font used is "/home/font.ttf" ( free.ttf if not found)
+ *      Memory leak with X's mga driver ( glDeleteTextures() seems not work ).
+ *	Tested on Nvidia, ATI ( soft mesa too ).
+
+
+Win32
+-----
+ *	Font used is "C:\font.ttf" ( "verdana.ttf" if not found)
+ *	Tested on Nvidia, Matrox, ATI ( soft mesa too ).
+
+
+MacOSX
+------
+ *	You have a MacOSX and a compilator ?
+
