@@ -108,7 +108,7 @@ AC_SUBST(GUI_LDFLAGS)
 dnl Checks to enable debugging informations and library (debug.h)
 AC_ARG_ENABLE(debug, [  --enable-debug=[no/min/yes]  set debug level (default=no)],, enable_debug=no )
 if test "x$enable_debug" = "xyes"; then
-  CFLAGS="-Wall -DDEBUG_LEVEL=2 $CFLAGS"
+  CFLAGS="-Wall -ggdb -DDEBUG_LEVEL=2 $CFLAGS"
 else
   if test "x$enable_debug" = "xmin"; then
     CFLAGS="-Wall -DDEBUG_LEVEL=1 $CFLAGS"
