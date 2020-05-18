@@ -18,19 +18,22 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
 */
 
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_guitk.h>
 
 typedef struct SDLGUITK_Video SDLGUITK_Video;
 
 struct SDLGUITK_Video {
-  int width, height;        /* public data */
-  int bpp;                  /* public data */
-  int fullscreen;           /* public data */
-  int opengl_ask;           /* public data */
+  int width, height;          /* public data */
+  int bpp;                    /* public data */
+  int fullscreen;             /* public data */
+  int opengl_ask;             /* public data */
 
-  Uint32 flags;             /* private data */
+  Uint32 flags;               /* private data */
   //SDL_Surface * surface;    /* private data */
-  SDL_Window * window;      /* private data */
-  SDL_Renderer *renderer;   /* private data */
+  SDL_Window    * window;     /* private data */
+  SDL_Renderer  *renderer;    /* private data */
+  SDL_GLContext *context;     /* Our opengl context handle */
 };
 
 /* static SDLGUITK_Video * main_video=NULL; */
@@ -50,7 +53,7 @@ extern
 void           * (*MySDL_SwapBuffers)();
 
 extern
-SDL_Window * MySDL_GetVideoWindow();
+SDL_Window  * MySDL_GetVideoWindow();
 extern
 SDL_Surface * MySDL_GetVideoSurface();
 
@@ -58,9 +61,10 @@ SDL_Surface * MySDL_GetVideoSurface();
 extern
 SDL_Surface *MySDL_CreateRGBSurface( SDL_Surface *dst, int w, int h );
 extern
-SDL_Surface *MySDL_CreateRGBSurface_WithColor( SDL_Surface *dst, \
-					       int w, int h, \
-					       SDL_Color color );
+SDL_Surface *MySDL_CreateRGBSurface_WithColor(
+                SDL_Surface *dst, \
+					      int w, int h, \
+					      SDL_Color color );
 
 extern
 void         MySDL_FreeSurface( SDL_Surface *surface );

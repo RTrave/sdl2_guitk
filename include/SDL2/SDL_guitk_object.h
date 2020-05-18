@@ -34,6 +34,7 @@ extern "C" {
 
   /* SDLGuiTK_Object structure definition */
   /* General common object */
+
   typedef struct SDLGuiTK_Object SDLGuiTK_Object;
 
 

@@ -33,7 +33,16 @@
 #include <string.h>
 #endif
 
-#include <SDL_syswm.h>
+#ifdef WIN32
+#include <GL/glew.h>
+
+#else
+//#define GL3_PROTOTYPES 1
+//#include <GL3/gl3.h>
+
+#endif
+
+#include <SDL2/SDL_syswm.h>
 #include <SDL2/SDL_guitk.h>
 
 #include "debug.h"
@@ -112,8 +121,8 @@ static void MainVideo_init()
 #endif
 
   main_video = malloc( sizeof( struct SDLGUITK_Video ) );
-  main_video->width = 800;
-  main_video->height = 600;
+  main_video->width = 1200;
+  main_video->height = 800;
   main_video->fullscreen = 0;
   main_video->opengl_ask = 1;
   /*
@@ -252,12 +261,13 @@ void MySDL_Uninit()
 void MySDL_MainSurface_set( SDL_Window * window, SDL_Renderer * renderer )
 {
   main_video = malloc( sizeof( struct SDLGUITK_Video ) );
-  main_video->width = 800;
-  main_video->height = 600;
+  main_video->width = 2200;
+  main_video->height = 800;
   main_video->fullscreen = 0;
   main_video->opengl_ask = 1;
   main_video->window = window;
   main_video->renderer = renderer;
+  //main_video->context = context;
 }
 
 SDLGUITK_Video * MySDL_MainSurface_create()
@@ -298,7 +308,7 @@ SDLGUITK_Video * MySDL_MainSurface_create()
    main_video->window = SDL_CreateWindow("SDL_GuiTK main display (MainRenderWindow)",
                                 SDL_WINDOWPOS_UNDEFINED,
                                 SDL_WINDOWPOS_UNDEFINED,
-                                800,600, 0);
+                                800,600, SDL_WINDOW_OPENGL);
    //SDL_Delay(10000);
    /* main_video->window = SDL_CreateWindow( "MainVideo", */
    /* 					       SDL_WINDOWPOS_UNDEFINED, */
@@ -321,6 +331,9 @@ SDLGUITK_Video * MySDL_MainSurface_create()
     }
 	/* main_video->renderer = SDL_CreateRenderer(main_video->window, -1, 0); */
     main_video->renderer = SDL_CreateRenderer(main_video->window, -1, SDL_RENDERER_ACCELERATED);
+
+  main_video->context = SDL_GL_CreateContext(main_video->window);
+
 #ifdef HAVE_GL_GL_H
 
   if( glflag==1 ) {
@@ -360,7 +373,10 @@ printf( "CREATE\n" );
 
 #endif
 
-printf( "CREATE0\n" );
+  //printf( "CREATE0a\n" );
+  glClearColor(0.0f, 0.5f, 1.0f, 0.0f);
+  glClear(GL_COLOR_BUFFER_BIT);
+  SDL_GL_SwapWindow(main_video->window);
   //glClearColor( (GLclampf)0.0, (GLclampf)0.0, (GLclampf)0.3, (GLclampf)1.0 );
   }
 #else
@@ -368,7 +384,16 @@ printf( "CREATE0\n" );
 #endif
 SDLGUITK_OUTPUT( "CREATE1\n" );
 //bgcolor = SDL_MapRGBA( SDL_GetWindowSurface(main_video->window)->format, 0x00, 0x00, 0x20, 0xff );
-SDLGUITK_OUTPUT( "CREATE2\n" );
+
+#ifdef WIN32
+
+    // initialise GLEW
+    glewInit();
+
+#endif
+
+
+  SDLGUITK_OUTPUT( "CREATE2\n" );
   //SDL_WM_SetCaption( "SDL Gui ToolKit", "SDL_GuiTK main display" );
 
 /*   SDL_SetAlpha( main_video->surface, SDL_SRCALPHA|SDL_RLEACCEL, 255 ); /\*  *\/ */

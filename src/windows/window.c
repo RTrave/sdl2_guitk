@@ -119,7 +119,6 @@ static void Window_destroy( SDLGuiTK_Window * window )
   free( window );
 }
 
-
 static void Window_MakeTitleSurface( SDLGuiTK_Window * window )
 {
   SDLGuiTK_Theme * theme;
@@ -129,6 +128,7 @@ static void Window_MakeTitleSurface( SDLGuiTK_Window * window )
 					    window->title, 18, \
 					    MyTTF_STYLE_BOLD, \
 					    theme->bgcolor );
+  //SetSurfaceAlpha( window->title_srf, 255 );
   PROT__theme_unlock( theme );
 }
 

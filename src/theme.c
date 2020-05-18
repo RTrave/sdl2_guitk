@@ -63,18 +63,22 @@ static SDLGuiTK_Theme * Theme_create()
   new_theme->bgcolor.r=0x00;
   new_theme->bgcolor.g=0x00;
   new_theme->bgcolor.b=0x00;
+  new_theme->bgcolor.a=0xff;
 
   new_theme->bdcolor.r=0xc0;
   new_theme->bdcolor.g=0xc0;
   new_theme->bdcolor.b=0xc0;
+  new_theme->bdcolor.a=0xff;
 
   new_theme->ftcolor.r=0xff;
   new_theme->ftcolor.g=0xff;
   new_theme->ftcolor.b=0xff;
+  new_theme->ftcolor.a=0xff;
 
   new_theme->wgcolor.r=0x20;
   new_theme->wgcolor.g=0x20;
   new_theme->wgcolor.b=0x20;
+  new_theme->wgcolor.a=0xff;
 
 /*   new_theme->ref_srf=MySDL_CreateRGBSurface( NULL, 1, 1 ); */
 
