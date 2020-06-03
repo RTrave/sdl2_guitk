@@ -54,7 +54,7 @@ struct SDLGuiTK_SignalHandler {
 /* SDLGuiTK_SignalFunction structure definition */
 struct SDLGuiTK_SignalFunction {
   SDLGuiTK_Object * object; /* unused */
-  void * (*function)( SDLGuiTK_Widget *, void * );
+  void * (*function)( SDLGuiTK_Widget *, void *, void * );
   void * data;
 };
 

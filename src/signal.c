@@ -156,20 +156,36 @@ static void Signal_process( SDLGuiTK_Signal * signal )
   if( signal->type==SDLGUITK_SIGNAL_TYPE_TEXTINPUT ) {
     (*handler->fdefault[signal->type]->function)( \
 				signal->object->widget, \
-				(void *) signal->tievent );
+				(void *) signal->tievent, \
+        NULL );
   } else if( signal->type==SDLGUITK_SIGNAL_TYPE_KEYBOARD ) {
     (*handler->fdefault[signal->type]->function)( \
 				signal->object->widget, \
-				(void *) signal->kevent );
+				(void *) signal->kevent, \
+        NULL );
   } else {
     (*handler->fdefault[signal->type]->function)( \
 				signal->object->widget, \
-				handler->fdefault[signal->type]->data );
+				handler->fdefault[signal->type]->data, \
+        NULL );
   }
-  (*handler->fuserdef[signal->type]->function)( \
+  if( signal->type==SDLGUITK_SIGNAL_TYPE_TEXTINPUT ) {
+    (*handler->fuserdef[signal->type]->function)( \
 				signal->object->widget, \
-				handler->fuserdef[signal->type]->data );
-/*   SDL_mutexV( signal->object->mutex ); */
+				  handler->fuserdef[signal->type]->data, \
+				(void *) signal->tievent );
+  } else if( signal->type==SDLGUITK_SIGNAL_TYPE_KEYBOARD ) {
+      (*handler->fuserdef[signal->type]->function)( \
+				  signal->object->widget, \
+				  handler->fuserdef[signal->type]->data, \
+				  (void *) signal->kevent );
+    } else {
+    (*handler->fuserdef[signal->type]->function)( \
+				  signal->object->widget, \
+				  handler->fuserdef[signal->type]->data, \
+          NULL );
+    }
+  /*   SDL_mutexV( signal->object->mutex ); */
 /*   if( parent!=NULL ) { */
 /*     if( signal->type==SDLGUITK_SIGNAL_TYPE_SHOW || \ */
 /* 	signal->type==SDLGUITK_SIGNAL_TYPE_HIDE ) */
@@ -302,7 +318,7 @@ void PROT__signal_uninit()
 }
 
 
-static void * Function_notsetted( SDLGuiTK_Widget * widget, void * data )
+static void * Function_notsetted( SDLGuiTK_Widget * widget, void * data, void * event )
 {
   return (void *)NULL;
 }
@@ -380,7 +396,8 @@ static SDL_TextInputEvent * TIevent_copy( SDL_TextInputEvent * tievent )
 
   tievent_c = malloc( sizeof( SDL_TextInputEvent ) );
   tievent_c->type = tievent->type;
-  //tievent_c->text = tievent->text;
+  tievent_c->timestamp = tievent->timestamp;
+  tievent_c->windowID = tievent->windowID;
   size_t destination_size = sizeof (tievent_c->text);
   snprintf(tievent_c->text, destination_size, "%s", tievent->text);
   return tievent_c;
@@ -415,6 +432,10 @@ static SDL_KeyboardEvent * Kevent_copy( SDL_KeyboardEvent * kevent )
 
   kevent_c = malloc( sizeof( SDL_KeyboardEvent ) );
   kevent_c->type = kevent->type;
+  kevent_c->timestamp = kevent->timestamp;
+  kevent_c->windowID = kevent->windowID;
+  kevent_c->state = kevent->state;
+  kevent_c->repeat = kevent->repeat;
   kevent_c->keysym = kevent->keysym;
   return kevent_c;
 }
@@ -499,12 +520,15 @@ static int Signal_get_type( char *ctype )
   if( strcmp(ctype,SDLGUITK_SIGNAL_TEXT_TEXTINPUT)==0 ) {
     return SDLGUITK_SIGNAL_TYPE_TEXTINPUT;
   }
+  if( strcmp(ctype,SDLGUITK_SIGNAL_TEXT_KEYBOARD)==0 ) {
+    return SDLGUITK_SIGNAL_TYPE_KEYBOARD;
+  }
   return 0;
 }
 
 void SDLGuiTK_signal_connect( SDLGuiTK_Object * object, \
 			      char * type, \
-			      void * (*fct)( SDLGuiTK_Widget *, void * )  , \
+			      void * (*fct)( SDLGuiTK_Widget *, void *, void* )  , \
 			      void * data )
 {
   char tmpstr[512];

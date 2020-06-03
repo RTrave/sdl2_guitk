@@ -38,7 +38,7 @@ extern "C" {
   extern DECLSPEC
   void SDLGuiTK_signal_connect( SDLGuiTK_Object *object, \
 				char *type, \
-				void *(*fct)( SDLGuiTK_Widget *, void * ) , \
+				void *(*fct)( SDLGuiTK_Widget *, void *, void * ) , \
 				void *data );
 
 /* Ends C function definitions when using C++ */
