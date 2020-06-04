@@ -241,10 +241,10 @@ SDL_Surface * MyTTF_Render_Solid_Block( SDL_Surface * render_text, \
 					int maxcharbyline )
 {
 #if DEBUG_LEVEL >= 2
-  char tmpstr[512];
+  //char tmpstr[512];
 #endif
   int finished=0;
-  int text_lenght;
+  //int text_lenght;
   int index=0;
   int current_line=0, current_pos=0;
   int last_space_index=0, last_space_pos=0;
@@ -260,7 +260,7 @@ SDL_Surface * MyTTF_Render_Solid_Block( SDL_Surface * render_text, \
     render_text = NULL;
   }
 
-  text_lenght = strlen( text );
+  //text_lenght = strlen( text );
   line_txt = calloc( maxcharbyline+2, sizeof( char ) );
   while( finished==0 ) {
 

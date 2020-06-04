@@ -197,29 +197,30 @@ static void Entry_active_area( SDLGuiTK_Entry * entry )
 
 static void * Entry_DrawBlit( SDLGuiTK_Widget * widget )
 {
-  int wdiff=0, hdiff=0;
-  int xdiff=0, ydiff=0;
+  //int wdiff=0, hdiff=0;
+  //int xdiff=0, ydiff=0;
   SDL_Rect fg_area;
-  Uint32 bgcolor;
-  SDLGuiTK_Theme * theme;
+  //Uint32 bgcolor;
+  //SDLGuiTK_Theme * theme;
   SDLGuiTK_Entry * entry=widget->entry;
 
-  wdiff = widget->abs_area.w - widget->rel_area.w;
-  hdiff = widget->abs_area.h - widget->rel_area.h;
-
+  //wdiff = widget->abs_area.w - widget->rel_area.w;
+  //hdiff = widget->abs_area.h - widget->rel_area.h;
+/*
   if( wdiff>0 ) {
     xdiff = (int)((wdiff)*0.5);
   }
   if( hdiff>0 ) {
     ydiff = (int)((hdiff)*0.5);
   }
-
+*/
 /*   misc->draw_area.x += xdiff; */
 /*   misc->draw_area.y += ydiff; */
 
   PROT__widget_DrawBlit( entry->widget );
 
-  theme = PROT__theme_get_and_lock();
+/*
+theme = PROT__theme_get_and_lock();
 #if DEBUG_LEVEL >= 2
   bgcolor = SDL_MapRGBA( widget->srf->format, 0xff, 0x00, 0x00, 0xff );
 #else
@@ -230,6 +231,8 @@ static void * Entry_DrawBlit( SDLGuiTK_Widget * widget )
 			 255 );
 #endif
   PROT__theme_unlock( theme );
+*/
+
 /*   bg_area.x = misc->xpad; */
 /*   bg_area.y = misc->ypad; */
 /*   bg_area.w = misc->widget->abs_area.w - 2*misc->xpad; */
@@ -281,7 +284,7 @@ static void * Entry_DrawBlit( SDLGuiTK_Widget * widget )
 }
 
 static void * Entry_Realize( SDLGuiTK_Widget * widget, \
-			     void * data )
+			     void * data, void * event )
 {
   if( widget->entry->text_flag!=0 ) {
     Entry_make_surface( widget->entry );
@@ -292,7 +295,7 @@ static void * Entry_Realize( SDLGuiTK_Widget * widget, \
 }
 
 static void * Entry_Show( SDLGuiTK_Widget * widget, \
-			  void * data )
+			  void * data, void * event )
 {
   widget->shown = 1;
 /*   widget->changed = 1; */
@@ -304,7 +307,7 @@ static void * Entry_Show( SDLGuiTK_Widget * widget, \
 }
 
 static void * Entry_Hide( SDLGuiTK_Widget * widget, \
-			  void * data )
+			  void * data, void * event )
 {
   widget->shown = 0;
 /*   widget->changed = 1; */
@@ -381,7 +384,7 @@ static int Entry_UpdateActive( SDLGuiTK_Widget * widget )
 }
 
 static void * Entry_MouseEnter( SDLGuiTK_Widget * widget, \
-				void * data )
+				void * data, void * event )
 {
 /*   SDLGuiTK_Entry * entry=widget->misc->entry; */
 /*   printf( "cursor load enter\n" ); */
@@ -393,7 +396,7 @@ static void * Entry_MouseEnter( SDLGuiTK_Widget * widget, \
 }
 
 static void * Entry_MouseLeave( SDLGuiTK_Widget * widget, \
-				void * data )
+				void * data, void * event )
 {
 /*   SDLGuiTK_Entry * entry=widget->misc->entry; */
 
@@ -425,7 +428,7 @@ void Push_keysym( SDLGuiTK_Entry * entry, SDL_KeyboardEvent * kevent )
   Uint16 unich[3];
 #endif
   //char *tch;
-	char tch;
+	//char tch;
 
   switch( kevent->keysym.sym ) {
   case SDLK_RIGHT:
@@ -470,7 +473,7 @@ void Push_keysym( SDLGuiTK_Entry * entry, SDL_KeyboardEvent * kevent )
 }
 
 static void * Entry_TextInput( SDLGuiTK_Widget * widget, \
-          void * data )
+          void * data, void * event )
 {
   SDLGuiTK_Entry * entry=widget->entry;
   char tmpstr[128];
@@ -487,7 +490,7 @@ static void * Entry_TextInput( SDLGuiTK_Widget * widget, \
 }
 
 static void * Entry_Keyboard( SDLGuiTK_Widget * widget, \
-			      void * data )
+			      void * data, void * event )
 {
   SDLGuiTK_Entry * entry=widget->entry;
   char tmpstr[128];

@@ -284,7 +284,7 @@ static void * Button_DrawBlit( SDLGuiTK_Widget * widget )
 
 
 static void * Button_Realize( SDLGuiTK_Widget * widget, \
-			      void * data )
+			      void * data, void * event )
 {
   SDLGuiTK_Button * button=widget->container->bin->button;
 
@@ -297,7 +297,7 @@ static void * Button_Realize( SDLGuiTK_Widget * widget, \
 }
 
 static void * Button_Show( SDLGuiTK_Widget * widget, \
-			   void * data )
+			   void * data, void * event )
 {
   widget->shown = 1;
 /*   widget->changed = 1; */
@@ -309,7 +309,7 @@ static void * Button_Show( SDLGuiTK_Widget * widget, \
 }
 
 static void * Button_Hide( SDLGuiTK_Widget * widget, \
-			   void * data )
+			   void * data, void * event )
 {
   widget->shown = 0;
 /*   widget->changed = 1; */
@@ -382,7 +382,7 @@ static int Button_UpdateActive( SDLGuiTK_Widget * widget)
 
 
 static void * Button_MouseEnter( SDLGuiTK_Widget * widget, \
-				 void * data )
+				 void * data, void * event )
 {
   SDLGuiTK_Button * button=widget->container->bin->button;
 
@@ -400,7 +400,7 @@ static void * Button_MouseEnter( SDLGuiTK_Widget * widget, \
 }
 
 static void * Button_MouseLeave( SDLGuiTK_Widget * widget, \
-				 void * data )
+				 void * data, void * event )
 {
   SDLGuiTK_Button * button=widget->container->bin->button;
 
@@ -421,7 +421,7 @@ static void * Button_MouseLeave( SDLGuiTK_Widget * widget, \
 }
 
 static void * Button_MousePressed( SDLGuiTK_Widget * widget, \
-				   void * data )
+				   void * data, void * event )
 {
   SDLGuiTK_Button * button=widget->container->bin->button;
 
@@ -436,7 +436,7 @@ static void * Button_MousePressed( SDLGuiTK_Widget * widget, \
 }
 
 static void * Button_MouseReleased( SDLGuiTK_Widget * widget, \
-				 void * data )
+				 void * data, void * event )
 {
   SDLGuiTK_Button * button=widget->container->bin->button;
 /*   SDL_mutexP( button->mutex ); */

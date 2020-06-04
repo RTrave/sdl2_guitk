@@ -199,10 +199,11 @@ static void Signal_process( SDLGuiTK_Signal * signal )
   Signal_destroy( signal );
 }
 
-static SDL_Thread * signal_thread;
+//static SDL_Thread * signal_thread;
 static int          signal_thread_flag=0;
 static SDL_mutex  * signal_thread_mutex=NULL;
 
+/*
 static int Signal_thread(void *data)
 {
   
@@ -210,16 +211,12 @@ static int Signal_thread(void *data)
 
   SDLGUITK_THREAD_REF( "signals" );
 
-/*   SDL_Delay( 50 ); */
 
   SDL_mutexP( signal_thread_mutex );
   signal_thread_flag = 1;
   while( signal_thread_flag==1 ) {
     SDL_mutexV( signal_thread_mutex );
 
-/* #if DEBUG_LEVEL <= 1 */
-    SDL_Delay( 50 );
-/* #endif */
 
     SDLGuiTK_threads_enter();
     signal = Signal_check();
@@ -233,29 +230,13 @@ static int Signal_thread(void *data)
 
     SDL_mutexP( signal_thread_mutex );
   }
-/*   SDL_mutexV( signal_thread_mutex ); */
-
-/*   SDL_Delay( 500 ); */
-
-/*   SDL_mutexP( signal_thread_mutex ); */
-/*   signal = Signal_check(); */
-/*   while( signal!=NULL ) { */
-/*     Signal_process( signal ); */
-/*     signal = Signal_check(); */
-/*   } */
-/*   PROT__widget_destroypending(); */
-/*   SDL_mutexV( signal_thread_mutex ); */
-
-/*   SDL_Delay( 500 ); */
-
-/*   SDL_mutexP( signal_thread_mutex ); */
   signal_thread_flag = 0;
   SDL_mutexV( signal_thread_mutex );
 
   SDLGUITK_THREAD_UNREF();
   return 0;
 }
-
+*/
 
 
 void PROT__signal_init()

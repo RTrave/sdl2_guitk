@@ -157,7 +157,7 @@ static void * Alignment_DrawBlit( SDLGuiTK_Widget * widget )
 }
 
 static void * Alignment_Realize( SDLGuiTK_Widget * widget, \
-				 void * data )
+				 void * data, void * event )
 {
   if( widget->top!=NULL ) {
     PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
@@ -167,7 +167,7 @@ static void * Alignment_Realize( SDLGuiTK_Widget * widget, \
 }
 
 static void * Alignment_Show( SDLGuiTK_Widget * widget, \
-			  void * data )
+			  void * data, void * event )
 {
   widget->shown = 1;
   if( widget->top!=NULL ) {
@@ -178,7 +178,7 @@ static void * Alignment_Show( SDLGuiTK_Widget * widget, \
 }
 
 static void * Alignment_Hide( SDLGuiTK_Widget * widget, \
-			  void * data )
+			  void * data, void * event )
 {
   widget->shown = 0;
   if( widget->top!=NULL ) {

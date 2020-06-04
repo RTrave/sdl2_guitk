@@ -191,7 +191,7 @@ static void Panel_UpdatePosition( SDLGuiTK_Panel * panel )
 
 static void Panel_MakeBaseSurface( SDLGuiTK_Panel * panel )
 {
-  Uint32 bgcolor, bdcolor;
+  //Uint32 bgcolor, bdcolor;
   SDLGuiTK_Theme * theme;
 
 /*   Panel_MakeTitleSurface( panel ); */
@@ -204,16 +204,16 @@ static void Panel_MakeBaseSurface( SDLGuiTK_Panel * panel )
 
   /* Load theme values */
   theme = PROT__theme_get_and_lock();
-  bdcolor = SDL_MapRGBA( panel->srf->format, \
-			 theme->bdcolor.r, \
-			 theme->bdcolor.g, \
-			 theme->bdcolor.b, \
-			 255 );
-  bgcolor = SDL_MapRGBA( panel->srf->format, \
-			 theme->bgcolor.r, \
-			 theme->bgcolor.g, \
-			 theme->bgcolor.b, \
-			 255 );
+  /* bdcolor = SDL_MapRGBA( panel->srf->format, \ */
+		/* 	 theme->bdcolor.r, \ */
+		/* 	 theme->bdcolor.g, \ */
+		/* 	 theme->bdcolor.b, \ */
+		/* 	 255 ); */
+  /* bgcolor = SDL_MapRGBA( panel->srf->format, \ */
+		/* 	 theme->bgcolor.r, \ */
+		/* 	 theme->bgcolor.g, \ */
+		/* 	 theme->bgcolor.b, \ */
+		/* 	 255 ); */
   PROT__theme_unlock( theme );
 
 /*   Panel_DrawTitleSurface( panel ); */
@@ -383,7 +383,7 @@ static void * Panel_Free( SDLGuiTK_Widget * widget )
 
 
 static void * Panel_Realize( SDLGuiTK_Widget * widget, \
-			      void * data )
+			      void * data, void * event )
 {
 
   Panel_UpdatePosition( widget->container->bin->panel );
@@ -394,7 +394,7 @@ static void * Panel_Realize( SDLGuiTK_Widget * widget, \
 }
 
 static void * Panel_Destroy( SDLGuiTK_Widget * widget, \
-			      void * data )
+			      void * data, void * event )
 {
 /*   SDLGuiTK_Panel * panel=widget->container->bin->panel; */
 
@@ -407,7 +407,7 @@ static void * Panel_Destroy( SDLGuiTK_Widget * widget, \
 }
 
 static void * Panel_Show( SDLGuiTK_Widget * widget, \
-			   void * data )
+			   void * data, void * event )
 {
   SDLGuiTK_Panel * panel=widget->container->bin->panel;
 
@@ -422,7 +422,7 @@ static void * Panel_Show( SDLGuiTK_Widget * widget, \
 }
 
 static void * Panel_Hide( SDLGuiTK_Widget * widget, \
-			   void * data )
+			   void * data, void * event )
 {
   SDLGuiTK_Panel * panel=widget->container->bin->panel;
 
@@ -436,7 +436,7 @@ static void * Panel_Hide( SDLGuiTK_Widget * widget, \
 }
 
 static void * Panel_FrameEvent( SDLGuiTK_Widget * widget, \
-				 void * data )
+				 void * data, void * event )
 {
   Panel_DrawUpdate( widget );
   Panel_DrawBlit( widget );
@@ -446,7 +446,7 @@ static void * Panel_FrameEvent( SDLGuiTK_Widget * widget, \
 }
 
 static void * Panel_MouseEnter( SDLGuiTK_Widget * widget, \
-				 void * data )
+				 void * data, void * event )
 {
 /*   widget->WM_srf = widget->container->bin->panel->active_srf; */
 /*   if( widget->absolute_srf!=widget->container->bin->panel->active_srf ) { */
@@ -459,7 +459,7 @@ static void * Panel_MouseEnter( SDLGuiTK_Widget * widget, \
 }
 
 static void * Panel_MouseLeave( SDLGuiTK_Widget * widget, \
-				 void * data )
+				 void * data, void * event )
 {
 /*   widget->WM_srf = widget->container->bin->panel->shaded_srf; */
 /*   if( widget->absolute_srf!=widget->container->bin->panel->shaded_srf ) { */
@@ -487,7 +487,7 @@ static void * Panel_MouseLeave( SDLGuiTK_Widget * widget, \
 /* } */
 
 static void * Panel_MouseReleased( SDLGuiTK_Widget * panel, \
-				    void * data )
+				    void * data, void * event )
 {
 /*   int x, y; */
 

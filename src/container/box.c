@@ -182,7 +182,7 @@ static void * Box_DrawBlit( SDLGuiTK_Widget * widget )
 {
   SDLGuiTK_Box * box=widget->container->box;
   BoxChild * current_child;
-  SDLGuiTK_Widget * current=NULL;
+  //SDLGuiTK_Widget * current=NULL;
 
   box->current_x=box->container->border_width;
   box->current_y=box->container->border_width;
@@ -190,10 +190,10 @@ static void * Box_DrawBlit( SDLGuiTK_Widget * widget )
   if( box->shown_nb<1 ) {
     current_child = (BoxChild *) SDLGuiTK_list_ref_init( box->children );
     while( current_child!=NULL ) {
-      current = current_child->child;
+      //current = current_child->child;
 /*       SDL_mutexV( current->object->mutex ); */
       current_child = (BoxChild *) SDLGuiTK_list_ref_next( box->children );
-    }
+    } //TODO loop useless
 
     PROT__container_DrawBlit( box->container );
     SDLGuiTK_list_unlock( box->children );
@@ -237,7 +237,7 @@ static void * Box_DrawBlit( SDLGuiTK_Widget * widget )
 
   current_child = (BoxChild *) SDLGuiTK_list_ref_init( box->children );
   while( current_child!=NULL ) {
-    current = current_child->child;
+    //current = current_child->child;
 
     if( widget->shown==1 && current_child->child->shown==1  ) {
 
@@ -362,13 +362,13 @@ static void * Box_Free( SDLGuiTK_Widget * widget )
 }
 
 static void * Box_Realize( SDLGuiTK_Widget * widget, \
-			   void * data )
+			   void * data, void * event )
 {
   return (void *) NULL;
 }
 
 static void * Box_Show( SDLGuiTK_Widget * widget, \
-			  void * data )
+			  void * data, void * event )
 {
   widget->shown = 1;
   if( widget->top!=NULL ) {
@@ -379,7 +379,7 @@ static void * Box_Show( SDLGuiTK_Widget * widget, \
 }
 
 static void * Box_Hide( SDLGuiTK_Widget * widget, \
-			void * data )
+			void * data, void * event )
 {
   widget->shown = 0;
   if( widget->top!=NULL ) {

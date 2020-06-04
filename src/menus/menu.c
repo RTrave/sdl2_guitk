@@ -136,7 +136,7 @@ static void * Menu_DrawBlit( SDLGuiTK_Widget * widget )
 {
   SDLGuiTK_Menu * menu=widget->container->menu;
   SDLGuiTK_MenuItem * current_child=menu->selected;
-  SDLGuiTK_Widget * current=NULL;
+  //SDLGuiTK_Widget * current=NULL;
   SDL_Rect          tmp_area;
   Uint32 bgcolor;
   SDLGuiTK_Theme * theme;
@@ -152,7 +152,7 @@ static void * Menu_DrawBlit( SDLGuiTK_Widget * widget )
 /*     printf( "ERROR\n" ); */
     return (void *) NULL;
   }
-  current = current_child->child;
+  //current = current_child->child;
 
   // draw menu background
   theme = PROT__theme_get_and_lock();
@@ -215,7 +215,7 @@ static SDLGuiTK_Widget * Menu_RecursiveEntering( SDLGuiTK_Widget * widget, \
 static void * Menu_RecursiveDestroy( SDLGuiTK_Widget * widget )
 {
   SDLGuiTK_Menu * menu=widget->container->menu;
-  SDLGuiTK_Widget * current;
+  //SDLGuiTK_Widget * current;
   SDLGuiTK_MenuItem * child;
 
   SDLGuiTK_list_lock( menu->menushell->children );
@@ -223,7 +223,7 @@ static void * Menu_RecursiveDestroy( SDLGuiTK_Widget * widget )
   child = \
     (SDLGuiTK_MenuItem *) SDLGuiTK_list_pop_head( menu->menushell->children );
   while( child!=NULL ) {
-    current = child->child;
+    //current = child->child;
 /*     SDLGuiTK_widget_destroy( child->child ); */
 /*     child->child = NULL; */
     SDLGuiTK_widget_destroy( child->object->widget );
@@ -244,13 +244,13 @@ static void * Menu_Free( SDLGuiTK_Widget * widget )
 }
 
 static void * Menu_Realize( SDLGuiTK_Widget * widget, \
-			    void * data )
+			    void * data, void * event )
 {
   return (void *) NULL;
 }
 
 static void * Menu_Show( SDLGuiTK_Widget * widget, \
-			 void * data )
+			 void * data, void * event )
 {
   widget->shown = 1;
   if( widget->top!=NULL ) {
@@ -261,7 +261,7 @@ static void * Menu_Show( SDLGuiTK_Widget * widget, \
 }
 
 static void * Menu_Hide( SDLGuiTK_Widget * widget, \
-			 void * data )
+			 void * data, void * event )
 {
   widget->shown = 0;
   if( widget->top!=NULL ) {
@@ -273,7 +273,7 @@ static void * Menu_Hide( SDLGuiTK_Widget * widget, \
 
 
 static void * Menu_MousePressed( SDLGuiTK_Widget * widget, \
-				 void * data )
+				 void * data, void * event )
 {
   SDLGuiTK_Menu * menu=widget->container->menu;
 

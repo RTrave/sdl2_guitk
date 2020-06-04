@@ -174,7 +174,7 @@ static void * Image_DrawBlit( SDLGuiTK_Widget * widget )
 }
 
 static void * Image_Realize( SDLGuiTK_Widget * widget, \
-			     void * data )
+			     void * data, void * event )
 {
 /*   if( widget->misc->image->text_flag!=0 ) { */
     Image_make_surface( widget->misc->image );
@@ -184,7 +184,7 @@ static void * Image_Realize( SDLGuiTK_Widget * widget, \
 }
 
 static void * Image_Show( SDLGuiTK_Widget * widget, \
-			  void * data )
+			  void * data, void * event )
 {
   widget->shown = 1;
   if( widget->top!=NULL ) {
@@ -195,7 +195,7 @@ static void * Image_Show( SDLGuiTK_Widget * widget, \
 }
 
 static void * Image_Hide( SDLGuiTK_Widget * widget, \
-			  void * data )
+			  void * data, void * event )
 {
   widget->shown = 0;
   if( widget->top!=NULL ) {

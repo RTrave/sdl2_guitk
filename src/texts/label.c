@@ -172,7 +172,7 @@ static void * Label_DrawBlit( SDLGuiTK_Widget * widget )
 }
 
 static void * Label_Realize( SDLGuiTK_Widget * widget, \
-			     void * data )
+			     void * data, void * event )
 {
   if( widget->misc->label->text_flag!=0 ) {
     Label_make_surface( widget->misc->label );
@@ -182,7 +182,7 @@ static void * Label_Realize( SDLGuiTK_Widget * widget, \
 }
 
 static void * Label_Show( SDLGuiTK_Widget * widget, \
-			  void * data )
+			  void * data, void * event )
 {
   widget->shown = 1;
   if( widget->top!=NULL ) {
@@ -193,7 +193,7 @@ static void * Label_Show( SDLGuiTK_Widget * widget, \
 }
 
 static void * Label_Hide( SDLGuiTK_Widget * widget, \
-			  void * data )
+			  void * data, void * event )
 {
   widget->shown = 0;
   if( widget->top!=NULL ) {

@@ -121,7 +121,8 @@ void MyWM_WMWidget_DrawUpdate( SDLGuiTK_WMWidget * wm_widget )
 void MyWM_WMWidget_DrawBlit( SDLGuiTK_WMWidget * wm_widget )
 {
 /*   SDLGuiTK_Widget * widget=wm_widget->widget; */
-  Uint32 bgcolor, bdcolor;
+  //Uint32 bgcolor;
+  Uint32 bdcolor;
   SDLGuiTK_Theme * theme;
 
   wm_widget->srf = \
@@ -135,11 +136,11 @@ void MyWM_WMWidget_DrawBlit( SDLGuiTK_WMWidget * wm_widget )
 			 theme->bdcolor.g, \
 			 theme->bdcolor.b, \
 			 255 );
-  bgcolor = SDL_MapRGBA( wm_widget->srf->format, \
-			 theme->bgcolor.r, \
-			 theme->bgcolor.g, \
-			 theme->bgcolor.b, \
-			 255 );
+  /* bgcolor = SDL_MapRGBA( wm_widget->srf->format, \ */
+		/* 	 theme->bgcolor.r, \ */
+		/* 	 theme->bgcolor.g, \ */
+		/* 	 theme->bgcolor.b, \ */
+		/* 	 255 ); */
   PROT__theme_unlock( theme );
 
 

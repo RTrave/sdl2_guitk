@@ -51,7 +51,7 @@
 #include "context_prot.h"
 
 
-static Uint32 bgcolor;
+//static Uint32 bgcolor;
 static int glflag=0;
 
 static SDLGUITK_Video * main_video=NULL;
@@ -115,9 +115,9 @@ static void Quit_SDL()
 static void MainVideo_init()
 {
   /* const SDL_VideoInfo* info=NULL; */
-  Uint32 bpp;
+  //Uint32 bpp;
 #if DEBUG_LEVEL >= 1
-  char tmpstr[512];
+  //char tmpstr[512];
 #endif
 
   main_video = malloc( sizeof( struct SDLGUITK_Video ) );
@@ -755,8 +755,8 @@ GLuint MySDL_GL_LoadTexture(SDL_Surface *surface, GLfloat *texcoord, GLuint *tex
         int w, h;
         SDL_Surface *image;
         SDL_Rect area;
-        Uint32 saved_flags;
-        Uint8  saved_alpha;
+        //Uint32 saved_flags;
+        //Uint8  saved_alpha;
 
         /* Use the surface width and height expanded to powers of 2 */
         w = power_of_two(surface->w);
@@ -787,7 +787,7 @@ GLuint MySDL_GL_LoadTexture(SDL_Surface *surface, GLfloat *texcoord, GLuint *tex
         }
 
         /* Save the alpha blending attributes */
-        saved_flags = surface->flags;
+        //saved_flags = surface->flags;
         //saved_alpha = surface->format->alpha;
         //2if ( (saved_flags & SDL_SRCALPHA) == SDL_SRCALPHA ) {
 		  //SDL_SetAlpha(surface, 0, 0);

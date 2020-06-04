@@ -169,13 +169,13 @@ static void Window_DrawTitleSurface( SDLGuiTK_Window * window )
 static void Window_UpdatePosition( SDLGuiTK_Window * window )
 {
   SDLGuiTK_Widget * widget=window->object->widget;
-  SDL_Surface * surface;
+  //SDL_Surface * surface;
   SDL_Window * mwindow;
   int w,h;
 
   printf( "Window0\n" );
   mwindow = MySDL_GetVideoWindow();
-  surface = MySDL_GetVideoSurface();
+  //surface = MySDL_GetVideoSurface();
 printf( "Window1\n" );
   switch( window->position ) {
   case SDLGUITK_WINDOW_CENTER:
@@ -207,7 +207,8 @@ printf( "Window1\n" );
 
 static void Window_MakeBaseSurface( SDLGuiTK_Window * window )
 {
-  Uint32 bgcolor, bdcolor;
+  //Uint32 bgcolor;
+  //Uint32 bdcolor;
   SDLGuiTK_Theme * theme;
 
   Window_MakeTitleSurface( window );
@@ -220,16 +221,16 @@ static void Window_MakeBaseSurface( SDLGuiTK_Window * window )
 
   /* Load theme values */
   theme = PROT__theme_get_and_lock();
-  bdcolor = SDL_MapRGBA( window->srf->format, \
-			 theme->bdcolor.r, \
-			 theme->bdcolor.g, \
-			 theme->bdcolor.b, \
-			 255 );
-  bgcolor = SDL_MapRGBA( window->srf->format, \
-			 theme->bgcolor.r, \
-			 theme->bgcolor.g, \
-			 theme->bgcolor.b, \
-			 255 );
+  /* bdcolor = SDL_MapRGBA( window->srf->format, \ */
+		/* 	 theme->bdcolor.r, \ */
+		/* 	 theme->bdcolor.g, \ */
+		/* 	 theme->bdcolor.b, \ */
+		/* 	 255 ); */
+  /* bgcolor = SDL_MapRGBA( window->srf->format, \ */
+		/* 	 theme->bgcolor.r, \ */
+		/* 	 theme->bgcolor.g, \ */
+		/* 	 theme->bgcolor.b, \ */
+		/* 	 255 ); */
   PROT__theme_unlock( theme );
 
   Window_DrawTitleSurface( window );
@@ -414,7 +415,7 @@ static void * Window_Free( SDLGuiTK_Widget * widget )
 
 
 static void * Window_Realize( SDLGuiTK_Widget * widget, \
-			      void * data )
+			      void * data, void * event )
 {
 
   Window_UpdatePosition( widget->container->bin->window );
@@ -425,7 +426,7 @@ static void * Window_Realize( SDLGuiTK_Widget * widget, \
 }
 
 static void * Window_Destroy( SDLGuiTK_Widget * widget, \
-			      void * data )
+			      void * data, void * event )
 {
 /*   SDLGuiTK_Window * window=widget->container->bin->window; */
 
@@ -438,7 +439,7 @@ static void * Window_Destroy( SDLGuiTK_Widget * widget, \
 }
 
 static void * Window_Show( SDLGuiTK_Widget * widget, \
-			   void * data )
+			   void * data, void * event )
 {
   SDLGuiTK_Window * window=widget->container->bin->window;
 
@@ -453,7 +454,7 @@ static void * Window_Show( SDLGuiTK_Widget * widget, \
 }
 
 static void * Window_Hide( SDLGuiTK_Widget * widget, \
-			   void * data )
+			   void * data, void * event )
 {
   SDLGuiTK_Window * window=widget->container->bin->window;
 
@@ -467,7 +468,7 @@ static void * Window_Hide( SDLGuiTK_Widget * widget, \
 }
 
 static void * Window_FrameEvent( SDLGuiTK_Widget * widget, \
-				 void * data )
+				 void * data, void * event )
 {
   Window_DrawUpdate( widget );
   Window_DrawBlit( widget );
@@ -477,7 +478,7 @@ static void * Window_FrameEvent( SDLGuiTK_Widget * widget, \
 }
 
 static void * Window_MouseEnter( SDLGuiTK_Widget * widget, \
-				 void * data )
+				 void * data, void * event )
 {
 /*   widget->WM_srf = widget->container->bin->window->active_srf; */
 /*   if( widget->absolute_srf!=widget->container->bin->window->active_srf ) { */
@@ -490,7 +491,7 @@ static void * Window_MouseEnter( SDLGuiTK_Widget * widget, \
 }
 
 static void * Window_MouseLeave( SDLGuiTK_Widget * widget, \
-				 void * data )
+				 void * data, void * event )
 {
 /*   widget->WM_srf = widget->container->bin->window->shaded_srf; */
 /*   if( widget->absolute_srf!=widget->container->bin->window->shaded_srf ) { */
@@ -518,7 +519,7 @@ static void * Window_MouseLeave( SDLGuiTK_Widget * widget, \
 /* } */
 
 static void * Window_MouseReleased( SDLGuiTK_Widget * window, \
-				    void * data )
+				    void * data, void * event )
 {
 /*   int x, y; */
 

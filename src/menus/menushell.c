@@ -91,7 +91,7 @@ static void * MenuShell_DrawUpdate( SDLGuiTK_Widget * widget )
 {
   struct SDLGuiTK_MenuShell * menushell=widget->menushell;
   SDLGuiTK_Widget   * current;
-  SDLGuiTK_MenuItem * current_item;
+  //SDLGuiTK_MenuItem * current_item;
 
   /* First placement for widget */
   widget->parent = widget;
@@ -102,7 +102,7 @@ static void * MenuShell_DrawUpdate( SDLGuiTK_Widget * widget )
   SDLGuiTK_list_lock( menushell->children );
   current = (SDLGuiTK_Widget *) SDLGuiTK_list_ref_init( menushell->children );
   while( current!=NULL ) {
-    current_item = SDLGuiTK_MENUITEM( current );
+    //current_item = SDLGuiTK_MENUITEM( current );
     current->top = widget->top;
     current->parent = widget;
     (*current->DrawUpdate)( current );
@@ -130,7 +130,7 @@ static void * MenuShell_DrawBlit( SDLGuiTK_Widget * widget )
 {
   struct SDLGuiTK_MenuShell * menushell=widget->menushell;
   SDLGuiTK_Widget   * current;
-  SDLGuiTK_MenuItem * current_item;
+  //SDLGuiTK_MenuItem * current_item;
   int current_x=0, current_y=0;
   SDL_Rect          tmp_area;
   Uint32 bgcolor;
@@ -154,7 +154,7 @@ static void * MenuShell_DrawBlit( SDLGuiTK_Widget * widget )
 
   current = (SDLGuiTK_Widget *) SDLGuiTK_list_ref_init( menushell->children );
   while( current!=NULL ) {
-    current_item = SDLGuiTK_MENUITEM( current );
+    //current_item = SDLGuiTK_MENUITEM( current );
     /* CHILD SIZE SUGGESTION */
     current->abs_area.x = widget->abs_area.x + current_x;
     current->abs_area.y = widget->abs_area.y + current_y;
@@ -201,14 +201,14 @@ static SDLGuiTK_Widget * MenuShell_RecursiveEntering( SDLGuiTK_Widget *widget, \
 {
   struct SDLGuiTK_MenuShell * menushell=widget->menushell;
   SDLGuiTK_Widget   * current, *active;
-  SDLGuiTK_MenuItem * current_item;
+  //SDLGuiTK_MenuItem * current_item;
 /*   int current_x=1, current_y=1; */
 
   SDLGuiTK_list_lock( menushell->children );
 
   current = (SDLGuiTK_Widget *) SDLGuiTK_list_ref_init( menushell->children );
   while( current!=NULL ) {
-    current_item = SDLGuiTK_MENUITEM( current );
+    //current_item = SDLGuiTK_MENUITEM( current );
 /*     current->act_area.x = widget->abs_area.x + current_x; */
 /*     current->act_area.y = widget->abs_area.y + current_y; */
 /*     current_y+=current->abs_area.h; */
@@ -239,7 +239,7 @@ static void * MenuShell_Free( SDLGuiTK_Widget * widget )
 }
 
 static void * MenuShell_Show( SDLGuiTK_Widget * widget, \
-			      void * data )
+			      void * data, void * event )
 {
   struct SDLGuiTK_MenuShell * menushell=widget->menushell;
 
@@ -252,7 +252,7 @@ static void * MenuShell_Show( SDLGuiTK_Widget * widget, \
 }
 
 static void * MenuShell_Hide( SDLGuiTK_Widget * widget, \
-			 void * data )
+			 void * data, void * event )
 {
   struct SDLGuiTK_MenuShell * menushell=widget->menushell;
 
@@ -263,14 +263,14 @@ static void * MenuShell_Hide( SDLGuiTK_Widget * widget, \
 }
 
 static void * MenuShell_MouseEnter( SDLGuiTK_Widget * widget, \
-				    void * data )
+				    void * data, void * event )
 {
   MyCursor_Set( SDLGUITK_CURSOR_DEFAULT );
   return (void *) NULL;
 }
 
 static void * MenuShell_MouseLeave( SDLGuiTK_Widget * widget, \
-				    void * data )
+				    void * data, void * event )
 {
   struct SDLGuiTK_MenuShell * menushell=widget->menushell;
   if( widget->shown==0) {
@@ -284,7 +284,7 @@ static void * MenuShell_MouseLeave( SDLGuiTK_Widget * widget, \
 }
 
 static void * MenuShell_Realize( SDLGuiTK_Widget * widget, \
-			    void * data )
+			    void * data, void * event )
 {
   struct SDLGuiTK_MenuShell * menushell=widget->menushell;
 /*   MenuShell_Show( widget, NULL ); */
@@ -295,7 +295,7 @@ static void * MenuShell_Realize( SDLGuiTK_Widget * widget, \
 }
 
 static void * MenuShell_Activate( SDLGuiTK_Widget * widget, \
-				  void * data )
+				  void * data, void * event )
 {
   PROT__signal_push( widget->object, SDLGUITK_SIGNAL_TYPE_REALIZE );
   PROT__signal_push( widget->object, SDLGUITK_SIGNAL_TYPE_SHOW );
@@ -304,7 +304,7 @@ static void * MenuShell_Activate( SDLGuiTK_Widget * widget, \
 }
 
 static void * MenuShell_DeActivate( SDLGuiTK_Widget * widget, \
-				    void * data )
+				    void * data, void * event )
 {
   PROT__signal_push( widget->object, SDLGUITK_SIGNAL_TYPE_HIDE );
 /*   PROT__signal_push( widget->object, SDLGUITK_SIGNAL_TYPE_DESTROY ); */
@@ -313,14 +313,14 @@ static void * MenuShell_DeActivate( SDLGuiTK_Widget * widget, \
 }
 
 static void * MenuShell_MousePressed( SDLGuiTK_Widget * widget, \
-				      void * data )
+				      void * data, void * event )
 {
 
   return (void *) NULL;
 }
 
 static void * MenuShell_SelectionDone( SDLGuiTK_Widget * widget, \
-				      void * data )
+				      void * data, void * event )
 {
 /*   SDLGuiTK_MenuShell * menushell=widget->menushell; */
   SDLGuiTK_Menu * menu=widget->menushell->menu;
