@@ -83,8 +83,10 @@ fixup_null_alloc (n)
   p = 0;
   if (n == 0)
     p = malloc ((size_t) 1);
+#if __STDC__ && (HAVE_VPRINTF || HAVE_DOPRNT)
   if (p == 0)
     error (xmalloc_exit_failure, 0, _("Memory exhausted"));
+#endif
   return p;
 }
 
