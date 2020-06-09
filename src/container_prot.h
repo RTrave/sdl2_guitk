@@ -32,7 +32,9 @@ struct SDLGuiTK_Container {
 
   int border_width;               /* "public" data */
 
-  SDL_Rect      children_area;    /* "private" data */
+  /* "private" data */
+  SDL_Rect      children_area;    /* w,h set in herited DrawUpdate (child suggestion)
+                                   * x,y set in self DrawUpdate */
   SDL_Rect      bg_area;          /* "private" data */
 };
 

@@ -38,6 +38,7 @@ struct SDLGuiTK_Box {
   SDL_Surface * srf;                /* "private" data */
   int homogeneous_size;             /* "private" data */
   int current_x, current_y;         /* "private" data */
+  int base_size;
   int expanded_nb;                  /* "private" data */
   int expanded_size;                /* "private" data */
   int shown_nb;                     /* "private" data */

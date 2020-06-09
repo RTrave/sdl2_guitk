@@ -27,7 +27,7 @@ struct SDLGuiTK_Misc {
   SDLGuiTK_Widget * widget;      /* herits from */
 
   SDLGuiTK_Label  * label;       /* herited */
-  SDLGuiTK_Entry  * entry;       /* herited */
+  //SDLGuiTK_Entry  * entry;       /* herited */
   SDLGuiTK_Image  * image;       /* herited */
 
   float xalign;                  /* "public" data */
@@ -35,7 +35,8 @@ struct SDLGuiTK_Misc {
   int   xpad;                    /* "public" data */
   int   ypad;                    /* "public" data */
 
-  SDL_Rect      area;            /* "private" data */
+  /* "private" data */
+  SDL_Rect      area;            /* (w,h) updated in Drawblit() of herited */
 };
 
 

@@ -207,7 +207,7 @@ printf( "Window1\n" );
 
 static void Window_MakeBaseSurface( SDLGuiTK_Window * window )
 {
-  //Uint32 bgcolor;
+  Uint32 bgcolor;
   //Uint32 bdcolor;
   SDLGuiTK_Theme * theme;
 
@@ -231,7 +231,8 @@ static void Window_MakeBaseSurface( SDLGuiTK_Window * window )
 		/* 	 theme->bgcolor.g, \ */
 		/* 	 theme->bgcolor.b, \ */
 		/* 	 255 ); */
-  PROT__theme_unlock( theme );
+  /*   SDL_FillRect( window->object->widget->srf, &window->area, bgcolor ); */
+  /* PROT__theme_unlock( theme ); */
 
   Window_DrawTitleSurface( window );
 
@@ -254,7 +255,6 @@ static void Window_MakeBaseSurface( SDLGuiTK_Window * window )
 /*   SDL_UpdateRect( window->active_srf, 0, 0, 0, 0 ); */
 
 /*   printf( " window->area %d %d %d %d\n", window->area.x, window->area.y, window->area.w, window->area.h ); */
-
   SDL_BlitSurface( window->object->widget->srf, NULL, \
 		   window->srf, &window->area );
   //2SDL_UpdateRects( window->srf, 1, &window->area );
@@ -274,31 +274,33 @@ static void * Window_DrawUpdate( SDLGuiTK_Widget * widget )
 {
   SDLGuiTK_Window * window=widget->container->bin->window;
 
+    PROT__widget_reset_req_area( widget );
   Window_MakeTitleSurface( window );
 
-  /* First placement for widget */
+  /* UPDATE SELF ASCENDENTS */
   widget->parent = widget;
   widget->top = widget;
 
   PROT__bin_DrawUpdate( window->bin );
 
   if( window->show_title ) {
-      if( widget->rel_area.w<window->title_srf->w ) {
-          widget->rel_area.w = window->title_srf->w;
-          widget->abs_area.w = window->title_srf->w;
+      if( widget->req_area.w<window->title_srf->w ) {
+          widget->req_area.w = window->title_srf->w;
+          //widget->abs_area.w = window->title_srf->w;
       }
   } else {
-      if( widget->rel_area.w<50 ) {
-          widget->rel_area.w = 50;
-          widget->abs_area.w = 50;
+      if( widget->req_area.w<50 ) {
+          widget->req_area.w = 50;
+          //widget->abs_area.w = 50;
       }
   }
 
-  window->wm_widget->child_area.w = widget->abs_area.w;
+    /* Prepare WMWidget dimensions */
+  window->wm_widget->child_area.w = widget->req_area.w;
   if( window->show_title ) 
-      window->wm_widget->child_area.h = widget->abs_area.h + window->title_srf->h;
+      window->wm_widget->child_area.h = widget->req_area.h + window->title_srf->h;
   else
-      window->wm_widget->child_area.h = widget->abs_area.h;
+      window->wm_widget->child_area.h = widget->req_area.h;
   
   window->wm_widget->surface2D_flag = 1;
 
@@ -312,6 +314,8 @@ static void * Window_DrawBlit( SDLGuiTK_Widget * widget )
 {
   SDLGuiTK_Window   * window=widget->container->bin->window;
   int wdiff=0, hdiff=0;
+    Uint32 bgcolor;
+    SDLGuiTK_Theme * theme;
 
   if( window->bin->child!=NULL ) {
 
@@ -322,6 +326,7 @@ static void * Window_DrawBlit( SDLGuiTK_Widget * widget )
       widget->abs_area.h - (2*widget->container->border_width) \
       - window->bin->child->rel_area.h;
     
+      wdiff = 0; hdiff = 0;
     if( wdiff>0 ) {
       widget->container->children_area.w = \
 	window->bin->child->rel_area.w + wdiff;
@@ -336,9 +341,18 @@ static void * Window_DrawBlit( SDLGuiTK_Widget * widget )
 
   PROT__bin_DrawBlit( window->bin );
 
+    theme = PROT__theme_get_and_lock();
+     bgcolor = SDL_MapRGBA( widget->srf->format, \
+			 theme->bgcolor.r, \
+			 theme->bgcolor.g, \
+			 theme->bgcolor.b, \
+			 255 );
+    PROT__theme_unlock( theme );
+
   if( window->bin->child!=NULL ) {
 /*     SDL_mutexP( window->bin->child->object->mutex ); */
     if( window->bin->child->shown==1 ) {
+        SDL_FillRect( widget->srf, &widget->rel_area, bgcolor );
       SDL_BlitSurface( window->bin->child->srf, NULL, \
 		       widget->srf, &window->bin->child->rel_area );
       //2SDL_UpdateRects( widget->srf, 1, &window->bin->child->rel_area );
@@ -351,8 +365,8 @@ static void * Window_DrawBlit( SDLGuiTK_Widget * widget )
 
   Window_MakeShadedSurface( window );
 
-  widget->rel_area.w = widget->abs_area.w;
-  widget->rel_area.h = widget->abs_area.h;
+  //widget->rel_area.w = widget->abs_area.w;
+  //widget->rel_area.h = widget->abs_area.h;
 
   widget->act_area.x = widget->abs_area.x;
   widget->act_area.y = widget->abs_area.y;

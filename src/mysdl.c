@@ -431,19 +431,19 @@ SDL_Surface * MySDL_CreateRGBSurface( SDL_Surface * dst, \
     MySDL_FreeSurface( dst );
   }
 
-  dst = SDL_CreateRGBSurface( SDL_SWSURFACE, /* |SDL_SRCALPHA */
+  dst = SDL_CreateRGBSurface( 0, /* SDL_SWSURFACE|SDL_SRCALPHA */
 				  w, h,
 				  32,
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN /* OpenGL RGBA masks */
 				  0x000000FF, 
 				  0x0000FF00, 
 				  0x00FF0000, 
-				  0x00000000
+				  0xFF000000
 #else
 				  0xFF000000,
 				  0x00FF0000, 
 				  0x0000FF00, 
-				  0x00000000
+				  0x000000FF
 #endif
 			      );
 

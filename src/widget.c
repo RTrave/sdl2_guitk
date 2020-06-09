@@ -165,6 +165,8 @@ static SDLGuiTK_Widget * Widget_create()
   new_widget->act_srf = NULL;
   new_widget->act_alpha = 0.5;
 /*   new_widget->srf_create = 0; */
+  new_widget->req_area.x = 0; new_widget->req_area.y = 0;
+  new_widget->req_area.w = 0; new_widget->req_area.h = 0;
   new_widget->rel_area.x = 0; new_widget->rel_area.y = 0;
   new_widget->rel_area.w = 0; new_widget->rel_area.h = 0;
   new_widget->abs_area.x = 0; new_widget->abs_area.y = 0;
@@ -329,34 +331,78 @@ void SDLGuiTK_widget_destroy( SDLGuiTK_Widget * widget )
 
 void  PROT__widget_DrawUpdate( SDLGuiTK_Widget * widget )
 {
-  if( widget->abs_area.w<widget->width_request ) {
-    widget->abs_area.w = widget->width_request;
-  }
-  if( widget->abs_area.h<widget->height_request ){
-    widget->abs_area.h = widget->height_request;
-  }
-  if( widget->abs_area.w<widget->rel_area.w ) {
-    widget->abs_area.w = widget->rel_area.w;
-  }
-  if( widget->abs_area.h<widget->rel_area.h ) {
-    widget->abs_area.h = widget->rel_area.h;
-  }
+    /* int width, height; */
+
+    /* if( widget->req_area.w<widget->width_request ) */
+    /*     width = widget->width_request; */
+    /* else */
+    /*     width = widget->req_area.w; */
+    /* if( widget->req_area.h<widget->height_request ) */
+    /*     height = widget->height_request; */
+    /* else */
+    /*     height = widget->req_area.h; */
+
+    /* widget->abs_area.w = width; */
+    /* widget->abs_area.h = height; */
+    /* widget->rel_area.w = width; */
+    /* widget->rel_area.h = height; */
+
+    if( widget->req_area.w<widget->width_request )
+        widget->req_area.w = widget->width_request;
+    if( widget->req_area.h<widget->height_request )
+        widget->req_area.h = widget->height_request;
+    /*
+    if( widget->abs_area.w<widget->width_request ) {
+        widget->abs_area.w = widget->width_request;
+    }
+    if( widget->abs_area.h<widget->height_request ){
+        widget->abs_area.h = widget->height_request;
+    }
+    if( widget->abs_area.w<widget->rel_area.w ) {
+        widget->abs_area.w = widget->rel_area.w;
+    }
+    if( widget->abs_area.h<widget->rel_area.h ) {
+        widget->abs_area.h = widget->rel_area.h;
+    }
+*/
 }
 
 void PROT__widget_DrawBlit(   SDLGuiTK_Widget * widget )
 {
 /*   if( widget->srf_create==1 ) { */
-  widget->srf = \
+
+    widget->abs_area.w = widget->req_area.w;
+    widget->abs_area.h = widget->req_area.h;
+    widget->rel_area.w = widget->req_area.w;
+    widget->rel_area.h = widget->req_area.h;
+
+    widget->srf = \
     MySDL_CreateRGBSurface( widget->srf, \
 			    widget->abs_area.w, \
 			    widget->abs_area.h );
-  //SDL_SetAlpha( widget->srf, SDL_RLEACCEL, 255 );
+    if(widget->srf==NULL)
+        SDLGUITK_ERROR("No srf created in Widget DrawBlit()\n");
+    //SDL_SetAlpha( widget->srf, SDL_RLEACCEL, 255 );
 /*   } */
 
   /* ACTIVABLE CODE TODO */
 /*   if( widget->misc!=NULL ) { */
 /*     MyWM_append_activable( widget ); */
 /*   } */
+}
+
+void PROT__widget_reset_req_area( SDLGuiTK_Widget *widget )
+{
+    widget->req_area.w = 0;
+    widget->req_area.h = 0;
+}
+
+void PROT__widget_set_req_area( SDLGuiTK_Widget *widget, int req_w, int req_h )
+{
+    if(req_w>widget->req_area.w)
+        widget->req_area.w = req_w;
+    if(req_h>widget->req_area.h)
+        widget->req_area.h = req_h;
 }
 
 void PROT__widget_destroypending()

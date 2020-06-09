@@ -61,6 +61,8 @@ SDL_Surface * MySDL_GetVideoSurface();
 extern
 SDL_Surface *MySDL_CreateRGBSurface( SDL_Surface *dst, int w, int h );
 extern
+SDL_Surface *MySDL_CreateRGBASurface( SDL_Surface *dst, int w, int h );
+extern
 SDL_Surface *MySDL_CreateRGBSurface_WithColor(
                 SDL_Surface *dst, \
 					      int w, int h, \

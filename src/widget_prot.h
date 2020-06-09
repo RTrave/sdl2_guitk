@@ -50,12 +50,14 @@ struct SDLGuiTK_Widget {
   void * (*DrawBlit  )( SDLGuiTK_Widget * );       /* "private" data */
   int    (*UpdateActive  )( SDLGuiTK_Widget * );   /* "private" data */
 
-  SDL_Rect      abs_area;                          /* "private" data */
-  SDL_Rect      rel_area;                          /* "private" data */
-  SDL_Rect      act_area;                          /* "private" data */
-  SDL_Surface * srf;                               /* "private" data */
-  SDL_Surface * act_srf;                           /* "private" data */
-  float         act_alpha;                         /* "private" data */
+  /* "private" data */
+  SDL_Rect      req_area;        /* (w,h) set in DrawUpdate() of herited */
+  SDL_Rect      abs_area;        /* (w,h) set in self DrawUpdate() */
+  SDL_Rect      rel_area;        /* (w,h) set in self DrawUpdate() */
+  SDL_Rect      act_area;        /* "private" data */
+  SDL_Surface * srf;             /* "private" data */
+  SDL_Surface * act_srf;         /* "private" data */
+  float         act_alpha;       /* "private" data */
 
 /*   int           srf_create;                        /\* "private" data *\/ */
 /*   SDL_Rect      WM_area;                           /\* "private" data *\/ */
@@ -80,6 +82,12 @@ extern
 void PROT__widget_DrawUpdate( SDLGuiTK_Widget *widget );
 extern
 void PROT__widget_DrawBlit(   SDLGuiTK_Widget *widget );
+
+/* Reset and Update req_area dimensions, only if larger values */
+extern
+void PROT__widget_reset_req_area( SDLGuiTK_Widget *widget );
+extern
+void PROT__widget_set_req_area( SDLGuiTK_Widget *widget, int req_w, int req_h );
 
 /* Entering/Exiting recursive procedure */
 extern

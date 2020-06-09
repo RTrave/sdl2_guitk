@@ -124,6 +124,7 @@ static void * Label_DrawUpdate( SDLGuiTK_Widget * widget )
 {
   SDLGuiTK_Label * label=widget->misc->label;
 
+    PROT__widget_reset_req_area( widget );
   Label_make_surface( label );
   
   label->misc->area.w = label->srf->w;
@@ -140,9 +141,9 @@ static void * Label_active_area( SDLGuiTK_Label * label )
   SDLGuiTK_Widget * widget=label->misc->widget;
 
   widget->act_area.x = \
-    widget->abs_area.x + label->misc->area.x;
+    widget->abs_area.x; // + label->misc->area.x;
   widget->act_area.y = \
-    widget->abs_area.y + label->misc->area.y;
+    widget->abs_area.y; // + label->misc->area.y;
   widget->act_area.w = widget->abs_area.w;  /* label->srf->w */
   widget->act_area.h = widget->abs_area.h;  /* label->srf->h */
 
@@ -159,8 +160,8 @@ static void * Label_DrawBlit( SDLGuiTK_Widget * widget )
 
   Label_active_area( label );
 
-  widget->rel_area.w = widget->abs_area.w;
-  widget->rel_area.h = widget->abs_area.h;
+  //widget->rel_area.w = widget->abs_area.w;
+  //widget->rel_area.h = widget->abs_area.h;
 
   if( widget->top!=NULL ) {
     SDL_BlitSurface( label->srf, NULL, \
@@ -252,6 +253,7 @@ SDLGuiTK_Widget * SDLGuiTK_label_new( const char *str )
   SDLGuiTK_Label * label;
 
   label = Label_create();
+    //SDLGuiTK_misc_set_padding( label->misc, 5, 5);
   strcpy( label->text, str );
   Label_set_functions( label );
   PROT__signal_push( label->object, SDLGUITK_SIGNAL_TYPE_REALIZE );

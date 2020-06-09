@@ -70,7 +70,7 @@ static SDLGuiTK_Misc * Misc_create()
   new_misc->widget->misc = new_misc;
 
   new_misc->label = NULL;
-  new_misc->entry = NULL;
+  //new_misc->entry = NULL;
   new_misc->image = NULL;
 
   new_misc->xalign = 0.5;
@@ -113,8 +113,8 @@ int PROT__misc_DrawUpdate( SDLGuiTK_Misc * misc )
   misc->area.x = misc->xpad;
   misc->area.y = misc->ypad;
 
-  misc->widget->rel_area.w = misc->area.w + 2*misc->xpad;
-  misc->widget->rel_area.h = misc->area.h + 2*misc->ypad;
+  misc->widget->req_area.w = misc->area.w + 2*misc->xpad;
+  misc->widget->req_area.h = misc->area.h + 2*misc->ypad;
 
   PROT__widget_DrawUpdate(  misc->widget );
 
@@ -129,8 +129,15 @@ void PROT__misc_DrawBlit(   SDLGuiTK_Misc * misc )
   Uint32 bgcolor;
   SDLGuiTK_Theme * theme;
 
-  wdiff = misc->widget->abs_area.w - misc->widget->rel_area.w;
-  hdiff = misc->widget->abs_area.h - misc->widget->rel_area.h;
+#if DEBUG_LEVEL >= 3
+    printf("*** %s PROT__misc_DrawBlit\n", misc->widget->object->name);
+    printf("*** misc req_area w:%d h:%d\n", misc->widget->req_area.w, misc->widget->req_area.h);
+    printf("*** misc abs_area w:%d h:%d\n", misc->widget->abs_area.w, misc->widget->abs_area.h);
+#endif
+
+   PROT__widget_DrawBlit(  misc->widget );
+   wdiff = misc->widget->req_area.w - misc->area.w - 2*misc->xpad;
+    hdiff = misc->widget->req_area.h - misc->area.h - 2*misc->ypad;
 
   if( wdiff>0 ) {
     xdiff = (int)((wdiff)*(misc->xalign));
@@ -142,9 +149,9 @@ void PROT__misc_DrawBlit(   SDLGuiTK_Misc * misc )
   misc->area.x += xdiff;
   misc->area.y += ydiff;
 
-  PROT__widget_DrawBlit(  misc->widget );
+  //PROT__widget_DrawBlit(  misc->widget );
 
-  theme = PROT__theme_get_and_lock();
+   theme = PROT__theme_get_and_lock();
 #if DEBUG_LEVEL >= 3
   bgcolor = SDL_MapRGBA( misc->widget->srf->format, 0xff, 0x00, 0x00, 0xff );
 #else

@@ -144,8 +144,8 @@ static void * Entry_DrawUpdate( SDLGuiTK_Widget * widget )
 /*   widget->rel_area.h = entry->srf->h; */
 /*   widget->abs_area.w = entry->srf->w; */
 /*   widget->abs_area.h = entry->srf->h; */
-  entry->widget->rel_area.w = entry->srf->w;
-  entry->widget->rel_area.h = entry->srf->h;
+  entry->widget->req_area.w = entry->srf->w;
+  entry->widget->req_area.h = entry->srf->h;
 
   PROT__widget_DrawUpdate( entry->widget );
 
@@ -259,8 +259,8 @@ theme = PROT__theme_get_and_lock();
 
   Entry_active_area( entry );
 
-  widget->rel_area.w = widget->abs_area.w;
-  widget->rel_area.h = widget->abs_area.h;
+  //widget->rel_area.w = widget->abs_area.w;
+  //widget->rel_area.h = widget->abs_area.h;
 
   fg_area.x = 0; fg_area.y = 0;
   fg_area.w = widget->abs_area.w; fg_area.h = widget->abs_area.h;

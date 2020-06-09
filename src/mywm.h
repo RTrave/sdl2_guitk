@@ -29,12 +29,13 @@ struct SDLGuiTK_WMWidget {
   int               title_shown;    /* "public" data */
   char              title[256];     /* "public" data */
 
-/*   SDLGuiTK_Widget * active;         /\* "private" data *\/ */
+  /* "private" data */
   int               enter;          /* "private" data */
   int               moving;         /* "private" data */
   SDL_Surface     * srf;            /* "private" data */
-  SDL_Rect          area;           /* "private" data */
-  SDL_Rect          child_area;     /* "private" data */
+  SDL_Rect          area;           /* Main surface */
+  SDL_Rect          child_area;     /* (w,h) setted in DrawUpdate() window,menushell,..
+                                     * (x,y) setted in self DrawUpdate*/
 
   SDLGuiTK_Surface2D * surface2D;       /* "private" data */
   int                  surface2D_flag;  /* "private" data */

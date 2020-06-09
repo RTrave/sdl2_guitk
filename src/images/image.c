@@ -1,4 +1,4 @@
-/* 
+/*
    SDL_guitk - GUI toolkit designed for SDL environnements.
 
    Copyright (C) 2005 Trave Roman
@@ -15,7 +15,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
+   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 #include <stdio.h>
@@ -24,7 +24,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
- 
+
 #ifdef STDC_HEADERS
 #include <stdlib.h>
 #endif
@@ -51,21 +51,21 @@
 
 static SDL_bool SDLGuiTK_IS_IMAGE( SDLGuiTK_Widget * widget )
 {
-  if( widget!=NULL ) {
-    if( widget->misc!=NULL ) {
-      if( widget->misc->image!=NULL ) {
-	return SDL_TRUE;
-      }
+    if( widget!=NULL ) {
+        if( widget->misc!=NULL ) {
+            if( widget->misc->image!=NULL ) {
+                return SDL_TRUE;
+            }
+        }
     }
-  }
-  SDLGUITK_ERROR( "SDLGuiTK_IS_IMAGE(): widget is not an image\n" );
-  return SDL_FALSE;
+    SDLGUITK_ERROR( "SDLGuiTK_IS_IMAGE(): widget is not an image\n" );
+    return SDL_FALSE;
 }
 
 SDLGuiTK_Image * SDLGuiTK_IMAGE( SDLGuiTK_Widget * widget )
 {
-  if( !SDLGuiTK_IS_IMAGE(widget) ) return NULL;
-  return widget->misc->image;
+    if( !SDLGuiTK_IS_IMAGE(widget) ) return NULL;
+    return widget->misc->image;
 }
 
 static int current_id=0;
@@ -73,192 +73,193 @@ static int current_id=0;
 
 static SDLGuiTK_Image * Image_create()
 {
-  SDLGuiTK_Image * new_image;
+    SDLGuiTK_Image * new_image;
 
-  new_image = malloc( sizeof( struct SDLGuiTK_Image ) );
-  new_image->misc = PROT__misc_new();
-  new_image->misc->image = new_image;
-  new_image->object = new_image->misc->object;
-  sprintf( new_image->object->name, "image%d", ++current_id );
+    new_image = malloc( sizeof( struct SDLGuiTK_Image ) );
+    new_image->misc = PROT__misc_new();
+    new_image->misc->image = new_image;
+    new_image->object = new_image->misc->object;
+    sprintf( new_image->object->name, "image%d", ++current_id );
 
-  new_image->file = calloc( 256, sizeof( char ) );
-  strcpy( new_image->file, "" );
-  new_image->srf = NULL;
+    new_image->file = calloc( 256, sizeof( char ) );
+    strcpy( new_image->file, "" );
+    new_image->srf = NULL;
 
-  return new_image;
+    return new_image;
 }
 
 static void Image_destroy( SDLGuiTK_Image * image )
 {
-  MySDL_FreeSurface( image->srf );
-  PROT__misc_destroy( image->misc );
-  free( image );
+    MySDL_FreeSurface( image->srf );
+    PROT__misc_destroy( image->misc );
+    free( image );
 }
 
 
 static void Image_make_surface( SDLGuiTK_Image * image )
 {
 #if DEBUG_LEVEL >= 1
-  char tmpstr[256];
+    char tmpstr[256];
 #endif
 
-  if( image->srf!=NULL ) {
-    MySDL_FreeSurface( image->srf );
-    image->srf = NULL;
-  }
+    if( image->srf!=NULL ) {
+        MySDL_FreeSurface( image->srf );
+        image->srf = NULL;
+    }
 #ifndef HAVE_SDL_SDL_IMAGE_H
-  image->srf = SDL_LoadBMP(image->file);
+    image->srf = SDL_LoadBMP(image->file);
 #else
-  image->srf = IMG_Load( image->file );
+    image->srf = IMG_Load( image->file );
 #endif
-  if( image->srf==NULL ) {
 #if DEBUG_LEVEL >= 1
-    sprintf( tmpstr, "Image_make_surface(): %s\n\t format unsupported!!!\n", \
-	     image->file );
-    SDLGUITK_ERROR( tmpstr );
+    if( image->srf==NULL ) {
+        sprintf( tmpstr, "Image_make_surface(): %s\n\t format unsupported!!!\n", \
+                 image->file );
+        SDLGUITK_ERROR( tmpstr );
+    }
 #endif
-    image->misc->area.w = 0;
-    image->misc->area.h = 0;
-    return;
-  }
-  image->misc->area.w = image->srf->w;
-  image->misc->area.h = image->srf->h;
-
 }
 
 static void * Image_DrawUpdate( SDLGuiTK_Widget * widget )
 {
-  SDLGuiTK_Image * image=SDLGuiTK_IMAGE( widget );
+    SDLGuiTK_Image * image=SDLGuiTK_IMAGE( widget );
 
-  Image_make_surface( image );
+    Image_make_surface( image );
+    if( image->srf==NULL ) {
+        image->misc->area.w = 0;
+        image->misc->area.h = 0;
+    } else {
+        image->misc->area.w = image->srf->w;
+        image->misc->area.h = image->srf->h;
+    }
 
-  PROT__misc_DrawUpdate( image->misc );
+    PROT__misc_DrawUpdate( image->misc );
 
-  return (void *) NULL;
+    return (void *) NULL;
 }
 
 
 static void * Image_active_area( SDLGuiTK_Image * image )
 {
-  SDLGuiTK_Widget * widget=image->misc->widget;
+    SDLGuiTK_Widget * widget=image->misc->widget;
 
-  if( image->srf==NULL ) return NULL;
-  widget->act_area.x = \
-    widget->abs_area.x + image->misc->area.x;
-  widget->act_area.y = \
-    widget->abs_area.y + image->misc->area.y;
-  widget->act_area.w = image->srf->w;
-  widget->act_area.h = image->srf->h;
+    if( image->srf==NULL ) return NULL;
+    widget->act_area.x = \
+                         widget->abs_area.x + image->misc->area.x;
+    widget->act_area.y = \
+                         widget->abs_area.y + image->misc->area.y;
+    widget->act_area.w = image->srf->w;
+    widget->act_area.h = image->srf->h;
 
-  return (void *) NULL;
+    return (void *) NULL;
 }
 
 static void * Image_DrawBlit( SDLGuiTK_Widget * widget )
 {
-  SDLGuiTK_Image * image=SDLGuiTK_IMAGE(widget);
+    SDLGuiTK_Image * image=SDLGuiTK_IMAGE(widget);
 
-  PROT__misc_DrawBlit( image->misc );
+    PROT__misc_DrawBlit( image->misc );
 
-  Image_active_area( image );
+    Image_active_area( image );
 
-  widget->rel_area.w = widget->abs_area.w;
-  widget->rel_area.h = widget->abs_area.h;
+    //widget->rel_area.w = widget->abs_area.w;
+    //widget->rel_area.h = widget->abs_area.h;
 
-  if( widget->top!=NULL ) {
-    SDL_BlitSurface( image->srf, NULL, \
-		     widget->srf, &image->misc->area );
-    //SDL_UpdateRect( widget->srf, 0, 0, 0, 0 );
-  }
+    if( widget->top!=NULL ) {
+        SDL_BlitSurface( image->srf, NULL, \
+                         widget->srf, &image->misc->area );
+        //SDL_UpdateRect( widget->srf, 0, 0, 0, 0 );
+    }
 
-  return (void *) NULL;
+    return (void *) NULL;
 }
 
 static void * Image_Realize( SDLGuiTK_Widget * widget, \
-			     void * data, void * event )
+                             void * data, void * event )
 {
-/*   if( widget->misc->image->text_flag!=0 ) { */
+    /*   if( widget->misc->image->text_flag!=0 ) { */
     Image_make_surface( widget->misc->image );
-/*   } */
+    /*   } */
 
-  return (void *) NULL;
+    return (void *) NULL;
 }
 
 static void * Image_Show( SDLGuiTK_Widget * widget, \
-			  void * data, void * event )
+                          void * data, void * event )
 {
-  widget->shown = 1;
-  if( widget->top!=NULL ) {
-    PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-  }
+    widget->shown = 1;
+    if( widget->top!=NULL ) {
+        PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
+    }
 
-  return (void *) NULL;
+    return (void *) NULL;
 }
 
 static void * Image_Hide( SDLGuiTK_Widget * widget, \
-			  void * data, void * event )
+                          void * data, void * event )
 {
-  widget->shown = 0;
-  if( widget->top!=NULL ) {
-    PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-  }
+    widget->shown = 0;
+    if( widget->top!=NULL ) {
+        PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
+    }
 
-  return (void *) NULL;
+    return (void *) NULL;
 }
 
 static SDLGuiTK_Widget * Image_RecursiveEntering( SDLGuiTK_Widget * widget, \
-						  int x, int y )
+        int x, int y )
 {
 
-  return NULL;
+    return NULL;
 }
 
 
 static void * Image_RecursiveDestroy( SDLGuiTK_Widget * widget )
 {
 
-  return (void *) NULL;
+    return (void *) NULL;
 }
 
 static void * Image_Free( SDLGuiTK_Widget * widget )
 {
-  Image_destroy( widget->misc->image );
-  
-  return (void *) NULL;
+    Image_destroy( widget->misc->image );
+
+    return (void *) NULL;
 }
 
 static void Image_set_functions( SDLGuiTK_Image * image )
 {
-  SDLGuiTK_Widget * widget=image->object->widget;
-  SDLGuiTK_SignalHandler * handler;
+    SDLGuiTK_Widget * widget=image->object->widget;
+    SDLGuiTK_SignalHandler * handler;
 
-  handler = (SDLGuiTK_SignalHandler *) image->object->signalhandler;
+    handler = (SDLGuiTK_SignalHandler *) image->object->signalhandler;
 
-  widget->RecursiveEntering = Image_RecursiveEntering;
-  widget->RecursiveDestroy = Image_RecursiveDestroy;
-  widget->Free = Image_Free;
+    widget->RecursiveEntering = Image_RecursiveEntering;
+    widget->RecursiveDestroy = Image_RecursiveDestroy;
+    widget->Free = Image_Free;
 
-  widget->DrawUpdate = Image_DrawUpdate;
-  widget->DrawBlit = Image_DrawBlit;
+    widget->DrawUpdate = Image_DrawUpdate;
+    widget->DrawBlit = Image_DrawBlit;
 
-  handler->fdefault[SDLGUITK_SIGNAL_TYPE_REALIZE]->function = \
-    Image_Realize;
-  handler->fdefault[SDLGUITK_SIGNAL_TYPE_SHOW]->function = \
-    Image_Show;
-  handler->fdefault[SDLGUITK_SIGNAL_TYPE_HIDE]->function = \
-    Image_Hide;
+    handler->fdefault[SDLGUITK_SIGNAL_TYPE_REALIZE]->function = \
+            Image_Realize;
+    handler->fdefault[SDLGUITK_SIGNAL_TYPE_SHOW]->function = \
+            Image_Show;
+    handler->fdefault[SDLGUITK_SIGNAL_TYPE_HIDE]->function = \
+            Image_Hide;
 }
 
 
 SDLGuiTK_Widget *SDLGuiTK_image_new_from_file( const char * filename )
 {
-  SDLGuiTK_Image * image;
+    SDLGuiTK_Image * image;
 
-  image = Image_create();
-  strcpy( image->file, filename );
-  Image_set_functions( image );
-  PROT__signal_push( image->object, SDLGUITK_SIGNAL_TYPE_REALIZE );
+    image = Image_create();
+    strcpy( image->file, filename );
+    Image_set_functions( image );
+    PROT__signal_push( image->object, SDLGUITK_SIGNAL_TYPE_REALIZE );
 
-  return image->object->widget;
+    return image->object->widget;
 }
 
 
