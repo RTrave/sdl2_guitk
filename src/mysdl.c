@@ -518,7 +518,7 @@ void MySDL_FreeSurface( SDL_Surface * surface )
 /*     surface_count--; */
 /*     printf( "Surface count: %d\n", surface_count ); */
 /* #endif */
-    //3SDL_FreeSurface( surface );
+    SDL_FreeSurface( surface );
     surface = NULL;
   } else {
     SDLGUITK_ERROR( "MySDL_FreeSurface(): surface==NULL .. continue\n" );

@@ -94,7 +94,7 @@ static SDLGuiTK_Entry * Entry_create()
   new_entry->text_flag = 1;
   new_entry->text_area.x = 0; new_entry->text_area.y = 0;
   new_entry->text_area.w = 0; new_entry->text_area.h = 0;
-  new_entry->text_srf = NULL;
+  //new_entry->text_srf = NULL;
 
   return new_entry;
 }
@@ -102,7 +102,7 @@ static SDLGuiTK_Entry * Entry_create()
 static void Entry_destroy( SDLGuiTK_Entry * entry )
 {
   MySDL_FreeSurface( entry->srf );
-  MySDL_FreeSurface( entry->text_srf );
+  //MySDL_FreeSurface( entry->text_srf );
 
   PROT__editable_destroy( entry->widget->editable );
   PROT__widget_destroy( entry->widget );
@@ -117,13 +117,13 @@ static void Entry_make_surface( SDLGuiTK_Entry * entry )
   theme = PROT__theme_get_and_lock();
 /*   strcat( entry->text, "/2588" ); */
 /*   strcat( entry->text, "\u2588" ); */
-  entry->text_srf = PROT__editable_makeblended( entry->text_srf, \
+  entry->srf = PROT__editable_makeblended( entry->srf, \
 						entry->widget->editable, \
 						16, theme->ftcolor );
   PROT__theme_unlock( theme );
 
   entry->text_flag = 0;
-  entry->srf = MySDL_CopySurface( entry->srf, entry->text_srf );
+  //entry->srf = MySDL_CopySurface( entry->srf, entry->text_srf );
 }
 
 
@@ -240,7 +240,7 @@ theme = PROT__theme_get_and_lock();
 /*   SDL_FillRect( misc->widget->srf, &bg_area, bgcolor ); */
 /*   SDL_UpdateRect( misc->widget->srf, 0, 0, 0, 0 ); */
 
-  entry->srf = MySDL_CopySurface( entry->srf, entry->text_srf );
+  //entry->srf = MySDL_CopySurface( entry->srf, entry->text_srf );
 
 /*   printf ( "\n- %s - DrawBlit\n\twidth:%d(%d) height:%d(%d)\n", */
 /*            widget->object->name, */

@@ -84,7 +84,7 @@ static SDLGuiTK_Label * Label_create()
   strcpy( new_label->text, new_label->object->name );
 
   new_label->text_flag = 1;
-  new_label->text_srf = NULL;
+  //new_label->text_srf = NULL;
   new_label->text_area.x = 0; new_label->text_area.y = 0;
   new_label->text_area.w = 0; new_label->text_area.h = 0;
   new_label->srf = NULL;
@@ -94,7 +94,7 @@ static SDLGuiTK_Label * Label_create()
 
 static void Label_destroy( SDLGuiTK_Label * label )
 {
-  MySDL_FreeSurface( label->text_srf );
+  //MySDL_FreeSurface( label->text_srf );
   MySDL_FreeSurface( label->srf );
 
   PROT__misc_destroy( label->misc );
@@ -108,7 +108,7 @@ static void Label_make_surface( SDLGuiTK_Label * label )
   SDLGuiTK_Theme * theme;
 
   theme = PROT__theme_get_and_lock();
-  label->text_srf = MyTTF_Render_Solid_Block( label->text_srf, \
+  label->srf = MyTTF_Render_Solid_Block( label->srf, \
 					 label->text, \
 					 16, MyTTF_STYLE_NORMAL, \
 					 theme->ftcolor, \
@@ -116,7 +116,7 @@ static void Label_make_surface( SDLGuiTK_Label * label )
   PROT__theme_unlock( theme );
 
   label->text_flag = 0;
-  label->srf = MySDL_CopySurface( label->srf, label->text_srf );
+  //label->srf = MySDL_CopySurface( label->srf, label->text_srf );
 }
 
 
@@ -156,7 +156,7 @@ static void * Label_DrawBlit( SDLGuiTK_Widget * widget )
 
   PROT__misc_DrawBlit( label->misc );
 
-  label->srf = MySDL_CopySurface( label->srf, label->text_srf );
+  //label->srf = MySDL_CopySurface( label->srf, label->text_srf );
 
   Label_active_area( label );
 

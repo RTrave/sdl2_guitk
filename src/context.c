@@ -116,6 +116,12 @@ void PROT__context_ref_wmwidget( SDLGuiTK_WMWidget * wm_widget )
 			(SDLGuiTK_Object *) wm_widget );
   SDLGuiTK_list_unlock( current_context->ref );
 /*   PROT_MyWM_checkfornew( wm_widget->widget ); */
+#if DEBUG_LEVEL >= 2
+  char tmpstr[512];
+    sprintf( tmpstr, \
+	     "_context_ref_wmwidget(): %s\n", wm_widget->object->name );
+    SDLGUITK_LOG( tmpstr );
+#endif
 }
 
 void PROT__context_unref_wmwidget( SDLGuiTK_WMWidget * wm_widget )

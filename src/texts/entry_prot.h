@@ -34,7 +34,7 @@ struct SDLGuiTK_Entry {
   SDL_Surface * srf;             /* "private" data */
 /*   char        * text_displayed;  /\* "public" data *\/ */
   int           text_flag;       /* "private" data */
-  SDL_Surface * text_srf;        /* "private" data */
+  //SDL_Surface * text_srf;        /* "private" data */
   SDL_Rect      text_area;       /* "private" data */
 };
 

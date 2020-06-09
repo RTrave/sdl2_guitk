@@ -260,6 +260,8 @@ static void * MenuShell_Hide( SDLGuiTK_Widget * widget, \
 
     widget->shown = 0;
     PROT__context_unref_wmwidget( menushell->wm_widget );
+    MyWM_WMWidget_Delete( menushell->wm_widget );
+    menushell->wm_widget = NULL;
 
     return (void *) NULL;
 }

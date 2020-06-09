@@ -92,6 +92,7 @@ static void Image_destroy( SDLGuiTK_Image * image )
 {
     MySDL_FreeSurface( image->srf );
     PROT__misc_destroy( image->misc );
+    free(image->file);
     free( image );
 }
 

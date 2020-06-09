@@ -110,6 +110,7 @@ static void Button_destroy( SDLGuiTK_Button * button )
     MySDL_FreeSurface( button->text_srf );
 
     PROT__bin_destroy( button->bin );
+    free(button->text);
     free( button );
 }
 
