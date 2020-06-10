@@ -104,6 +104,7 @@ static void Image_make_surface( SDLGuiTK_Image * image )
 #endif
 
     if( image->srf!=NULL ) {
+        return; //TODO: handling image change
         MySDL_FreeSurface( image->srf );
         image->srf = NULL;
     }

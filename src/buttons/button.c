@@ -296,7 +296,7 @@ static void * Button_DrawBlit( SDLGuiTK_Widget * widget )
         }
         /*     SDL_mutexV( button->bin->child->object->mutex ); */
     }
-
+    MySDL_FreeSurface( srf );
     /*   Button_active_area( button ); */
     ButtonCache( widget );
     if( widget->top!=NULL ) {
