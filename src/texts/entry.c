@@ -81,28 +81,22 @@ static SDLGuiTK_Entry * Entry_create()
   new_entry->object = new_entry->widget->object;
   sprintf( new_entry->object->name, "entry%d", ++current_id );
 
-/*   new_entry->text = calloc( 256, sizeof( char ) ); */
-/*   strcpy( new_entry->text, new_entry->object->name ); */
-/*   new_entry->text_displayed = calloc( 256, sizeof( char ) ); */
   new_entry->widget->editable = PROT__editable_new( new_entry->object );
 
   new_entry->editable = 1;
-/*   new_entry->cursor_position = 1; */
   new_entry->max_length = 1;
 
-  new_entry->srf = NULL;
+  new_entry->srf = MySDL_Surface_new ("Entry_srf");
   new_entry->text_flag = 1;
   new_entry->text_area.x = 0; new_entry->text_area.y = 0;
   new_entry->text_area.w = 0; new_entry->text_area.h = 0;
-  //new_entry->text_srf = NULL;
 
   return new_entry;
 }
 
 static void Entry_destroy( SDLGuiTK_Entry * entry )
 {
-  MySDL_FreeSurface( entry->srf );
-  //MySDL_FreeSurface( entry->text_srf );
+  MySDL_Surface_free( entry->srf );
 
   PROT__editable_destroy( entry->widget->editable );
   PROT__widget_destroy( entry->widget );
@@ -117,9 +111,9 @@ static void Entry_make_surface( SDLGuiTK_Entry * entry )
   theme = PROT__theme_get_and_lock();
 /*   strcat( entry->text, "/2588" ); */
 /*   strcat( entry->text, "\u2588" ); */
-  entry->srf = PROT__editable_makeblended( entry->srf, \
-						entry->widget->editable, \
-						16, theme->ftcolor );
+  PROT__editable_makeblended( entry->srf, \
+						      entry->widget->editable, \
+						      16, theme->ftcolor );
   PROT__theme_unlock( theme );
 
   entry->text_flag = 0;
@@ -144,8 +138,8 @@ static void * Entry_DrawUpdate( SDLGuiTK_Widget * widget )
 /*   widget->rel_area.h = entry->srf->h; */
 /*   widget->abs_area.w = entry->srf->w; */
 /*   widget->abs_area.h = entry->srf->h; */
-  entry->widget->req_area.w = entry->srf->w;
-  entry->widget->req_area.h = entry->srf->h;
+  entry->widget->req_area.w = entry->srf->srf->w;
+  entry->widget->req_area.h = entry->srf->srf->h;
 
   PROT__widget_DrawUpdate( entry->widget );
 
@@ -266,8 +260,8 @@ theme = PROT__theme_get_and_lock();
   fg_area.w = widget->abs_area.w; fg_area.h = widget->abs_area.h;
 
   if( widget->top!=NULL ) {
-    SDL_BlitSurface( entry->srf, NULL, \
-		     widget->srf, &fg_area );
+    MySDL_BlitSurface(  entry->srf, NULL, \
+		                widget->srf, &fg_area );
     //2SDL_UpdateRect( widget->srf, 0, 0, 0, 0 );
 	//SDL_UpdateWindowSurface( entry->srf );
 /*     SDL_BlitSurface( entry->srf, NULL, \ */
@@ -372,11 +366,11 @@ static int Entry_UpdateActive( SDLGuiTK_Widget * widget )
 
   if( idef!=0 ) {
     idef = 0;
-    widget->act_srf = srf_act2;
+    widget->act_srf->srf = srf_act2;
 /*     widget->top->container->bin->window->wm_widget->active_2D->texture_flag = 1; */
   } else {
     idef = 1;
-    widget->act_srf = srf_act1;
+    widget->act_srf->srf = srf_act1;
 /*     widget->top->container->bin->window->wm_widget->active_2D->texture_flag = 1; */
   }
 

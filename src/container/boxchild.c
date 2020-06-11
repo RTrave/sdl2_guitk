@@ -176,8 +176,8 @@ void       BoxChild_DrawBlit( BoxChild * child )
 
     (*widget->DrawBlit)( widget );
 
-    SDL_BlitSurface( widget->srf, NULL, \
-                     wbox->srf, &widget->rel_area );
+    MySDL_BlitSurface(  widget->srf, NULL, \
+                        wbox->srf, &widget->rel_area );
     //2SDL_UpdateRects( wbox->srf, 1, &widget->rel_area );
     //SDL_UpdateWindowSurface( widget->srf );
 

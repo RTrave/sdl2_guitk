@@ -137,8 +137,8 @@ static void * Alignment_DrawBlit( SDLGuiTK_Widget * widget )
   if( alignment->bin->child!=NULL ) {
 /*     SDL_mutexP( alignment->bin->child->object->mutex ); */
     if( alignment->bin->child->shown==1 ) {
-      SDL_BlitSurface( alignment->bin->child->srf, NULL, \
-		       widget->srf, &alignment->bin->child->rel_area );
+      MySDL_BlitSurface(    alignment->bin->child->srf, NULL, \
+		                    widget->srf, &alignment->bin->child->rel_area );
       //2SDL_UpdateRects( widget->srf, 1, &alignment->bin->child->rel_area );
 	  //SDL_UpdateWindowSurface( widget->srf );
     }

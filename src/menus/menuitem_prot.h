@@ -25,15 +25,17 @@ struct SDLGuiTK_MenuItem {
 
   SDLGuiTK_Bin * bin;             /* herits from */
 
-  SDLGuiTK_Menu   * menu;         /* "public" data */
-  SDLGuiTK_Widget * child;        /* "public" data */
+  /* "public" data */
+  SDLGuiTK_Menu   * menu;
+  SDLGuiTK_Widget * child;
 
-  int active_flag;            /* "private" data */
-  float active_alpha_mod;            /* "private" data */
-  SDL_Surface * srf;            /* "private" data */
-  SDL_Rect      area;           /* "private" data */
-
-  SDL_Rect      parent_area;    /* "private" data */
+  /* "private" data */
+  int             active_flag;
+  float           active_alpha_mod;
+  MySDL_Surface * active_srf;
+  SDL_Surface   * srf;
+  SDL_Rect        area;
+  SDL_Rect        parent_area;
 };
 
 

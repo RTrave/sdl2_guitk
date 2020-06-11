@@ -85,10 +85,10 @@ static void * Unset_RecursiveDestroy(SDLGuiTK_Widget * widget)
 static int Unset_UpdateActive(SDLGuiTK_Widget * widget)
 {
 #if DEBUG_LEVEL >= 1
-  char tmpstr[512];
-  sprintf( tmpstr, "*UpdateActive: not setted in %s.\n", \
-	   widget->object->name );
-  SDLGUITK_ERROR( tmpstr );
+  /* char tmpstr[512]; */
+  /* sprintf( tmpstr, "*UpdateActive: not setted in %s.\n", \ */
+	 /*   widget->object->name ); */
+  /* SDLGUITK_ERROR( tmpstr ); */
 #endif
   return 0;
 }
@@ -161,7 +161,8 @@ static SDLGuiTK_Widget * Widget_create()
 /*   new_widget->requisition.width = 0; */
 /*   new_widget->requisition.height = 0; */
 
-  new_widget->srf = NULL;
+  new_widget->srf = MySDL_Surface_new ("Widget_srf");
+  //new_widget->act_srf = MySDL_Surface_new ("Widget_act_srf");
   new_widget->act_srf = NULL;
   new_widget->act_alpha = 0.5;
 /*   new_widget->srf_create = 0; */
@@ -182,7 +183,7 @@ static void Widget_destroy( SDLGuiTK_Widget * widget )
 /*   printf( "DESTR: %s\n", widget->object->name ); */
   if( widget->tooltipsdata!=NULL )
     PROT__TooltipsData_Destroy( widget->tooltipsdata );
-  MySDL_FreeSurface( widget->srf );
+  MySDL_Surface_free( widget->srf );
 /*   MySDL_FreeSurface( widget->act_srf ); */
   PROT__object_destroy( widget->object );
   free( widget );
@@ -376,11 +377,10 @@ void PROT__widget_DrawBlit(   SDLGuiTK_Widget * widget )
     widget->rel_area.w = widget->req_area.w;
     widget->rel_area.h = widget->req_area.h;
 
-    widget->srf = \
     MySDL_CreateRGBSurface( widget->srf, \
-			    widget->abs_area.w, \
-			    widget->abs_area.h );
-    if(widget->srf==NULL)
+			                widget->abs_area.w, \
+			                widget->abs_area.h );
+    if(widget->srf->srf==NULL)
         SDLGUITK_ERROR("No srf created in Widget DrawBlit()\n");
     //SDL_SetAlpha( widget->srf, SDL_RLEACCEL, 255 );
 /*   } */

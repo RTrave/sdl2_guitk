@@ -101,6 +101,7 @@ static void Init_internals()
 {
   main_loop_mutex = SDL_CreateMutex();
 
+    MySDL_Surface_init();
   PROT__theme_init();
   PROT__widget_init();
   PROT__object_init();
@@ -117,6 +118,7 @@ static void Quit_internals()
   PROT__theme_uninit();
 
   PROT__context_uninit();
+    MySDL_Surface_uninit();
 
   SDL_DestroyMutex( main_loop_mutex );
 }

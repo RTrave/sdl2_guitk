@@ -73,7 +73,8 @@ SDLGuiTK_WMWidget * MyWM_WMWidget_New( SDLGuiTK_Widget * widget )
 /*   wm_widget->active = NULL; */
   wm_widget->enter = 0;
   wm_widget->moving = 0;
-  wm_widget->srf = NULL;
+  wm_widget->srf = MySDL_Surface_new ("WMWidget_srf");
+  //wm_widget->srf = NULL;
   wm_widget->area.x = 0; wm_widget->area.y = 0;
   wm_widget->area.w = 0; wm_widget->area.h = 0;
   wm_widget->child_area.x = 0; wm_widget->child_area.y = 0;
@@ -89,7 +90,7 @@ SDLGuiTK_WMWidget * MyWM_WMWidget_New( SDLGuiTK_Widget * widget )
 
 void              MyWM_WMWidget_Delete( SDLGuiTK_WMWidget * wm_widget )
 {
-  MySDL_FreeSurface( wm_widget->srf );
+  MySDL_Surface_free( wm_widget->srf );
 /*   MyWM_2DWidget_destroy( wm_widget->wmwidget_2D ); */
 /*   MyWM_2DWidget_destroy( wm_widget->active_2D ); */
   free( wm_widget );
@@ -125,17 +126,16 @@ void MyWM_WMWidget_DrawBlit( SDLGuiTK_WMWidget * wm_widget )
   Uint32 bdcolor;
   SDLGuiTK_Theme * theme;
 
-  wm_widget->srf = \
-    MySDL_CreateRGBSurface( wm_widget->srf,\
-			    wm_widget->area.w, wm_widget->area.h );
+  MySDL_CreateRGBSurface(   wm_widget->srf,\
+			                wm_widget->area.w, wm_widget->area.h );
 
   /* Load theme values */
   theme = PROT__theme_get_and_lock();
-  bdcolor = SDL_MapRGBA( wm_widget->srf->format, \
-			 theme->bdcolor.r, \
-			 theme->bdcolor.g, \
-			 theme->bdcolor.b, \
-			 255 );
+  bdcolor = SDL_MapRGBA( wm_widget->srf->srf->format, \
+			             theme->bdcolor.r, \
+			             theme->bdcolor.g, \
+			             theme->bdcolor.b, \
+			             255 );
   /* bgcolor = SDL_MapRGBA( wm_widget->srf->format, \ */
 		/* 	 theme->bgcolor.r, \ */
 		/* 	 theme->bgcolor.g, \ */
@@ -145,7 +145,7 @@ void MyWM_WMWidget_DrawBlit( SDLGuiTK_WMWidget * wm_widget )
 
 
   /* Blit border, backgroud and title */
-  SDL_FillRect( wm_widget->srf, NULL, bdcolor );
+  MySDL_FillRect( wm_widget->srf, NULL, bdcolor );
   //SDL_UpdateRect( wm_widget->srf, 0, 0, 0, 0 );
 
 /*   wm_widget->area.x = wm_widget->widget->abs_area.x - wm_widget->border_width - wm_widget->widget->rel_area.x; */
@@ -579,7 +579,7 @@ static void * MyWM_blitsurface_GL( SDLGuiTK_WMWidget * wm_widget )
   SDL_GetMouseState( &mouse_x, &mouse_y );
  
   if ( wm_widget->surface2D_flag!=0 ) {
-    MySDL_surface2D_update( surface2D, wm_widget->srf );
+    MySDL_surface2D_update( surface2D, wm_widget->srf->srf );
     wm_widget->surface2D_flag = 0;
   }
 
@@ -594,11 +594,11 @@ static void * MyWM_blitsurface_GL( SDLGuiTK_WMWidget * wm_widget )
     act_flag = (int) (*active_widget->UpdateActive) ( active_widget );
     if ( act_flag!=0 ) { /*  */
       MySDL_surface2D_update( active_2D, \
-			      active_widget->act_srf );
+			      active_widget->act_srf->srf );
 /*       active_2D->texture_flag = 0; */
     }
     active_2D->alpha = (GLfloat) active_widget->act_alpha;
-    if( active_widget->act_srf==active_2D->srf) {
+    if( active_widget->act_srf->srf==active_2D->srf) {
       MySDL_surface2D_blitsurface( active_2D,		    \
 				   active_widget->act_area.x,	\
 				   active_widget->act_area.y );
@@ -691,17 +691,18 @@ static void * MyWM_blitsurface_noGL( SDLGuiTK_WMWidget * wm_widget )
     act_flag = (int) (*active_widget->UpdateActive) ( active_widget );
 
     if ( act_flag!=0 ) {
-      surface2D->srf = MySDL_CopySurface( surface2D->srf, wm_widget->srf );
-      surface2D->w = wm_widget->srf->w;
-      surface2D->h = wm_widget->srf->h;
+      //surface2D->srf = MySDL_CopySurface( surface2D->srf, wm_widget->srf );
+      surface2D->srf = wm_widget->srf->srf;
+      surface2D->w = wm_widget->srf->srf->w;
+      surface2D->h = wm_widget->srf->srf->h;
       wm_widget->surface2D_flag = 0;
       act_area.x = active_widget->act_area.x - wm_widget->area.x;
       act_area.y = active_widget->act_area.y - wm_widget->area.y;
-      act_area.w = active_widget->act_srf->w;
-      act_area.h = active_widget->act_srf->h;
+      act_area.w = active_widget->act_srf->srf->w;
+      act_area.h = active_widget->act_srf->srf->h;
       //SDL_SetAlpha( active_widget->act_srf, SDL_RLEACCEL, 64 ); //SDL_SRCALPHA|
-      SDL_BlitSurface( active_widget->act_srf, NULL, \
-		       surface2D->srf, &act_area);
+      //MySDL_BlitSurface( active_widget->act_srf, NULL, \
+	  //	                    surface2D->srf, &act_area);
       //2SDL_UpdateRects( surface2D->srf, 1, &act_area);
 	  //SDL_UpdateWindowSurface( active_widget->act_srf );
     }
@@ -709,9 +710,10 @@ static void * MyWM_blitsurface_noGL( SDLGuiTK_WMWidget * wm_widget )
   }
 
   if ( wm_widget->surface2D_flag!=0 ) {
-    surface2D->srf = MySDL_CopySurface( surface2D->srf, wm_widget->srf );
-    surface2D->w = wm_widget->srf->w;
-    surface2D->h = wm_widget->srf->h;
+    //surface2D->srf = MySDL_CopySurface( surface2D->srf, wm_widget->srf );
+      surface2D->srf = wm_widget->srf->srf;
+    surface2D->w = wm_widget->srf->srf->w;
+    surface2D->h = wm_widget->srf->srf->h;
     wm_widget->surface2D_flag = 0;
   }
 

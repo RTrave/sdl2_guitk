@@ -89,34 +89,37 @@ static SDLGuiTK_MenuItem * MenuItem_create()
     new_menuitem->child = NULL;
     new_menuitem->active_flag = 0;
     new_menuitem->active_alpha_mod = -0.01;
+    new_menuitem->active_srf = MySDL_Surface_new ("Menuitem_active_srf");
 
     return new_menuitem;
 }
 
 static void MenuItem_destroy( SDLGuiTK_MenuItem * menuitem )
 {
-    free( menuitem );
+     MySDL_Surface_free( menuitem->active_srf );
+   free( menuitem );
 }
 
 static void Make_activesrf( SDLGuiTK_Widget * widget ) {
+    SDLGuiTK_MenuItem * menuitem=widget->container->bin->menuitem;
     SDL_Rect          tmp_area;
     Uint32 bgcolor;
     SDLGuiTK_Theme * theme;
 
-    widget->act_srf = MySDL_CreateRGBSurface( widget->act_srf,   \
-                      widget->act_area.w,		\
-                      widget->act_area.h );
+    MySDL_CreateRGBSurface(   menuitem->active_srf,   \
+                              widget->act_area.w,		\
+                              widget->act_area.h );
     theme = PROT__theme_get_and_lock();
     tmp_area.x = 0;
     tmp_area.y = 0;
     tmp_area.w = widget->act_area.w;
     tmp_area.h = widget->act_area.h;
-    bgcolor = SDL_MapRGBA( widget->srf->format, \
+    bgcolor = SDL_MapRGBA( menuitem->active_srf->srf->format, \
                            theme->bdcolor.r, \
                            theme->bdcolor.g, \
                            theme->bdcolor.b, \
                            255 );
-    SDL_FillRect( widget->act_srf, &tmp_area, bgcolor );
+    MySDL_FillRect( menuitem->active_srf, &tmp_area, bgcolor );
     //SDL_UpdateRect( widget->act_srf, 0, 0, 0, 0 );
     //SDL_SetAlpha( widget->act_srf, SDL_SRCALPHA|SDL_RLEACCEL, 255 ); /*  */
     PROT__theme_unlock( theme );
@@ -151,8 +154,8 @@ static void * MenuItem_DrawBlit( SDLGuiTK_Widget * widget )
     /*   printf( "ITEM2 ( child->srf.w=%d , child->srf.h=%d )\n", child->srf->w, child->srf->h ); */
     /*   printf( "ITEM2 ( widget->srf.w=%d , widget->srf.h=%d )\n", widget->srf->w, widget->srf->h ); */
 
-    SDL_BlitSurface( child->srf, NULL, \
-                     widget->srf, &child->rel_area );
+    MySDL_BlitSurface(  child->srf, NULL, \
+                        widget->srf, &child->rel_area );
     //SDL_UpdateRect( widget->srf, 0, 0, 0, 0 );
 
     widget->act_area.x = widget->abs_area.x /* + button->bin->area.x */;
@@ -201,8 +204,8 @@ void MenuItem_DrawBlit_Menu( SDLGuiTK_MenuItem * menuitem )
     /*   printf( "ITEM ( parent_area.w=%d , parent_area.h=%d )\n", menuitem->parent_area.w, menuitem->parent_area.h ); */
     /*   printf( "ITEM ( widget->srf.w=%d , widget->srf.h=%d )\n", widget->srf->w, widget->srf->h ); */
     /*   printf( "ITEM ( parent->srf.w=%d , parent->srf.h=%d )\n", menuitem->child->parent->srf->w, menuitem->child->parent->srf->h ); */
-    SDL_BlitSurface( child->srf, NULL, \
-                     menuitem->child->parent->srf, &menuitem->parent_area );
+    MySDL_BlitSurface(  child->srf, NULL, \
+                        menuitem->child->parent->srf, &menuitem->parent_area );
     //2SDL_UpdateRect( menuitem->child->parent->srf, 0, 0, 0, 0 );
     //SDL_UpdateWindowSurface( widget->srf );
     /*   SDL_UpdateRects( menuitem->child->parent->srf, 1, &menuitem->parent_area ); */
@@ -256,7 +259,7 @@ static void * MenuItem_MouseEnter( SDLGuiTK_Widget * widget, \
     SDLGuiTK_MenuItem * menuitem=widget->container->bin->menuitem;
 
     Make_activesrf( widget );
-
+    widget->act_srf = menuitem->active_srf;
     widget->act_alpha = 0.5;
     menuitem->active_flag = 1;
     return (void *) NULL;

@@ -21,19 +21,21 @@
 
 /* SDLGuiTK_Window structure definition */
 struct SDLGuiTK_Window {
-  SDLGuiTK_Object * object;     /* referent object */
+    SDLGuiTK_Object * object;     /* referent object */
 
-  SDLGuiTK_Bin      * bin;      /* herits from */
-  SDLGuiTK_WMWidget * wm_widget;/* herits from */
+    SDLGuiTK_Bin      * bin;      /* herits from */
+    SDLGuiTK_WMWidget * wm_widget;/* herits from */
 
-  char title[64];               /* "public" data */
-    int  position;                /* "public" data */
-    int  show_title;            /* "public" data */
+  /* "public" data */
+    char title[64];
+    int  position;
+    int  show_title;
 
-  SDL_Surface * srf;            /* "private" data */
-  SDL_Rect      area;           /* "private" data */
-  SDL_Surface * title_srf;      /* "private" data */
-  SDL_Rect      title_area;     /* "private" data */
+  /* "private" data */
+    MySDL_Surface * srf;
+    SDL_Rect        area;
+    MySDL_Surface * title_srf;
+    SDL_Rect        title_area;
 };
 
 

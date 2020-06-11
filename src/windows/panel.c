@@ -93,7 +93,7 @@ static SDLGuiTK_Panel * Panel_create()
 /*   strcpy( new_panel->title, new_panel->object->name ); */
   new_panel->position = SDLGUITK_PANEL_BOTTOM;
 
-  new_panel->srf = NULL;
+  new_panel->srf = MySDL_Surface_new ("Panel_srf");
   new_panel->area.x = 0; new_panel->area.y = 0;
   new_panel->area.w = 0; new_panel->area.h = 0;
 /*   new_panel->title_srf = NULL; */
@@ -110,7 +110,7 @@ static void Panel_destroy( SDLGuiTK_Panel * panel )
 /*   MySDL_FreeSurface( panel->active_srf ); */
 /*   MySDL_FreeSurface( panel->shaded_srf ); */
 /*   MySDL_FreeSurface( panel->title_srf ); */
-  MySDL_FreeSurface( panel->srf );
+  MySDL_Surface_free( panel->srf );
 
   PROT__bin_destroy( panel->bin );
   MyWM_WMWidget_Delete( panel->wm_widget );
@@ -197,10 +197,9 @@ static void Panel_MakeBaseSurface( SDLGuiTK_Panel * panel )
 /*   Panel_MakeTitleSurface( panel ); */
 
   /* Prepare surface */
-  panel->srf = \
-    MySDL_CreateRGBSurface( panel->srf,\
-			    panel->wm_widget->child_area.w, \
-			    panel->wm_widget->child_area.h );
+  MySDL_CreateRGBSurface(   panel->srf,\
+			                panel->wm_widget->child_area.w, \
+			                panel->wm_widget->child_area.h );
 
   /* Load theme values */
   theme = PROT__theme_get_and_lock();
@@ -234,8 +233,8 @@ static void Panel_MakeBaseSurface( SDLGuiTK_Panel * panel )
 
 /*   printf( " panel->area %d %d %d %d\n", panel->area.x, panel->area.y, panel->area.w, panel->area.h ); */
 
-  SDL_BlitSurface( panel->object->widget->srf, NULL, \
-		   panel->srf, &panel->area );
+  MySDL_BlitSurface(    panel->object->widget->srf, NULL, \
+		                panel->srf, &panel->area );
   //2SDL_UpdateRects( panel->srf, 1, &panel->area );
   //SDL_UpdateWindowSurface( panel->object->widget->srf );
 }
@@ -307,8 +306,8 @@ static void * Panel_DrawBlit( SDLGuiTK_Widget * widget )
   if( panel->bin->child!=NULL ) {
 /*     SDL_mutexP( panel->bin->child->object->mutex ); */
     if( panel->bin->child->shown==1 ) {
-      SDL_BlitSurface( panel->bin->child->srf, NULL, \
-		       widget->srf, &panel->bin->child->rel_area );
+      MySDL_BlitSurface(    panel->bin->child->srf, NULL, \
+		                    widget->srf, &panel->bin->child->rel_area );
       //2SDL_UpdateRects( widget->srf, 1, &panel->bin->child->rel_area );
 	  //SDL_UpdateWindowSurface( panel->bin->child->srf );
     }
@@ -329,8 +328,8 @@ static void * Panel_DrawBlit( SDLGuiTK_Widget * widget )
 
   MyWM_WMWidget_DrawBlit( panel->wm_widget );
 
-  SDL_BlitSurface( panel->srf, NULL, \
-		   panel->wm_widget->srf, &panel->wm_widget->child_area );
+  MySDL_BlitSurface(    panel->srf, NULL, \
+		                panel->wm_widget->srf, &panel->wm_widget->child_area );
   //2SDL_UpdateRects( panel->wm_widget->srf, 1, &panel->wm_widget->child_area );
   //SDL_UpdateWindowSurface( panel->srf );
 

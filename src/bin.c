@@ -80,7 +80,7 @@ static SDLGuiTK_Bin * Bin_create()
 
     new_bin->child = NULL;
 
-    new_bin->srf = NULL;
+    //new_bin->srf = MySDL_Surface_new ("Bin_srf");
 
     return new_bin;
 }
@@ -88,7 +88,7 @@ static SDLGuiTK_Bin * Bin_create()
 static void Bin_destroy( SDLGuiTK_Bin * bin )
 {
     PROT__container_destroy( bin->container );
-    MySDL_FreeSurface( bin->srf );
+    //MySDL_Surface_free( bin->srf );
     free( bin );
 }
 
@@ -172,8 +172,8 @@ void PROT__bin_DrawUpdate( SDLGuiTK_Bin * bin )
     SDLGuiTK_Widget *widget=bin->object->widget;
 
     if(bin->child==NULL || bin->child->shown!=1) {
-        bin->container->children_area.w = 0;
-        bin->container->children_area.h = 0;
+        bin->container->children_area.w = 4;
+        bin->container->children_area.h = 4;
         PROT__container_DrawUpdate( bin->container );
         return;
     }
@@ -197,8 +197,8 @@ void PROT__bin_DrawUpdate( SDLGuiTK_Bin * bin )
         /*     bin->container->children_area.h = 0; */
         /* } */
 #if DEBUG_LEVEL >= 3
-    printf("*** %s PROT__bin_DrawUpdate\n", widget->object->name);
-    printf("*** bin children_area1 w:%d h:%d\n", bin->container->children_area.w, bin->container->children_area.h);
+    /* printf("*** %s PROT__bin_DrawUpdate\n", widget->object->name); */
+    /* printf("*** bin children_area1 w:%d h:%d\n", bin->container->children_area.w, bin->container->children_area.h); */
 #endif
 
         /* ... IF NO CHILD */
@@ -214,7 +214,7 @@ void PROT__bin_DrawUpdate( SDLGuiTK_Bin * bin )
     /* Bin forces child to fit its size */
     //if(bin->child!=NULL) {
 #if DEBUG_LEVEL >= 3
-    printf("*** bin children_area2 w:%d h:%d\n", bin->container->children_area.w, bin->container->children_area.h);
+    /* printf("*** bin children_area2 w:%d h:%d\n", bin->container->children_area.w, bin->container->children_area.h); */
 #endif
 
 /* PROT__widget_set_req_area(bin->child, */
@@ -230,7 +230,7 @@ void PROT__bin_DrawBlit(   SDLGuiTK_Bin * bin )
 {
     SDLGuiTK_Widget *widget=bin->object->widget;
 
-    if( bin->child==NULL ) {
+    if( bin->child==NULL || bin->child->shown!=1 ) {
         SDLGUITK_LOG( "PROT__bin_DrawBlit(): 'child==NULL'\n" );
         PROT__container_DrawBlit( bin->container );
         return;
@@ -268,9 +268,9 @@ void PROT__bin_DrawBlit(   SDLGuiTK_Bin * bin )
                               bin->container->children_area.w,
                               bin->container->children_area.h);
 #if DEBUG_LEVEL >= 3
-    printf("*** %s PROT__bin_DrawBlit\n", widget->object->name);
-    printf("*** bin req_area w:%d h:%d\n", widget->req_area.w, widget->req_area.h);
-    printf("*** bin abs_area w:%d h:%d\n", widget->abs_area.w, widget->abs_area.h);
+    /* printf("*** %s PROT__bin_DrawBlit\n", widget->object->name); */
+    /* printf("*** bin req_area w:%d h:%d\n", widget->req_area.w, widget->req_area.h); */
+    /* printf("*** bin abs_area w:%d h:%d\n", widget->abs_area.w, widget->abs_area.h); */
 #endif
         (*bin->child->DrawBlit)( bin->child );
         /*     SDL_BlitSurface( bin->child->srf, NULL, \ */

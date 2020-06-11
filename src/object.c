@@ -35,6 +35,7 @@
 
 #include <SDL2/SDL_guitk.h>
 
+#include "mysdl.h"
 #include "debug.h"
 #include "object_prot.h"
 #include "widget_prot.h"

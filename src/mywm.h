@@ -25,20 +25,20 @@ struct SDLGuiTK_WMWidget {
 
   SDLGuiTK_Widget * widget;         /* herits from */
 
-  int               border_width;   /* "public" data */
-  int               title_shown;    /* "public" data */
-  char              title[256];     /* "public" data */
+  /* "public" data */
+  int               border_width;
+  int               title_shown;
+  char              title[256];
 
   /* "private" data */
-  int               enter;          /* "private" data */
-  int               moving;         /* "private" data */
-  SDL_Surface     * srf;            /* "private" data */
-  SDL_Rect          area;           /* Main surface */
-  SDL_Rect          child_area;     /* (w,h) setted in DrawUpdate() window,menushell,..
+  int                 enter;
+  int                 moving;
+  MySDL_Surface     * srf;
+  SDL_Rect            area;
+  SDL_Rect            child_area;     /* (w,h) setted in DrawUpdate() window,menushell,..
                                      * (x,y) setted in self DrawUpdate*/
-
-  SDLGuiTK_Surface2D * surface2D;       /* "private" data */
-  int                  surface2D_flag;  /* "private" data */
+  SDLGuiTK_Surface2D * surface2D;
+  int                  surface2D_flag;
 };
 
 

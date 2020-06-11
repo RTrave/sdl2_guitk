@@ -26,13 +26,12 @@ struct SDLGuiTK_Panel {
   SDLGuiTK_Bin      * bin;      /* herits from */
   SDLGuiTK_WMWidget * wm_widget;/* herits from */
 
-/*   char title[64];               /\* "public" data *\/ */
-  int  position;                /* "public" data */
+  /* "public" data */
+  int  position;
 
-  SDL_Surface * srf;            /* "private" data */
-  SDL_Rect      area;           /* "private" data */
-/*   SDL_Surface * title_srf;      /\* "private" data *\/ */
-/*   SDL_Rect      title_area;     /\* "private" data *\/ */
+  /* "private" data */
+  MySDL_Surface * srf;
+  SDL_Rect        area;
 };
 
 

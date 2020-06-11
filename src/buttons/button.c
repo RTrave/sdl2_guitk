@@ -89,25 +89,23 @@ static SDLGuiTK_Button * Button_create()
     new_button->text = calloc( 256, sizeof( char ) );
     strcpy( new_button->text, new_button->object->name );
 
-    new_button->srf = NULL;
+    new_button->srf = MySDL_Surface_new ("Button_srf");
 
     new_button->text_flag = 1;
     new_button->pressed_flag = 0;
-    new_button->text_srf = NULL;
+    new_button->text_srf = MySDL_Surface_new ("Button_text_srf");
     new_button->active_alpha_mod = -0.01;
-    new_button->active_srf = NULL;
+    new_button->active_srf = MySDL_Surface_new ("Button_active_srf");
     new_button->active_cflag = 0;
-    /*   new_button->clicked_srf = NULL; */
 
     return new_button;
 }
 
 static void Button_destroy( SDLGuiTK_Button * button )
 {
-    /*   MySDL_FreeSurface( button->inactive_srf ); */
-    MySDL_FreeSurface( button->active_srf );
-    /*   MySDL_FreeSurface( button->clicked_srf ); */
-    MySDL_FreeSurface( button->text_srf );
+    MySDL_Surface_free( button->active_srf );
+    MySDL_Surface_free( button->text_srf );
+    MySDL_Surface_free( button->srf );
 
     PROT__bin_destroy( button->bin );
     free(button->text);
@@ -123,18 +121,18 @@ static void Button_make_surface( SDLGuiTK_Button * button )
     SDLGuiTK_Widget * widget=button->object->widget;
 
     theme = PROT__theme_get_and_lock();
-    button->text_srf = MyTTF_Render_Solid_Block( button->text_srf, \
-                       button->text, 16, \
-                       MyTTF_STYLE_NORMAL, \
-                       theme->ftcolor, \
-                       40 );
+    button->text_srf->srf = MyTTF_Render_Solid_Block(  button->text_srf->srf, \
+                                                       button->text, 16, \
+                                                       MyTTF_STYLE_NORMAL, \
+                                                       theme->ftcolor, \
+                                                       40 );
     button->text_area.x = SDLGUITK_BUTTONBORDER;
     button->text_area.y = SDLGUITK_BUTTONBORDER;
-    button->text_area.w = button->text_srf->w;
-    button->text_area.h = button->text_srf->h;
+    button->text_area.w = button->text_srf->srf->w;
+    button->text_area.h = button->text_srf->srf->h;
 
-    widget->rel_area.w = button->text_srf->w + 2*SDLGUITK_BUTTONBORDER;
-    widget->rel_area.h = button->text_srf->h + 2*SDLGUITK_BUTTONBORDER;
+    widget->rel_area.w = button->text_srf->srf->w + 2*SDLGUITK_BUTTONBORDER;
+    widget->rel_area.h = button->text_srf->srf->h + 2*SDLGUITK_BUTTONBORDER;
 
     /*   button->active_srf  = MySDL_CreateRGBSurface_WithColor(  */
     /* 						      button->active_srf, \ */
@@ -198,22 +196,22 @@ static void ButtonCache( SDLGuiTK_Widget * widget )
 
     Button_active_area( button );
 
-    if( button->active_srf==NULL ) {
-        button->active_srf = MySDL_CreateRGBSurface( button->active_srf,\
-                             widget->act_area.w, \
-                             widget->act_area.h );
+    if( button->active_srf->srf==NULL ) {
+        MySDL_CreateRGBSurface(  button->active_srf,\
+                                 widget->act_area.w, \
+                                 widget->act_area.h );
     }
 
-    if( button->active_srf->w!=widget->act_area.w ||
-            button->active_srf->h!=widget->act_area.h )
+    if( button->active_srf->srf->w!=widget->act_area.w ||
+        button->active_srf->srf->h!=widget->act_area.h )
     {
-        button->active_srf = MySDL_CreateRGBSurface( button->active_srf,\
-                             widget->act_area.w, \
-                             widget->act_area.h );
+        MySDL_CreateRGBSurface(  button->active_srf,\
+                                 widget->act_area.w, \
+                                 widget->act_area.h );
     }
-    bdcolor2 = SDL_MapRGBA( button->active_srf->format, \
+    bdcolor2 = SDL_MapRGBA( button->active_srf->srf->format, \
                             255, 255, 255, 200 );
-    SDL_FillRect( button->active_srf, NULL, bdcolor2 );
+    MySDL_FillRect( button->active_srf, NULL, bdcolor2 );
     //SDL_UpdateRect( button->active_srf, 0, 0, 0, 0 );
     //SDL_SetAlpha( button->active_srf, SDL_SRCALPHA|SDL_RLEACCEL, 255 ); /*  */
     button->active_cflag = 1;
@@ -227,7 +225,7 @@ static void * Button_DrawBlit( SDLGuiTK_Widget * widget )
     /*   int wdiff=0, hdiff=0; */
     Uint32 bgcolor;
     SDLGuiTK_Theme * theme;
-    SDL_Surface * srf=NULL;
+    MySDL_Surface * srf=MySDL_Surface_new ("Button_DrawBlit_srf");
 /*
     container->children_area.w = \
                                  widget->abs_area.w - 2*(container->border_width+SDLGUITK_BUTTONBORDER);
@@ -237,7 +235,7 @@ static void * Button_DrawBlit( SDLGuiTK_Widget * widget )
     PROT__bin_DrawBlit( button->bin );
 
     //srf = MySDL_CopySurface( srf, widget->srf);
-    srf = MySDL_CreateRGBSurface( srf, widget->abs_area.w, widget->abs_area.h );
+    MySDL_CreateRGBSurface( srf, widget->abs_area.w, widget->abs_area.h );
     /* button->text_area.x = container->border_width; */
     /* button->text_area.y = container->border_width; */
     /* button->text_area.w = widget->abs_area.w - 2*(container->border_width); */
@@ -248,55 +246,55 @@ static void * Button_DrawBlit( SDLGuiTK_Widget * widget )
     button->text_area.h = widget->abs_area.h;
 
     theme = PROT__theme_get_and_lock();
-    bgcolor = SDL_MapRGBA( srf->format, \
+    bgcolor = SDL_MapRGBA( srf->srf->format, \
                            theme->bdcolor.r, \
                            theme->bdcolor.g, \
                            theme->bdcolor.b, \
                            150 );
     //SDL_FillRect( widget->srf, &button->text_area, bgcolor );
-    SDL_FillRect( srf, NULL, bgcolor );
+    MySDL_FillRect( srf, NULL, bgcolor );
     //SDL_UpdateRect( widget->srf, 0, 0, 0, 0 );
 
     button->text_area.x = 2;
     button->text_area.y = 2;
     button->text_area.w = widget->abs_area.w-4;
     button->text_area.h = widget->abs_area.h-4;
-    bgcolor = SDL_MapRGBA( srf->format, \
+    bgcolor = SDL_MapRGBA( srf->srf->format, \
                            theme->bdcolor.r, \
                            theme->bdcolor.g, \
                            theme->bdcolor.b, \
                            50 );
-    SDL_FillRect( srf, &button->text_area, bgcolor );
+    MySDL_FillRect( srf, &button->text_area, bgcolor );
 
     button->text_area.x = SDLGUITK_BUTTONBORDER;
     button->text_area.y = SDLGUITK_BUTTONBORDER;
     button->text_area.w = widget->abs_area.w-(2*SDLGUITK_BUTTONBORDER);
     button->text_area.h = widget->abs_area.h-(2*SDLGUITK_BUTTONBORDER);
-    bgcolor = SDL_MapRGBA( srf->format, \
+    bgcolor = SDL_MapRGBA( srf->srf->format, \
                            theme->bdcolor.r, \
                            theme->bdcolor.g, \
                            theme->bdcolor.b, \
                            0 );
     //SDL_FillRect( widget->srf, &button->text_area, bgcolor );
     //SDL_FillRect( srf, &button->text_area, bgcolor );
-    SDL_FillRect(srf, &button->text_area, SDL_MapRGBA(srf->format, 0, 0, 0, 0));
+    MySDL_FillRect(srf, &button->text_area, SDL_MapRGBA(srf->srf->format, 0, 0, 0, 0));
     //SDL_UpdateRect( widget->srf, 0, 0, 0, 0 );
     PROT__theme_unlock( theme );
 
     if( button->bin->child!=NULL ) {
         /*     SDL_mutexP( button->bin->child->object->mutex ); */
         if( button->bin->child->shown==1 ) {
-            SDL_BlitSurface( button->bin->child->srf, NULL, \
-                             widget->srf, &button->bin->child->rel_area );
+            MySDL_BlitSurface(  button->bin->child->srf, NULL, \
+                                widget->srf, &button->bin->child->rel_area );
             //2SDL_UpdateRects( widget->srf, 1, &button->bin->child->rel_area );
             //SDL_UpdateWindowSurface( button->bin->child->srf );
-            SDL_BlitSurface( srf, NULL, \
-                             widget->srf, &button->bin->child->rel_area );
+            MySDL_BlitSurface(  srf, NULL, \
+                                widget->srf, &button->bin->child->rel_area );
 
         }
         /*     SDL_mutexV( button->bin->child->object->mutex ); */
     }
-    MySDL_FreeSurface( srf );
+    MySDL_Surface_free( srf );
     /*   Button_active_area( button ); */
     ButtonCache( widget );
     if( widget->top!=NULL ) {
@@ -420,7 +418,7 @@ static void * Button_MouseEnter( SDLGuiTK_Widget * widget, \
     SDLGuiTK_Button * button=widget->container->bin->button;
 
     if( button->srf!=button->active_srf ) {
-        button->srf = button->active_srf;
+        //button->srf = button->active_srf;
         /*     if( widget->top!=NULL ) { */
         /*       PROT__signal_push( widget->top->object,SDLGUITK_SIGNAL_TYPE_FRAMEEVENT ); */
         /*     } */

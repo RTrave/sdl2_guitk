@@ -83,14 +83,14 @@ static SDLGuiTK_Image * Image_create()
 
     new_image->file = calloc( 256, sizeof( char ) );
     strcpy( new_image->file, "" );
-    new_image->srf = NULL;
+    new_image->srf = MySDL_Surface_new ("Image_srf");
 
     return new_image;
 }
 
 static void Image_destroy( SDLGuiTK_Image * image )
 {
-    MySDL_FreeSurface( image->srf );
+    MySDL_Surface_free( image->srf );
     PROT__misc_destroy( image->misc );
     free(image->file);
     free( image );
@@ -103,18 +103,18 @@ static void Image_make_surface( SDLGuiTK_Image * image )
     char tmpstr[256];
 #endif
 
-    if( image->srf!=NULL ) {
+    if( image->srf->srf!=NULL ) {
         return; //TODO: handling image change
         MySDL_FreeSurface( image->srf );
-        image->srf = NULL;
+        //image->srf->srf = NULL;
     }
 #ifndef HAVE_SDL_SDL_IMAGE_H
-    image->srf = SDL_LoadBMP(image->file);
+    image->srf->srf = SDL_LoadBMP(image->file);
 #else
-    image->srf = IMG_Load( image->file );
+    image->srf->srf = IMG_Load( image->file );
 #endif
 #if DEBUG_LEVEL >= 1
-    if( image->srf==NULL ) {
+    if( image->srf->srf==NULL ) {
         sprintf( tmpstr, "Image_make_surface(): %s\n\t format unsupported!!!\n", \
                  image->file );
         SDLGUITK_ERROR( tmpstr );
@@ -127,12 +127,12 @@ static void * Image_DrawUpdate( SDLGuiTK_Widget * widget )
     SDLGuiTK_Image * image=SDLGuiTK_IMAGE( widget );
 
     Image_make_surface( image );
-    if( image->srf==NULL ) {
+    if( image->srf->srf==NULL ) {
         image->misc->area.w = 0;
         image->misc->area.h = 0;
     } else {
-        image->misc->area.w = image->srf->w;
-        image->misc->area.h = image->srf->h;
+        image->misc->area.w = image->srf->srf->w;
+        image->misc->area.h = image->srf->srf->h;
     }
 
     PROT__misc_DrawUpdate( image->misc );
@@ -145,13 +145,13 @@ static void * Image_active_area( SDLGuiTK_Image * image )
 {
     SDLGuiTK_Widget * widget=image->misc->widget;
 
-    if( image->srf==NULL ) return NULL;
+    if( image->srf->srf==NULL ) return NULL;
     widget->act_area.x = \
                          widget->abs_area.x + image->misc->area.x;
     widget->act_area.y = \
                          widget->abs_area.y + image->misc->area.y;
-    widget->act_area.w = image->srf->w;
-    widget->act_area.h = image->srf->h;
+    widget->act_area.w = image->srf->srf->w;
+    widget->act_area.h = image->srf->srf->h;
 
     return (void *) NULL;
 }
@@ -168,8 +168,8 @@ static void * Image_DrawBlit( SDLGuiTK_Widget * widget )
     //widget->rel_area.h = widget->abs_area.h;
 
     if( widget->top!=NULL ) {
-        SDL_BlitSurface( image->srf, NULL, \
-                         widget->srf, &image->misc->area );
+        MySDL_BlitSurface(  image->srf, NULL, \
+                            widget->srf, &image->misc->area );
         //SDL_UpdateRect( widget->srf, 0, 0, 0, 0 );
     }
 

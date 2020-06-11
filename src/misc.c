@@ -130,9 +130,9 @@ void PROT__misc_DrawBlit(   SDLGuiTK_Misc * misc )
   SDLGuiTK_Theme * theme;
 
 #if DEBUG_LEVEL >= 3
-    printf("*** %s PROT__misc_DrawBlit\n", misc->widget->object->name);
-    printf("*** misc req_area w:%d h:%d\n", misc->widget->req_area.w, misc->widget->req_area.h);
-    printf("*** misc abs_area w:%d h:%d\n", misc->widget->abs_area.w, misc->widget->abs_area.h);
+    /* printf("*** %s PROT__misc_DrawBlit\n", misc->widget->object->name); */
+    /* printf("*** misc req_area w:%d h:%d\n", misc->widget->req_area.w, misc->widget->req_area.h); */
+    /* printf("*** misc abs_area w:%d h:%d\n", misc->widget->abs_area.w, misc->widget->abs_area.h); */
 #endif
 
    PROT__widget_DrawBlit(  misc->widget );
@@ -153,9 +153,9 @@ void PROT__misc_DrawBlit(   SDLGuiTK_Misc * misc )
 
    theme = PROT__theme_get_and_lock();
 #if DEBUG_LEVEL >= 3
-  bgcolor = SDL_MapRGBA( misc->widget->srf->format, 0xff, 0x00, 0x00, 0xff );
+  bgcolor = SDL_MapRGBA( misc->widget->srf->srf->format, 0xff, 0x00, 0x00, 0xff );
 #else
-  bgcolor = SDL_MapRGBA( misc->widget->srf->format, \
+  bgcolor = SDL_MapRGBA( misc->widget->srf->srf->format, \
 			 theme->wgcolor.r, \
 			 theme->wgcolor.g, \
 			 theme->wgcolor.b, \
@@ -166,7 +166,7 @@ void PROT__misc_DrawBlit(   SDLGuiTK_Misc * misc )
   bg_area.y = misc->ypad;
   bg_area.w = misc->widget->abs_area.w - 2*misc->xpad;
   bg_area.h = misc->widget->abs_area.h - 2*misc->ypad;
-  SDL_FillRect( misc->widget->srf, &bg_area, bgcolor );
+  MySDL_FillRect( misc->widget->srf, &bg_area, bgcolor );
   //SDL_UpdateRect( misc->widget->srf, 0, 0, 0, 0 );
 }
 

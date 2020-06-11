@@ -24,8 +24,10 @@ struct SDLGuiTK_Image {
 
   SDLGuiTK_Misc * misc;          /* herits from */
 
+  /* "public" data */
   char * file;
 
-  SDL_Surface * srf;             /* "private" data */
+  /* "private" data */
+  MySDL_Surface * srf;
 };
 

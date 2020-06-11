@@ -185,9 +185,9 @@ void SDLGuiTK_editable_insert_text( SDLGuiTK_Editable *editable, \
 }
 
 
-SDL_Surface * PROT__editable_makeblended( SDL_Surface * render_text, \
-					 SDLGuiTK_Editable * editable, \
-					 int size, SDL_Color color )
+void PROT__editable_makeblended( MySDL_Surface * render_text, \
+					             SDLGuiTK_Editable * editable, \
+					             int size, SDL_Color color )
 {
   char tmpstr[512];
   int text_lenght;
@@ -208,9 +208,9 @@ SDL_Surface * PROT__editable_makeblended( SDL_Surface * render_text, \
   s = text_displayed;
 /*   printf( "text_lenght=%d (%s) curs_pos=%d\n", text_lenght, text_displayed, editable->cursor_position); */
 
-  if( render_text!=NULL ) {
+  if( render_text->srf!=NULL ) {
     MySDL_FreeSurface( render_text );
-    render_text = NULL;
+    //render_text = NULL;
   }
 
   if( editable->cursor_position>=text_lenght ) {
@@ -315,21 +315,20 @@ SDL_Surface * PROT__editable_makeblended( SDL_Surface * render_text, \
     line_area[2].h = 0;
   }
   theme = PROT__theme_get_and_lock();
-  render_text = MySDL_CreateRGBSurface_WithColor( render_text, \
-						  line_area[0].w+line_area[1].w+line_area[2].w, line_area[1].h, \
-						  theme->bgcolor );
+  MySDL_CreateRGBSurface_WithColor( render_text, \
+						            line_area[0].w+line_area[1].w+line_area[2].w, \
+                                    line_area[1].h, \
+						            theme->bgcolor );
   PROT__theme_unlock( theme );
   for( i=0; i<=2; i++ ) {
     if( line_surf[i]!=NULL ) {
-      SDL_BlitSurface( line_surf[i], NULL, \
-		       render_text, &line_area[i] );
-      //2SDL_UpdateRects( render_text, 1, &line_area[i] );
-	  //SDL_UpdateWindowSurface( render_text );
+      SDL_BlitSurface(  line_surf[i], NULL, \
+		                render_text->srf, &line_area[i] );
       SDL_FreeSurface( line_surf[i] );
     }
   }
 
-  return render_text;
+  return;
 }
 
 

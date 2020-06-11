@@ -25,18 +25,17 @@ struct SDLGuiTK_Button {
 
   SDLGuiTK_Bin * bin;            /* herits from */
 
-  char * text;                   /* "public" data */
+  /* "public" data */
+  char * text;
 
-  SDL_Surface * srf;     /* "private" data */
-
-  int           text_flag;       /* "private" data */
-  int           pressed_flag;    /* "private" data */
-  SDL_Surface * text_srf;        /* "private" data */
-  SDL_Rect      text_area;       /* "private" data */
-/*   SDL_Surface * inactive_srf;    /\* "private" data *\/ */
-  SDL_Surface * active_srf;      /* "private" data */
-  int           active_cflag;     /* "private" data */
-  float         active_alpha_mod; /* "private" data */
-/*   SDL_Surface * clicked_srf;     /\* "private" data *\/ */
+  /* "private" data */
+  MySDL_Surface * srf;
+  int             text_flag;
+  int             pressed_flag;
+  MySDL_Surface * text_srf;
+  SDL_Rect        text_area;
+  MySDL_Surface * active_srf;
+  int             active_cflag;
+  float           active_alpha_mod;
 };
 

@@ -27,15 +27,16 @@ struct SDLGuiTK_Bin {
   SDLGuiTK_Container * container;      /* instance from */
 
   SDLGuiTK_Window    * window;         /* herited */
-  SDLGuiTK_Panel     * panel;         /* herited */
+  SDLGuiTK_Panel     * panel;          /* herited */
   SDLGuiTK_Alignment * alignment;      /* herited */
   SDLGuiTK_Button    * button;         /* herited */
   SDLGuiTK_MenuItem  * menuitem;       /* herited */
 
-  SDLGuiTK_Widget * child;             /* "public" data */
+  /* "public" data */
+  SDLGuiTK_Widget * child;
 
-  SDL_Surface * srf;                   /* "private" data */
-/*   int xalign, yalign, walign, halign;  /\* "private" data *\/ */
+  /* "private" data */
+  //MySDL_Surface * srf;
 };
 
 /* Create and destroy structure */

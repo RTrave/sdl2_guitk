@@ -101,6 +101,9 @@ void PROT__context_quit()
 /*   SDLGuiTK_list_unlock( current_context->activables ); */
 
   PROT__Tooltips_DestroyAll();  /* Hack to free tooltips struct */
+    PROT__signal_check();
+    SDL_Delay( 200 );
+    PROT__signal_check();
 }
 
 void PROT__context_uninit()

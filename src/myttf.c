@@ -225,7 +225,7 @@ SDL_Surface * MyTTF_Render_BlendedU( SDL_Surface * render_text, \
   //render_text = SDL_DisplayFormatAlpha( render_tmp );
   render_text = render_tmp;
 /*   render_text = render_tmp; */
-  MySDL_FreeSurface( render_tmp );
+  SDL_FreeSurface( render_tmp );
   PROT__theme_unlock( theme );
   TTF_CloseFont(font);
 
@@ -256,7 +256,7 @@ SDL_Surface * MyTTF_Render_Solid_Block( SDL_Surface * render_text, \
   SDLGuiTK_Theme * theme;
 
   if( render_text!=NULL ) {
-    MySDL_FreeSurface( render_text );
+    SDL_FreeSurface( render_text );
     render_text = NULL;
   }
 
@@ -321,10 +321,24 @@ SDL_Surface * MyTTF_Render_Solid_Block( SDL_Surface * render_text, \
   current_y += line_area[current_line].h;
 
   theme = PROT__theme_get_and_lock();
-  render_text = MySDL_CreateRGBSurface_WithColor( render_text, \
-						  max_w, current_y, \
-						  theme->bgcolor );
-  PROT__theme_unlock( theme );
+  /* render_text = MySDL_CreateRGBSurface_WithColor( render_text, \ */
+		/* 				  max_w, current_y, \ */
+		/* 				  theme->bgcolor ); */
+    render_text = SDL_CreateRGBSurface( 0, max_w, current_y, 32,
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN /* OpenGL RGBA masks */
+                                         0x000000FF,
+                                         0x0000FF00,
+                                         0x00FF0000,
+                                         0xFF000000
+#else
+                                         0xFF000000,
+                                         0x00FF0000,
+                                         0x0000FF00,
+                                         0x000000FF
+#endif
+                                        );
+
+    PROT__theme_unlock( theme );
   for( i=0; i<=current_line; i++ ) {
     SDL_BlitSurface( line_srf[i], NULL, \
 		     render_text, &line_area[i] );

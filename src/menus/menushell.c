@@ -69,11 +69,13 @@ static struct SDLGuiTK_MenuShell * MenuShell_Create() {
 
     new_menushell->wm_widget = NULL;
     new_menushell->children = SDLGuiTK_list_new();
+    new_menushell->title_srf = MySDL_Surface_new ("Menushell_title_srf");
 
     return new_menushell;
 }
 
 static void MenuShell_Destroy( struct SDLGuiTK_MenuShell * menushell ) {
+    MySDL_Surface_free (menushell->title_srf);
     SDLGuiTK_list_destroy( menushell->children );
     PROT__widget_destroy( menushell->widget );
     free( menushell );
@@ -144,12 +146,12 @@ static void * MenuShell_DrawBlit( SDLGuiTK_Widget * widget )
     tmp_area.y = 1;
     tmp_area.w = widget->abs_area.w - 2;
     tmp_area.h = widget->abs_area.h - 2;
-    bgcolor = SDL_MapRGBA( widget->srf->format, \
+    bgcolor = SDL_MapRGBA( widget->srf->srf->format, \
                            theme->bgcolor.r, \
                            theme->bgcolor.g, \
                            theme->bgcolor.b, \
                            255 );
-    SDL_FillRect( widget->srf, &tmp_area, bgcolor );
+    MySDL_FillRect( widget->srf, &tmp_area, bgcolor );
     //SDL_UpdateRect( widget->srf, 0, 0, 0, 0 );
     PROT__theme_unlock( theme );
 
@@ -170,8 +172,8 @@ static void * MenuShell_DrawBlit( SDLGuiTK_Widget * widget )
         /* current->act_area.y = current->abs_area.y; */
         current->act_area.w = widget->abs_area.w;
         /* current->act_area.h = current->abs_area.h; */
-        SDL_BlitSurface( current->srf, NULL,			\
-                         widget->srf, &current->rel_area );
+        MySDL_BlitSurface(  current->srf, NULL,			\
+                            widget->srf, &current->rel_area );
         //2SDL_UpdateRect( widget->srf, 0, 0, 0, 0 );
         //SDL_UpdateWindowSurface( current->srf );
         /*     SDL_UpdateRects( widget->srf, 1, &widget->rel_area ); */
@@ -191,8 +193,8 @@ static void * MenuShell_DrawBlit( SDLGuiTK_Widget * widget )
 
     MyWM_WMWidget_DrawBlit( menushell->wm_widget );
 
-    SDL_BlitSurface( widget->srf, NULL, \
-                     menushell->wm_widget->srf, &menushell->wm_widget->child_area );
+    MySDL_BlitSurface(  widget->srf, NULL, \
+                        menushell->wm_widget->srf, &menushell->wm_widget->child_area );
     //SDL_UpdateRect( menushell->wm_widget->srf, 0, 0, 0, 0 );
 
     return (void *) NULL;

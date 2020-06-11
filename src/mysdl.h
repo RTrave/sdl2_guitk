@@ -58,25 +58,60 @@ extern
 SDL_Surface * MySDL_GetVideoSurface();
 
 
-extern
-SDL_Surface *MySDL_CreateRGBSurface( SDL_Surface *dst, int w, int h );
-extern
-SDL_Surface *MySDL_CreateRGBASurface( SDL_Surface *dst, int w, int h );
-extern
-SDL_Surface *MySDL_CreateRGBSurface_WithColor(
-                SDL_Surface *dst, \
-					      int w, int h, \
-					      SDL_Color color );
+typedef struct MySDL_Surface MySDL_Surface;
+
+struct MySDL_Surface {
+   SDLGuiTK_Object    * object;      /* referent widget */
+
+    int id;
+    char name[64];
+    SDL_Surface *srf;
+    Uint32 updated;
+};
 
 extern
-void         MySDL_FreeSurface( SDL_Surface *surface );
+void MySDL_Surface_init();
 
 extern
-SDL_Surface *MySDL_CopySurface( SDL_Surface *dst, SDL_Surface *src );
+void MySDL_Surface_uninit();
+
 extern
-SDL_Surface *MySDL_CopySurface_with_alpha( SDL_Surface *dst, \
-					   SDL_Surface *src, \
+MySDL_Surface *MySDL_Surface_new(char *name);
+extern
+void           MySDL_Surface_free(MySDL_Surface *surface);
+
+extern
+void MySDL_CreateRGBSurface(MySDL_Surface *dst,
+                            int w, int h);
+//extern
+//SDL_Surface *MySDL_CreateRGBASurface( SDL_Surface *dst, int w, int h );
+extern
+void MySDL_CreateRGBSurface_WithColor(MySDL_Surface *dst, \
+                                      int w, int h, \
+					                            SDL_Color color);
+
+extern
+void         MySDL_FreeSurface(MySDL_Surface *surface);
+
+extern
+int MySDL_BlitSurface(MySDL_Surface*  src,
+                      const SDL_Rect* srcrect,
+                      MySDL_Surface*  dst,
+                      SDL_Rect*       dstrect);
+
+extern
+int MySDL_FillRect(MySDL_Surface*  dst,
+                   const SDL_Rect* rect,
+                   Uint32          color);
+
+extern
+MySDL_Surface *MySDL_CopySurface( MySDL_Surface *dst, MySDL_Surface *src );
+/*
+extern
+MySDL_Surface *MySDL_CopySurface_with_alpha( MySDL_Surface *dst, \
+					   MySDL_Surface *src, \
 					   Uint8 alpha );
+*/
 
 /* extern Uint32 MySDL_MapRGBA( SDL_PixelFormat *fmt, SDL_Color color ); */
 

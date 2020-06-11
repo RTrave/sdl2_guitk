@@ -55,8 +55,8 @@ struct SDLGuiTK_Widget {
   SDL_Rect      abs_area;        /* (w,h) set in self DrawUpdate() */
   SDL_Rect      rel_area;        /* (w,h) set in self DrawUpdate() */
   SDL_Rect      act_area;        /* "private" data */
-  SDL_Surface * srf;             /* "private" data */
-  SDL_Surface * act_srf;         /* "private" data */
+  MySDL_Surface * srf;             /* "private" data */
+  MySDL_Surface * act_srf;         /* "private" data */
   float         act_alpha;       /* "private" data */
 
 /*   int           srf_create;                        /\* "private" data *\/ */

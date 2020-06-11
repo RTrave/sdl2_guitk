@@ -25,17 +25,14 @@ struct SDLGuiTK_Entry {
 
   SDLGuiTK_Widget * widget;      /* herits from */
 
-  int    editable;               /* "public" data */
-/*   int    cursor_position;        /\* "public" data *\/ */
-  int    max_length;             /* "public" data */
-/*   char * text;                   /\* "public" data *\/ */
-/*   SDLGuiTK_Editable * weditable; /\* "public" data *\/ */
+  /* "public" data */
+  int    editable;
+  int    max_length;
 
-  SDL_Surface * srf;             /* "private" data */
-/*   char        * text_displayed;  /\* "public" data *\/ */
-  int           text_flag;       /* "private" data */
-  //SDL_Surface * text_srf;        /* "private" data */
-  SDL_Rect      text_area;       /* "private" data */
+  /* "private" data */
+  int             text_flag;
+  SDL_Rect        text_area;
+  MySDL_Surface * srf;
 };
 
 

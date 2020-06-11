@@ -84,18 +84,21 @@ static SDLGuiTK_Label * Label_create()
   strcpy( new_label->text, new_label->object->name );
 
   new_label->text_flag = 1;
-  //new_label->text_srf = NULL;
   new_label->text_area.x = 0; new_label->text_area.y = 0;
   new_label->text_area.w = 0; new_label->text_area.h = 0;
-  new_label->srf = NULL;
+  new_label->srf = MySDL_Surface_new ("Label_srf");
 
   return new_label;
 }
 
 static void Label_destroy( SDLGuiTK_Label * label )
 {
-  //MySDL_FreeSurface( label->text_srf );
-  MySDL_FreeSurface( label->srf );
+  //MySDL_Surface_free( label->text_srf );
+  if(label->srf->srf!=NULL) {
+      SDL_FreeSurface ( label->srf->srf );
+      label->srf->srf = NULL;
+  }
+  MySDL_Surface_free( label->srf );
 
   PROT__misc_destroy( label->misc );
   free( label->text );
@@ -108,11 +111,11 @@ static void Label_make_surface( SDLGuiTK_Label * label )
   SDLGuiTK_Theme * theme;
 
   theme = PROT__theme_get_and_lock();
-  label->srf = MyTTF_Render_Solid_Block( label->srf, \
-					 label->text, \
-					 16, MyTTF_STYLE_NORMAL, \
-					 theme->ftcolor, \
-					 40 );
+  label->srf->srf = MyTTF_Render_Solid_Block(    label->srf->srf, \
+				                                 label->text, \
+				                                 16, MyTTF_STYLE_NORMAL, \
+				                                 theme->ftcolor, \
+				                                 40 );
   PROT__theme_unlock( theme );
 
   label->text_flag = 0;
@@ -127,8 +130,8 @@ static void * Label_DrawUpdate( SDLGuiTK_Widget * widget )
     PROT__widget_reset_req_area( widget );
   Label_make_surface( label );
   
-  label->misc->area.w = label->srf->w;
-  label->misc->area.h = label->srf->h;
+  label->misc->area.w = label->srf->srf->w;
+  label->misc->area.h = label->srf->srf->h;
 
   PROT__misc_DrawUpdate( label->misc );
 
@@ -164,8 +167,8 @@ static void * Label_DrawBlit( SDLGuiTK_Widget * widget )
   //widget->rel_area.h = widget->abs_area.h;
 
   if( widget->top!=NULL ) {
-    SDL_BlitSurface( label->srf, NULL, \
-		     widget->srf, &label->misc->area );
+    MySDL_BlitSurface(  label->srf, NULL, \
+		                widget->srf, &label->misc->area );
     //SDL_UpdateRect( widget->srf, 0, 0, 0, 0 );
   }
 

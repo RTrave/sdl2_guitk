@@ -33,13 +33,13 @@ extern
 void PROT__editable_destroy( SDLGuiTK_Editable * editable );
 
 extern 
-void PROT__editable_settext( SDLGuiTK_Editable * editable, \
-			     const char *text );
+void PROT__editable_settext(  SDLGuiTK_Editable * editable, \
+			                        const char *text );
 
 extern
-SDL_Surface * PROT__editable_makeblended( SDL_Surface * render_text, \
-					  SDLGuiTK_Editable * editable, \
-					  int size, SDL_Color color );
+void PROT__editable_makeblended(  MySDL_Surface * render_text, \
+					                        SDLGuiTK_Editable * editable, \
+					                        int size, SDL_Color color );
 
 extern
 void PROT__editable_keysym( SDLGuiTK_Editable * editable, \

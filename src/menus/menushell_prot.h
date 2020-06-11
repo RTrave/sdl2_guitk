@@ -27,14 +27,15 @@ struct SDLGuiTK_MenuShell {
 
   SDLGuiTK_Menu      * menu;       /* referent menu */
 
+  /* "public" data */
   SDLGuiTK_List      * children;   /* "public" data */
 
+  /* "private" data */
   SDLGuiTK_WMWidget  * wm_widget;  /* herits from */
-  int                  wm_flag;    /* "private" data */
-
-  int           title_flag;     /* "private" data */
-  SDL_Surface * title_srf;      /* "private" data */
-  SDL_Rect      title_area;     /* "private" data */
+  int                  wm_flag;
+  int                  title_flag;
+  MySDL_Surface      * title_srf;
+  SDL_Rect             title_area;
 };
 
 extern void

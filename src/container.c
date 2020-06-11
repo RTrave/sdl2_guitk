@@ -189,9 +189,9 @@ void PROT__container_DrawUpdate( SDLGuiTK_Container * container )
     container->children_area.x = container->border_width;
     container->children_area.y = container->border_width;
 #if DEBUG_LEVEL >= 3
-    printf("===1 PROT__container_DrawUpdate() %s\n    req_area: w=%d h=%d\n",
-           container->widget->object->name,
-           container->widget->req_area.w, container->widget->req_area.h);
+    /* printf("===1 PROT__container_DrawUpdate() %s\n    req_area: w=%d h=%d\n", */
+    /*        container->widget->object->name, */
+    /*        container->widget->req_area.w, container->widget->req_area.h); */
 #endif
 /*
     container->widget->req_area.w =
@@ -226,10 +226,10 @@ static void Container_DrawSurface( SDLGuiTK_Container * container )
 
     theme = PROT__theme_get_and_lock();
 #if DEBUG_LEVEL >= 3
-    bgcolor = SDL_MapRGBA( container->widget->srf->format, \
+    bgcolor = SDL_MapRGBA( container->widget->srf->srf->format, \
                            0xff, 0xff, 0x00, 128 );
 #else
-    bgcolor = SDL_MapRGBA( container->widget->srf->format, \
+    bgcolor = SDL_MapRGBA( container->widget->srf->srf->format, \
                            theme->wgcolor.r, \
                            theme->wgcolor.g, \
                            theme->wgcolor.b, \
@@ -237,7 +237,7 @@ static void Container_DrawSurface( SDLGuiTK_Container * container )
 #endif
     PROT__theme_unlock( theme );
 
-    SDL_FillRect( container->widget->srf, &container->bg_area, bgcolor );
+    MySDL_FillRect( container->widget->srf, &container->bg_area, bgcolor );
     //SDL_UpdateRect( container->widget->srf, 0, 0, 0, 0 );
 }
 

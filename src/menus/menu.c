@@ -163,23 +163,23 @@ static void * Menu_DrawBlit( SDLGuiTK_Widget * widget )
     tmp_area.y = 1;
     tmp_area.w = widget->abs_area.w - 2;
     tmp_area.h = widget->abs_area.h - 2;
-    bgcolor = SDL_MapRGBA( widget->srf->format, \
+    bgcolor = SDL_MapRGBA( widget->srf->srf->format, \
                            theme->bdcolor.r, \
                            theme->bdcolor.g, \
                            theme->bdcolor.b, \
                            255 );
-    SDL_FillRect( widget->srf, &tmp_area, bgcolor );
+    MySDL_FillRect( widget->srf, &tmp_area, bgcolor );
     //SDL_UpdateRect( widget->srf, 0, 0, 0, 0 );
     tmp_area.x = 2;
     tmp_area.y = 2;
     tmp_area.w = widget->abs_area.w - 14;
     tmp_area.h = widget->abs_area.h - 4;
-    bgcolor = SDL_MapRGBA( widget->srf->format, \
+    bgcolor = SDL_MapRGBA( widget->srf->srf->format, \
                            theme->bgcolor.r, \
                            theme->bgcolor.g, \
                            theme->bgcolor.b, \
                            255 );
-    SDL_FillRect( widget->srf, &tmp_area, bgcolor );
+    MySDL_FillRect( widget->srf, &tmp_area, bgcolor );
     //SDL_UpdateRect( widget->srf, 0, 0, 0, 0 );
     PROT__theme_unlock( theme );
 

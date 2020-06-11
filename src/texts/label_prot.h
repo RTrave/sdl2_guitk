@@ -25,12 +25,12 @@ struct SDLGuiTK_Label {
 
   SDLGuiTK_Misc * misc;          /* herits from */
 
-  char * text;                   /* "public" data */
+  /* "public" data */
+  char * text;
 
-  int           text_flag;       /* "private" data */
-  //SDL_Surface * text_srf;        /* "private" data */
-  SDL_Rect      text_area;       /* "private" data */
-
-  SDL_Surface * srf;             /* "private" data */
+  /* "private" data */
+  int             text_flag;
+  SDL_Rect        text_area;
+  MySDL_Surface   * srf;
 };
 
