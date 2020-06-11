@@ -124,10 +124,11 @@ static void MainVideo_init()
 #endif
 
     main_video = malloc( sizeof( struct SDLGUITK_Video ) );
-    main_video->width = 1200;
-    main_video->height = 800;
+    main_video->width = 800;
+    main_video->height = 600;
     main_video->fullscreen = 0;
     main_video->opengl_ask = 1;
+    main_video->bpp = 24;
     /*
     info = SDL_GetVideoInfo();
     if( !info ) {
@@ -192,10 +193,10 @@ static void MainVideo_init()
     /* #endif */
     /*   } */
 
-    if( ((int)main_video->bpp)!=32 ) {
-        SDLGUITK_ERROR( "Try to emulate with a 32bpp forced surface!\n" );
-        main_video->bpp = 32;
-    }
+    /* if( ((int)main_video->bpp)!=32 ) { */
+    /*     SDLGUITK_ERROR( "Try to emulate with a 32bpp forced surface!\n" ); */
+    /*     main_video->bpp = 32; */
+    /* } */
 
     /*   video_flags = SDL_HWSURFACE|SDL_DOUBLEBUF|SDL_OPENGLBLIT|SDL_SRCALPHA|SDL_HWACCEL; */
     /*   video_flags |= SDL_RESIZABLE|SDL_SRCALPHA|SDL_HWACCEL; */
@@ -264,8 +265,8 @@ void MySDL_Uninit()
 void MySDL_MainSurface_set( SDL_Window * window, SDL_Renderer * renderer )
 {
     main_video = malloc( sizeof( struct SDLGUITK_Video ) );
-    main_video->width = 2200;
-    main_video->height = 800;
+    main_video->width = 800;
+    main_video->height = 600;
     main_video->fullscreen = 0;
     main_video->opengl_ask = 1;
     main_video->window = window;
@@ -286,6 +287,22 @@ SDLGUITK_Video * MySDL_MainSurface_create()
     };
     glflag=1;
 
+    int display_count = 0, display_index = 0, mode_index = 0;
+    SDL_DisplayMode mode = { SDL_PIXELFORMAT_UNKNOWN, 0, 0, 0, 0 };
+
+    if ((display_count = SDL_GetNumVideoDisplays()) < 1) {
+        SDL_Log("SDL_GetNumVideoDisplays returned: %i", display_count);
+        return NULL;
+    }
+
+    if (SDL_GetDisplayMode(display_index, mode_index, &mode) != 0) {
+        SDL_Log("SDL_GetDisplayMode failed: %s", SDL_GetError());
+        return NULL;
+    }
+    //SDL_Log("SDL_GetDisplayMode(0, 0, &mode):\t\t%i bpp\t%i x %i", SDL_BITSPERPIXEL(mode.format), mode.w, mode.h);
+    //SDLGUITK_LOG( sprintf("SDL_GetDisplayMode(0, 0, &mode):\t\t%i bpp\t%i x %i",
+    //    SDL_BITSPERPIXEL(mode.format), mode.w, mode.h));
+
     if( glflag==1 ) {
 #ifdef HAVE_GL_GL_H
         /*   SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 ); */
@@ -302,19 +319,23 @@ SDLGUITK_Video * MySDL_MainSurface_create()
 
     /*   main_video->flags = SDL_OPENGLBLIT; |SDL_SRCALPHA|SDL_HWACCEL*/
 
-    if( main_video->fullscreen==1 ) main_video->flags |= SDL_WINDOW_FULLSCREEN;
+    if( main_video->fullscreen==1 ) {
+        main_video->flags |= SDL_WINDOW_FULLSCREEN;
+        main_video->width = mode.w;
+        main_video->height = mode.h;
+    }
 
-    /* main_video->window = SDL_CreateWindow( "SDL_GuiTK main display (MainRenderWindow)", */
-    /*                                        SDL_WINDOWPOS_UNDEFINED, */
-    /*                                        SDL_WINDOWPOS_UNDEFINED, */
-    /*                                        800,600, */
-    /*                                        SDL_WINDOW_OPENGL); */
-    main_video->window = SDL_CreateWindow( "MainVideo",
-                					       SDL_WINDOWPOS_UNDEFINED,
-                					       SDL_WINDOWPOS_UNDEFINED,
-                					       main_video->width,
-                					       main_video->height,
-                                           0);
+    main_video->window = SDL_CreateWindow( "SDL_GuiTK main display (MainRenderWindow)",
+                                           SDL_WINDOWPOS_UNDEFINED,
+                                           SDL_WINDOWPOS_UNDEFINED,
+                                           main_video->width, main_video->height,
+                                           main_video->flags);
+    /* main_video->window = SDL_CreateWindow( "MainVideo", */
+    /*             					       SDL_WINDOWPOS_UNDEFINED, */
+    /*             					       SDL_WINDOWPOS_UNDEFINED, */
+    /*             					       main_video->width, */
+    /*             					       main_video->height, */
+    /*                                        0); */
     SDL_SysWMinfo sysInfo;
     SDL_VERSION( &sysInfo.version );
 
@@ -421,7 +442,6 @@ static int srfid=0;
 void MySDL_Surface_init()
 {
 #if DEBUG_LEVEL >= 3
-    printf("TESTEST\n");
     surfaces = SDLGuiTK_list_new();
 #endif
 }
@@ -429,7 +449,6 @@ void MySDL_Surface_init()
 void MySDL_Surface_uninit()
 {
 #if DEBUG_LEVEL >= 3
-    printf("TESTEST\n");
     SDLGuiTK_list_destroy( surfaces );
 #endif
 }
@@ -774,6 +793,7 @@ void MySDL_GL_Enter2DMode()
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
+    glViewport(0, 0, (GLdouble)w, (GLdouble)h);
 
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }
@@ -992,7 +1012,7 @@ void MySDL_surface2D_blitsurface( SDLGuiTK_Surface2D * surface2D, \
                                   int x, int y )
 {
     /* Show the image on the screen */
-    /*   MySDL_GL_Enter2DMode(); */
+      /* MySDL_GL_Enter2DMode(); */
 
 
     glEnable( GL_BLEND );
@@ -1014,7 +1034,7 @@ void MySDL_surface2D_blitsurface( SDLGuiTK_Surface2D * surface2D, \
     glDisable( GL_BLEND );
 
 
-    /*   MySDL_GL_Leave2DMode(); */
+      /* MySDL_GL_Leave2DMode(); */
 
 
     //Apply the image stretched
