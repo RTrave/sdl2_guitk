@@ -1,4 +1,4 @@
-/* 
+/*
    SDL_guitk - GUI toolkit designed for SDL environnements (GTK-style).
 
    Copyright (C) 2005 Trave Roman
@@ -15,7 +15,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
+   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 */
 
@@ -34,7 +34,7 @@ extern "C" {
   /* SDLGuiTK_Entry structure definition */
   typedef struct SDLGuiTK_Entry SDLGuiTK_Entry;
 
-  extern DECLSPEC 
+  extern DECLSPEC
   SDLGuiTK_Entry *SDLGuiTK_ENTRY( SDLGuiTK_Widget *widget );
 
 
@@ -47,7 +47,7 @@ extern "C" {
   void SDLGuiTK_entry_set_text( SDLGuiTK_Widget *entry, const char *text );
 
   extern DECLSPEC
-  const char * SDLGuiTK_entry_get_text( SDLGuiTK_Widget *entry );
+  char * SDLGuiTK_entry_get_text( SDLGuiTK_Widget *entry );
 
 
 /* Ends C function definitions when using C++ */

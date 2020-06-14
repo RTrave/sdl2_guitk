@@ -1,4 +1,4 @@
-/* 
+/*
    SDL_guitk - GUI toolkit designed for SDL environnements.
 
    Copyright (C) 2005 Trave Roman
@@ -15,7 +15,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
+   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 #include <stdio.h>
@@ -24,7 +24,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
- 
+
 #ifdef STDC_HEADERS
 #include <stdlib.h>
 #endif
@@ -133,7 +133,7 @@ static void * Entry_DrawUpdate( SDLGuiTK_Widget * widget )
 /*            widget->object->name, */
 /*            widget->absolute_area.w, widget->relative_area.w, */
 /*            widget->absolute_area.h, widget->relative_area.h ); */
-  
+
 /*   widget->rel_area.w = entry->srf->w; */
 /*   widget->rel_area.h = entry->srf->h; */
 /*   widget->abs_area.w = entry->srf->w; */
@@ -240,7 +240,7 @@ theme = PROT__theme_get_and_lock();
 /*            widget->object->name, */
 /*            widget->absolute_area.w, widget->relative_area.w, */
 /*            widget->absolute_area.h, widget->relative_area.h ); */
-  
+
 /*   Entry_expand( entry ); */
 
 /*   printf ( "\n- %s - DrawBlit\n\twidth:%d(%d) height:%d(%d)\n", */
@@ -272,7 +272,7 @@ theme = PROT__theme_get_and_lock();
 /*     SDL_UpdateRects( widget->top->srf, 1, &widget->rel_area ); */
   }
 
-  
+
 
   return (void *) NULL;
 }
@@ -328,7 +328,7 @@ static void * Entry_RecursiveDestroy( SDLGuiTK_Widget * widget )
 static void * Entry_Free( SDLGuiTK_Widget * widget )
 {
   Entry_destroy( widget->entry );
-  
+
   return (void *) NULL;
 }
 
@@ -408,7 +408,7 @@ void Push_textinput( SDLGuiTK_Entry * entry, SDL_TextInputEvent * tievent )
 #ifdef HAVE_UNICODE_H
   Uint16 unich[3];
 #endif
-  
+
       SDLGuiTK_editable_insert_text( editable, \
 				     tievent->text, \
 				     -1,
@@ -581,7 +581,10 @@ void SDLGuiTK_entry_set_text( SDLGuiTK_Widget * entry, const char *str )
 }
 
 
-const char * SDLGuiTK_entry_get_text( SDLGuiTK_Widget *entry )
+char * SDLGuiTK_entry_get_text( SDLGuiTK_Widget *entry )
 {
-  return entry->editable->text;
+    char *text;
+    text = calloc( MyTTF_MAX_CHARS, sizeof( char ) );
+    strcpy( text, entry->editable->text );
+    return text;
 }

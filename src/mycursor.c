@@ -1,4 +1,4 @@
-/* 
+/*
    sdl_guitk - GUI toolkit designed for SDL environnements (GTK-style).
 
    Copyright (C) 2003 Trave Roman
@@ -15,7 +15,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
+   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 
@@ -25,7 +25,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
- 
+
 #ifdef STDC_HEADERS
 #include <stdlib.h>
 #endif
@@ -123,7 +123,7 @@ static const char *barre[] = {
   "                                ",
   "                                ",
   "                                ",
-  "0,0"
+  "16,0"
 };
 
 static SDL_Cursor *Load_cursor(const char *image[])
