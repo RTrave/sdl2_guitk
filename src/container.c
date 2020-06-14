@@ -233,7 +233,7 @@ static void Container_DrawSurface( SDLGuiTK_Container * container )
                            theme->wgcolor.r, \
                            theme->wgcolor.g, \
                            theme->wgcolor.b, \
-                           0 ); /* setted to 0 to be transparent */
+                           255 );
 #endif
     PROT__theme_unlock( theme );
 
