@@ -197,6 +197,8 @@ static void * Entry_DrawBlit( SDLGuiTK_Widget * widget )
   //Uint32 bgcolor;
   //SDLGuiTK_Theme * theme;
   SDLGuiTK_Entry * entry=widget->entry;
+  Uint32 bgcolor;
+  SDLGuiTK_Theme * theme;
 
   //wdiff = widget->abs_area.w - widget->rel_area.w;
   //hdiff = widget->abs_area.h - widget->rel_area.h;
@@ -258,7 +260,18 @@ theme = PROT__theme_get_and_lock();
 
   fg_area.x = 0; fg_area.y = 0;
   fg_area.w = widget->abs_area.w; fg_area.h = widget->abs_area.h;
-
+   theme = PROT__theme_get_and_lock();
+#if DEBUG_LEVEL >= 3
+  bgcolor = SDL_MapRGBA( widget->srf->srf->format, 0x00, 0xff, 0x00, 0xff );
+#else
+  bgcolor = SDL_MapRGBA( widget->srf->srf->format, \
+			 theme->wgcolor.r, \
+			 theme->wgcolor.g, \
+			 theme->wgcolor.b, \
+			 255 );
+#endif
+  PROT__theme_unlock( theme );
+    MySDL_FillRect( widget->srf, &fg_area, bgcolor );
   if( widget->top!=NULL ) {
     MySDL_BlitSurface(  entry->srf, NULL, \
 		                widget->srf, &fg_area );
