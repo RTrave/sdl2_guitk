@@ -265,9 +265,9 @@ theme = PROT__theme_get_and_lock();
   bgcolor = SDL_MapRGBA( widget->srf->srf->format, 0x00, 0xff, 0x00, 0xff );
 #else
   bgcolor = SDL_MapRGBA( widget->srf->srf->format, \
-			 theme->wgcolor.r, \
-			 theme->wgcolor.g, \
-			 theme->wgcolor.b, \
+			 theme->bgcolor.r, \
+			 theme->bgcolor.g, \
+			 theme->bgcolor.b, \
 			 255 );
 #endif
   PROT__theme_unlock( theme );
