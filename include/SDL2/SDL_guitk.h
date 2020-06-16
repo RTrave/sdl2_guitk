@@ -56,6 +56,7 @@
 #include "SDL_guitk_image.h"
 #include "SDL_guitk_menu.h"
 #include "SDL_guitk_panel.h"
+#include "SDL_guitk_scrolledwindow.h"
 
 /* #include "SDL_guitk_entry.h" */
 

@@ -22,15 +22,16 @@
 
 /* SDLGuiTK_Bin structure definition */
 struct SDLGuiTK_Bin {
-  SDLGuiTK_Object    * object;         /* referent instance */
+  SDLGuiTK_Object         * object;         /* referent instance */
 
-  SDLGuiTK_Container * container;      /* instance from */
+  SDLGuiTK_Container      * container;      /* instance from */
 
-  SDLGuiTK_Window    * window;         /* herited */
-  SDLGuiTK_Panel     * panel;          /* herited */
-  SDLGuiTK_Alignment * alignment;      /* herited */
-  SDLGuiTK_Button    * button;         /* herited */
-  SDLGuiTK_MenuItem  * menuitem;       /* herited */
+  SDLGuiTK_Window         * window;         /* herited */
+  SDLGuiTK_Panel          * panel;          /* herited */
+  SDLGuiTK_Alignment      * alignment;      /* herited */
+  SDLGuiTK_Button         * button;         /* herited */
+  SDLGuiTK_MenuItem       * menuitem;       /* herited */
+  SDLGuiTK_ScrolledWindow * scrolledwindow; /* herited */
 
   /* "public" data */
   SDLGuiTK_Widget * child;
