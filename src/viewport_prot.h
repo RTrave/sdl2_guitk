@@ -1,5 +1,5 @@
 /*
-   SDL_guitk - GUI toolkit designed for SDL environnements (GTK-style).
+   SDL_guitk - GUI toolkit designed for SDL environnements.
 
    Copyright (C) 2020 Trave Roman
 
@@ -16,17 +16,18 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
 */
 
-
-/* SDLGuiTK_ScrolledWindow structure definition */
-struct SDLGuiTK_ScrolledWindow {
+/* SDLGuiTK_Viewport structure definition */
+struct SDLGuiTK_Viewport {
     SDLGuiTK_Object * object;     /* referent object */
 
     SDLGuiTK_Bin      * bin;      /* herits from */
 
   /* "public" data */
-    int  position;
+  SDLGuiTK_Adjustment *hadjustment;
+  SDLGuiTK_Adjustment *vadjustment;
 
   /* "private" data */
     MySDL_Surface * srf;

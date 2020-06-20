@@ -1,5 +1,5 @@
 /*
-   SDL_guitk - GUI toolkit designed for SDL environnements (GTK-style).
+   SDL_guitk - GUI toolkit designed for SDL environnements.
 
    Copyright (C) 2020 Trave Roman
 
@@ -19,10 +19,10 @@
 
 */
 
-#ifndef _SDLguitk_scrolledwindow_h
-#define _SDLguitk_scrolledwindow_h
+#ifndef _SDLguitk_adjustment_h
+#define _SDLguitk_adjustment_h
 
-//#include <SDL/SDL.h>
+//#include <SDL2/SDL.h>
 #include "SDL_guitk.h"
 
 /* Set up for C function definitions, even when using C++ */
@@ -30,24 +30,26 @@
 extern "C" {
 #endif
 
-  /* SDLGuiTK_Window structure definition */
-  typedef struct SDLGuiTK_ScrolledWindow SDLGuiTK_ScrolledWindow;
+  /* SDLGuiTK_Button structure definition */
+  typedef struct SDLGuiTK_Adjustment SDLGuiTK_Adjustment;
+
+    /*  */
+  extern DECLSPEC
+  SDLGuiTK_Adjustment * SDLGuiTK_adjustment_new(double value,
+                                                double lower,
+                                                double upper,
+                                                double step_increment);
+
 
   extern DECLSPEC
-  SDLGuiTK_ScrolledWindow *SDLGuiTK_SCROLLEDWINDOW( SDLGuiTK_Widget *widget );
-
-
-  /* ops. on SDLGuiTK_Window objects */
-  extern DECLSPEC
-  SDLGuiTK_Widget *SDLGuiTK_scrolled_window_new();
-
-
+  void SDLGuiTK_adjustment_set_value(SDLGuiTK_Adjustment *adjustment,
+                                     double               value);
 
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
 };
 #endif
 
-#endif /* _SDLguitk_scrolledwindow_h */
+#endif /* _SDLguitk_adjustment_h */
 
 

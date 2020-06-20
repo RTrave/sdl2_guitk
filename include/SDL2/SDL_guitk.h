@@ -39,6 +39,7 @@
 #include "SDL_guitk_widget.h"
 #include "SDL_guitk_signal.h"
 #include "SDL_guitk_tooltips.h"
+#include "SDL_guitk_adjustment.h"
 
 /* Interface widgets */
 #include "SDL_guitk_editable.h"
@@ -56,6 +57,7 @@
 #include "SDL_guitk_image.h"
 #include "SDL_guitk_menu.h"
 #include "SDL_guitk_panel.h"
+#include "SDL_guitk_viewport.h"
 #include "SDL_guitk_scrolledwindow.h"
 
 /* #include "SDL_guitk_entry.h" */

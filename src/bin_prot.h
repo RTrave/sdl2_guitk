@@ -31,6 +31,7 @@ struct SDLGuiTK_Bin {
   SDLGuiTK_Alignment      * alignment;      /* herited */
   SDLGuiTK_Button         * button;         /* herited */
   SDLGuiTK_MenuItem       * menuitem;       /* herited */
+  SDLGuiTK_Viewport       * viewport;       /* herited */
   SDLGuiTK_ScrolledWindow * scrolledwindow; /* herited */
 
   /* "public" data */
