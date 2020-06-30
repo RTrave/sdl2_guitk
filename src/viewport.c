@@ -356,8 +356,10 @@ SDLGuiTK_Widget * SDLGuiTK_viewport_new(SDLGuiTK_Adjustment *hadjustment,
     if(vadjustment==NULL) {
         vadjustment = SDLGuiTK_adjustment_new(0, 0, 1, 0);
     }
-    viewport->vadjustment = vadjustment;
     viewport->hadjustment = hadjustment;
+    PROT__adjustment_attach(hadjustment, viewport->object->widget);
+    viewport->vadjustment = vadjustment;
+    PROT__adjustment_attach(vadjustment, viewport->object->widget);
 
     viewport->object->widget->RecursiveEntering = Viewport_RecursiveEntering;
     viewport->object->widget->RecursiveDestroy = Viewport_RecursiveDestroy;
