@@ -24,6 +24,7 @@ libguitk_la_SOURCES = xmalloc.c getopt.c getopt.h \
 	container.c container_prot.h \
 	bin.c bin_prot.h \
 	viewport.c viewport_prot.h \
-	adjustment.c adjustment_prot.h
+	adjustment.c adjustment_prot.h \
+	scrollbar.c scrollbar_prot.h
 
 libguitk_la_LDFLAGS = $(GUI_LDFLAGS)

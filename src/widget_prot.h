@@ -28,6 +28,7 @@ struct SDLGuiTK_Widget {
   SDLGuiTK_Entry      * entry;                     /* herited */
   SDLGuiTK_Editable   * editable;                  /* herited */
   SDLGuiTK_MenuShell  * menushell;                 /* herited */
+  SDLGuiTK_Scrollbar  * scrollbar;                 /* herited */
 
 
   int  shown;                                      /* "public" data */

@@ -45,6 +45,7 @@
 #include "SDL_guitk_editable.h"
 
 /* User-level objects */
+#include "SDL_guitk_scrollbar.h"
 #include "SDL_guitk_misc.h"
 #include "SDL_guitk_button.h"
 #include "SDL_guitk_entry.h"

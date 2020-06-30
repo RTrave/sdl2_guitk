@@ -42,8 +42,18 @@
 #include "myttf.h"
 #include "signal.h"
 #include "object_prot.h"
+#include "widget_prot.h"
 
 #include "adjustment_prot.h"
+
+
+static int current_id=0;
+
+void PROT__adjustment_attach(SDLGuiTK_Adjustment *adjustment,
+                             SDLGuiTK_Widget *parent)
+{
+    adjustment->parent = parent;
+}
 
 
 SDLGuiTK_Adjustment * SDLGuiTK_adjustment_new(double value,
@@ -55,6 +65,7 @@ SDLGuiTK_Adjustment * SDLGuiTK_adjustment_new(double value,
 
     new_adjustment = malloc( sizeof( struct SDLGuiTK_Adjustment ) );
     new_adjustment->object = PROT__object_new();
+    sprintf( new_adjustment->object->name, "adjustment%d", ++current_id );
 
     new_adjustment->value = value;
     new_adjustment->lower = lower;
@@ -67,6 +78,17 @@ SDLGuiTK_Adjustment * SDLGuiTK_adjustment_new(double value,
 void SDLGuiTK_adjustment_set_value(SDLGuiTK_Adjustment *adjustment,
                                    double               value)
 {
+    if(value<adjustment->lower)
+        value = adjustment->lower;
+    if(value>adjustment->upper)
+        value = adjustment->upper;
     adjustment->value = value;
+    //printf("Adjustment value=%f\n", value);
+    if( adjustment->parent!=NULL && adjustment->parent->top!=NULL ) {
+        PROT__signal_push(adjustment->object,
+                          SDLGUITK_SIGNAL_TYPE_VALUECHANGED );
+        PROT__signal_push (adjustment->parent->top->object,
+                           SDLGUITK_SIGNAL_TYPE_FRAMEEVENT);
+    }
 }
 

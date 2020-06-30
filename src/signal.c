@@ -125,6 +125,10 @@ static char * Signal_translate( SDLGuiTK_Signal * signal )
     return SDLGUITK_SIGNAL_TEXT_SELECTIONDONE;
   case SDLGUITK_SIGNAL_TYPE_TEXTINPUT:
     return SDLGUITK_SIGNAL_TEXT_TEXTINPUT;
+  case SDLGUITK_SIGNAL_TYPE_CHANGED:
+    return SDLGUITK_SIGNAL_TEXT_CHANGED;
+  case SDLGUITK_SIGNAL_TYPE_VALUECHANGED:
+    return SDLGUITK_SIGNAL_TEXT_VALUECHANGED;
   case SDLGUITK_SIGNAL_TYPE_NONE:
     return "none";
   default:
@@ -503,6 +507,12 @@ static int Signal_get_type( char *ctype )
   }
   if( strcmp(ctype,SDLGUITK_SIGNAL_TEXT_KEYBOARD)==0 ) {
     return SDLGUITK_SIGNAL_TYPE_KEYBOARD;
+  }
+  if( strcmp(ctype,SDLGUITK_SIGNAL_TEXT_CHANGED)==0 ) {
+    return SDLGUITK_SIGNAL_TYPE_CHANGED;
+  }
+  if( strcmp(ctype,SDLGUITK_SIGNAL_TEXT_VALUECHANGED)==0 ) {
+    return SDLGUITK_SIGNAL_TYPE_VALUECHANGED;
   }
   return 0;
 }

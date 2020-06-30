@@ -40,6 +40,9 @@ typedef struct SDLGuiTK_SignalFunction SDLGuiTK_SignalFunction;
 #define SDLGUITK_SIGNAL_TYPE_DEACTIVATE    ((int) 31)
 #define SDLGUITK_SIGNAL_TYPE_SELECTIONDONE ((int) 32)
 #define SDLGUITK_SIGNAL_TYPE_TEXTINPUT    ((int) 33)
+#define SDLGUITK_SIGNAL_TYPE_CHANGED      ((int) 34)
+#define SDLGUITK_SIGNAL_TYPE_VALUECHANGED ((int) 35)
+
 #define SDLGUITK_SIGNAL_TYPE_MAXID        ((int) 64)
 
 
@@ -112,4 +115,6 @@ void PROT__signalhandler_destroy( SDLGuiTK_Object *handler );
 #define SDLGUITK_SIGNAL_TEXT_DEACTIVATE  ("deactivate")
 #define SDLGUITK_SIGNAL_TEXT_SELECTIONDONE ("selection_done")
 #define SDLGUITK_SIGNAL_TEXT_TEXTINPUT   ("text_input")
+#define SDLGUITK_SIGNAL_TEXT_CHANGED     ("changed")
+#define SDLGUITK_SIGNAL_TEXT_VALUECHANGED ("value-changed")
 
