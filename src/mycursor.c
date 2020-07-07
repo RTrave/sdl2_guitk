@@ -123,7 +123,7 @@ static const char *barre[] = {
   "                                ",
   "                                ",
   "                                ",
-  "31,0"
+  "0,7"
 };
 
 static SDL_Cursor *Load_cursor(const char *image[])
