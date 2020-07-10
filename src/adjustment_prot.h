@@ -25,7 +25,8 @@ struct SDLGuiTK_Adjustment {
     SDLGuiTK_Object * object;     /* referent object */
 
   /* "public" data */
-    SDLGuiTK_Widget *parent;
+    SDLGuiTK_Widget *parent[5];
+    int parent_nb;
     double value;
     double lower;
     double upper;

@@ -74,7 +74,7 @@ static SDLGuiTK_Scrollbar * Scrollbar_create()
     sprintf( new_scrollbar->object->name, "scrollbar%d", ++current_id );
     new_scrollbar->widget->scrollbar = new_scrollbar;
 
-    new_scrollbar->orientation = 0;
+    new_scrollbar->orientation = SDLGUITK_ORIENTATION_HORIZONTAL;
     new_scrollbar->adjustment = NULL;
 
     new_scrollbar->srf = MySDL_Surface_new ("Scrollbar_srf");
@@ -93,8 +93,6 @@ static double Adjustment_ratio(SDLGuiTK_Adjustment *adjustment)
 {
     return (adjustment->value/(adjustment->upper-adjustment->lower));
 }
-
-static int SCROLLBAR_SIZE=10;
 
 static void * Scrollbar_make_surface(SDLGuiTK_Scrollbar * scrollbar)
 {
@@ -122,11 +120,21 @@ static void * Scrollbar_make_surface(SDLGuiTK_Scrollbar * scrollbar)
     MySDL_FillRect( widget->srf, &area, bgcolor );
 
     //draw button
-    int w_diff = area.w-SCROLLBAR_SIZE;
-    scrollbar->button_area.x = (int) (w_diff*Adjustment_ratio (scrollbar->adjustment));
-    scrollbar->button_area.y = 1;
-    scrollbar->button_area.w = SCROLLBAR_SIZE;
-    scrollbar->button_area.h = area.h;
+    if(scrollbar->orientation==SDLGUITK_ORIENTATION_HORIZONTAL) {
+        int w_diff = area.w-SCROLLBAR_SIZE;
+        scrollbar->button_area.x =
+            (int) (w_diff*Adjustment_ratio (scrollbar->adjustment));
+        scrollbar->button_area.y = 1;
+        scrollbar->button_area.w = SCROLLBAR_SIZE;
+        scrollbar->button_area.h = area.h;
+    } else {
+        int h_diff = area.h-SCROLLBAR_SIZE;
+        scrollbar->button_area.x = 1;
+        scrollbar->button_area.y =
+            (int) (h_diff*Adjustment_ratio (scrollbar->adjustment));
+        scrollbar->button_area.w = area.w;
+        scrollbar->button_area.h = SCROLLBAR_SIZE;
+    }
     MySDL_FillRect( widget->srf, &scrollbar->button_area, fgcolor );
     //printf("TEST SB1\n");
 
@@ -273,17 +281,33 @@ static SDLGuiTK_Widget * Scrollbar_RecursiveEntering( SDLGuiTK_Widget * widget, 
     //printf("TEST mouse_recurseenter: %d/%d --- %d/%d\n", mx, my, x, y);
     int mdiff = 0;
     int wdiff = 0;
-    mdiff = mx-scrollbar->mbutton_x;
-
-    if(scrollbar->buttonOn==1 && mdiff!=0){
-        wdiff = scrollbar->button_area.x;
-        //printf("Mx:%d / AbsX:%d, AbsW:%d\n ", mx, widget->abs_area.x, widget->abs_area.w);
-        double value = (((double)mx - (double)widget->abs_area.x) / ((double)widget->abs_area.w));
-        SDLGuiTK_adjustment_set_value(scrollbar->adjustment,
-                                      value);
-        scrollbar->button_area.x += mdiff;
-        scrollbar->button_act_area.x += mdiff;
-        scrollbar->mbutton_x += mdiff;
+    if(scrollbar->orientation==SDLGUITK_ORIENTATION_HORIZONTAL) {
+        mdiff = mx-scrollbar->mbutton_x;
+        if(scrollbar->buttonOn==1 && mdiff!=0){
+            wdiff = scrollbar->button_area.x;
+            //printf("Mx:%d / AbsX:%d, AbsW:%d\n ", mx, widget->abs_area.x, widget->abs_area.w);
+            double value =
+                (((double)mx - (double)widget->abs_area.x) / ((double)widget->abs_area.w));
+            SDLGuiTK_adjustment_set_value(scrollbar->adjustment,
+                                          value);
+            scrollbar->button_area.x += mdiff;
+            scrollbar->button_act_area.x += mdiff;
+            scrollbar->mbutton_x += mdiff;
+        }
+    } else {
+        mdiff = my-scrollbar->mbutton_y;
+        if(scrollbar->buttonOn==1 && mdiff!=0){
+            wdiff = scrollbar->button_area.y;
+            //printf("Mx:%d / AbsX:%d, AbsW:%d\n ", mx, widget->abs_area.x, widget->abs_area.w);
+            double value =
+                (((double)my - (double)widget->abs_area.y) /
+                 ((double)widget->abs_area.h-SCROLLBAR_SIZE));
+            SDLGuiTK_adjustment_set_value(scrollbar->adjustment,
+                                          value);
+            scrollbar->button_area.y += mdiff;
+            scrollbar->button_act_area.y += mdiff;
+            scrollbar->mbutton_y += mdiff;
+        }
     }
     return NULL;
 }

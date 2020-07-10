@@ -20,6 +20,8 @@
 */
 
 
+static int SCROLLBAR_SIZE=10;
+
 /* SDLGuiTK_Scrollbar structure definition */
 struct SDLGuiTK_Scrollbar {
   SDLGuiTK_Object * object;       /* referent object */

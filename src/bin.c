@@ -40,6 +40,7 @@
 #include "theme_prot.h"
 
 #include "container_prot.h"
+#include "container/scrolledwindow_prot.h"
 #include "bin_prot.h"
 
 
@@ -77,6 +78,7 @@ static SDLGuiTK_Bin * Bin_create()
     new_bin->alignment = NULL;
     new_bin->button = NULL;
     new_bin->menuitem = NULL;
+    new_bin->scrolledwindow = NULL;
 
     new_bin->child = NULL;
 
@@ -123,7 +125,11 @@ void PROT__bin_add( SDLGuiTK_Bin * bin, SDLGuiTK_Widget * widget )
     if( bin->child!=NULL ) {
         SDLGUITK_ERROR( "__bin_add(): yet have a child! LOOSING IT!\n" );
     }
-    bin->child = widget;
+    if( bin->scrolledwindow!=NULL )
+        bin->child = PROT__scrolledwindow_add(bin->scrolledwindow,
+                                              widget);
+    else
+        bin->child = widget;
     widget->parent = bin->object->widget;
     if( bin->object->widget->top!=NULL ) {
         widget->top = bin->object->widget->top;
@@ -169,7 +175,7 @@ void PROT__bin_remove( SDLGuiTK_Bin * bin, SDLGuiTK_Widget * widget )
 
 void PROT__bin_DrawUpdate( SDLGuiTK_Bin * bin )
 {
-    SDLGuiTK_Widget *widget=bin->object->widget;
+    //SDLGuiTK_Widget *widget=bin->object->widget;
 
     if(bin->child==NULL || bin->child->shown!=1) {
         bin->container->children_area.w = 4;

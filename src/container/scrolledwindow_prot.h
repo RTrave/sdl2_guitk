@@ -27,10 +27,17 @@ struct SDLGuiTK_ScrolledWindow {
 
   /* "public" data */
     int  position;
+    SDLGuiTK_Widget *hscrollbar;
+    SDLGuiTK_Widget *vscrollbar;
 
   /* "private" data */
     MySDL_Surface * srf;
     SDL_Rect        area;
+    SDL_Rect        hsb_area;
+    SDL_Rect        vsb_area;
 };
 
+extern
+SDLGuiTK_Widget * PROT__scrolledwindow_add(SDLGuiTK_ScrolledWindow *scrolledwindow,
+                                           SDLGuiTK_Widget *widget );
 

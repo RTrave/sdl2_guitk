@@ -42,7 +42,7 @@
 #include "container_prot.h"
 #include "bin_prot.h"
 #include "adjustment_prot.h"
-
+#include "mywm.h"
 #include "viewport_prot.h"
 
 
@@ -88,6 +88,9 @@ static SDLGuiTK_Viewport * Viewport_create()
     new_viewport->area.y = 0;
     new_viewport->area.w = 0;
     new_viewport->area.h = 0;
+    new_viewport->force_width = 0;
+    new_viewport->force_height = 0;
+    new_viewport->is_active = 0;
 
     //new_viewport->wm_widget = MyWM_WMWidget_New( new_viewport->object->widget );
 
@@ -134,6 +137,7 @@ static double Adjustment_ratio(SDLGuiTK_Adjustment *adjustment)
 static void * Viewport_DrawBlit( SDLGuiTK_Widget * widget )
 {
     SDLGuiTK_Viewport   * viewport=widget->container->bin->viewport;
+    SDLGuiTK_Widget * child = viewport->bin->child;
 
     //widget->container->children_area.w = widget->req_area.w;
     //widget->container->children_area.h = widget->req_area.h;
@@ -151,6 +155,21 @@ static void * Viewport_DrawBlit( SDLGuiTK_Widget * widget )
     MySDL_BlitSurface( viewport->bin->child->srf, &viewport->area, \
                         widget->srf, &viewport->bin->child->rel_area );
 
+    widget->act_area.x = widget->abs_area.x;
+    widget->act_area.y = widget->abs_area.y;
+    if(viewport->force_width)
+        widget->act_area.w = viewport->force_width;
+    else
+        widget->act_area.w = widget->abs_area.w;
+    if(viewport->force_height)
+        widget->act_area.h = viewport->force_height;
+    else
+        widget->act_area.h = widget->abs_area.h;
+
+    if(child->act_area.w>widget->act_area.w)
+        child->act_area.w = widget->act_area.w;
+    if(child->act_area.h>widget->act_area.h)
+        child->act_area.h = widget->act_area.h;
 
     return (void *) NULL;
 }
@@ -159,6 +178,7 @@ static void * Viewport_DrawBlit( SDLGuiTK_Widget * widget )
 static SDLGuiTK_Widget * Viewport_RecursiveEntering( SDLGuiTK_Widget * widget, \
         int x, int y )
 {
+    SDLGuiTK_Viewport *viewport = widget->container->bin->viewport;
     SDLGuiTK_Widget * child;
     SDLGuiTK_Widget * active;
 
@@ -170,9 +190,17 @@ static SDLGuiTK_Widget * Viewport_RecursiveEntering( SDLGuiTK_Widget * widget, \
     if( child->shown==0 ) {
         return NULL;
     }
-    active = PROT__widget_is_entering( child, x, y );
-
-    return active;
+    if((x>=widget->act_area.x && x<(widget->act_area.x+widget->act_area.w)) &&
+       (y>=widget->act_area.y && y<(widget->act_area.y+widget->act_area.h)))
+    {
+        viewport->is_active = 1;
+        return active = PROT__widget_is_entering( child, x, y );
+    } else if(-viewport->is_active==1) {
+        viewport->is_active = 0;
+        //PROT__signal_push( child->object, SDLGUITK_SIGNAL_TYPE_LEAVE );
+        //PROT_MyWM_leaveall ();
+    }
+    return NULL;
 }
 
 static void * Viewport_RecursiveDestroy( SDLGuiTK_Widget * widget )
@@ -265,12 +293,6 @@ static void * Viewport_FrameEvent( SDLGuiTK_Widget * widget, \
 static void * Viewport_MouseEnter( SDLGuiTK_Widget * widget, \
                                  void * data, void * event )
 {
-    /*   widget->WM_srf = widget->container->bin->window->active_srf; */
-    /*   if( widget->absolute_srf!=widget->container->bin->window->active_srf ) { */
-    /*     widget->absolute_srf = widget->container->bin->window->active_srf; */
-    /*   } */
-    /*   PROT__box_activate( window->window->main_box->box ); */
-    //MyCursor_Set( SDLGUITK_CURSOR_DEFAULT );
 
     return (void *) NULL;
 }
@@ -278,28 +300,21 @@ static void * Viewport_MouseEnter( SDLGuiTK_Widget * widget, \
 static void * Viewport_MouseLeave( SDLGuiTK_Widget * widget, \
                                  void * data, void * event )
 {
-    /*   widget->WM_srf = widget->container->bin->window->shaded_srf; */
-    /*   if( widget->absolute_srf!=widget->container->bin->window->shaded_srf ) { */
-    /*     widget->absolute_srf = widget->container->bin->window->shaded_srf; */
-    /*   } */
-    /*   PROT__box_update_relwin( window->window->main_box->box ); */
-    /*   Intern__SDLGuiTK_events_unref_widgets(); */
-    //MyCursor_Unset();
 
     return (void *) NULL;
 }
 
-/* static void * Viewport_MousePressed( SDLGuiTK_Widget * window, \ */
-/* 				   void * data ) */
-/* { */
-/*   int x, y; */
-/*   if( SDL_GetMouseState( &x, &y) ) { */
-/*     printf( "Mouse pressed in: x=%d y=%d\n", x, y ); */
-/*     window->moving = 1; */
-/*   } */
+static void * Viewport_MousePressed(SDLGuiTK_Widget * window,
+                                    void * data )
+{
+    int x, y;
+        if( SDL_GetMouseState( &x, &y) ) {
+        printf( "Mouse pressed on viewport: x=%d y=%d\n", x, y );
+        //window->moving = 1;
+    }
 
-/*   return (void *) NULL; */
-/* } */
+    return (void *) NULL;
+}
 
 static void * Viewport_MouseReleased( SDLGuiTK_Widget * widget, \
                                     void * data, void * event )
@@ -386,4 +401,11 @@ SDLGuiTK_Adjustment * SDLGuiTK_viewport_get_hadjustment(SDLGuiTK_Viewport *viewp
 SDLGuiTK_Adjustment * SDLGuiTK_viewport_get_vadjustment(SDLGuiTK_Viewport *viewport)
 {
     return viewport->vadjustment;
+}
+
+void PROT_viewport_setsize(SDLGuiTK_Viewport * viewport,
+                           int width, int height)
+{
+    viewport->force_width = width;
+    viewport->force_height = height;
 }

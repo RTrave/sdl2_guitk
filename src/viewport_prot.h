@@ -32,6 +32,10 @@ struct SDLGuiTK_Viewport {
   /* "private" data */
     MySDL_Surface * srf;
     SDL_Rect        area;
+    int force_width, force_height;
+    int is_active;
 };
 
-
+extern
+void PROT_viewport_setsize(SDLGuiTK_Viewport * viewport,
+                           int width, int height);
