@@ -82,7 +82,6 @@ static struct option const long_options[] =
   {"help", no_argument, 0, 'h'},
   {"version", no_argument, 0, 'V'},
   {"fullscreen", no_argument, 0, 'f'},
-  {"nogl", no_argument, 0, 'G'},
 #ifndef WIN32
   {"width", required_argument, 0, WIDTH_CODE},
   {"height", required_argument, 0, HEIGHT_CODE},
@@ -93,8 +92,6 @@ static struct option const long_options[] =
   {NULL, 0, NULL, 0}
 };
 
-
-/* #undef HAVE_GL_GL_H */
 
 
 static void Init_internals()
@@ -176,8 +173,6 @@ void SDLGuiTK_init( int argc, char **argv )
 
 void SDLGuiTK_main()
 {
-  //  PROT__signal_start();
-
   Main_loop();
 
   MyCursor_Uninit();
@@ -189,7 +184,6 @@ void SDLGuiTK_main()
   MySDL_Uninit();
 }
 
-//void SDLGuiTK_init_with_surface( SDL_Surface * surface )
 void SDLGuiTK_init_with_window( SDL_Window * window, SDL_Renderer * renderer )
 {
   SDL_mutexP( main_loop_mutex );
@@ -199,12 +193,7 @@ void SDLGuiTK_init_with_window( SDL_Window * window, SDL_Renderer * renderer )
   PROT__debug_init();
 
   MySDL_MainSurface_set( window, renderer );
-#ifdef HAVE_GL_GL_H
-  MySDL_OpenGLEnable();
-#else
-  SDLGUITK_ERROR( "SDLGUITK_init_with_surface(): no OpenGL support!\n" );
-  SDLGUITK_ERROR( "                              SLAVE_MODE is not safe.\n" );
-#endif
+
   MyTTF_Init();
   MyWM_Init();
 
@@ -212,7 +201,6 @@ void SDLGuiTK_init_with_window( SDL_Window * window, SDL_Renderer * renderer )
   PROT__context_new( SDL_GetWindowSurface( window ), SDLGUITK_CONTEXT_MODE_SLAVE );
   
   MyCursor_Init();
-  //  PROT__signal_start();
 }
 
 void SDLGuiTK_main_quit()
@@ -226,7 +214,6 @@ void SDLGuiTK_main_quit()
   if( main_loop==2 ) {
     SDL_mutexV( main_loop_mutex );
 
-/*     SDL_mutexP( current_context->mutex ); */
     if( current_context->type==SDLGUITK_CONTEXT_MODE_SLAVE ) {
       MyCursor_Uninit();
       MyWM_Uninit();
@@ -254,8 +241,7 @@ decode_switches (int argc, char **argv)
 			   "h"	/* help */
 			   "V"	/* version */
 			   "f"	/* version */
-			   "w"	/* version */
-			   "G",	/* version */
+			   "w"	/* version */,
 			   long_options, (int *) 0)) != EOF)
 #else
   while ((c = getopt (argc, argv, 
@@ -263,8 +249,7 @@ decode_switches (int argc, char **argv)
 			   "V"	/* version */
 			   "f"	/* version */
 			   "W"	/* version */
-			   "H"	/* version */
-			   "G"	/* version */
+			   "H"	/* version */,
 		      )) != EOF)
 #endif
     {
@@ -279,9 +264,6 @@ decode_switches (int argc, char **argv)
 
 	case 'f':
 	  MySDL_ModeFullScreen( SDL_TRUE );
-	  break;
-	case 'G':
-	  MySDL_ModeOpenGL( SDL_FALSE );
 	  break;
 #ifndef WIN32
 	case WIDTH_CODE:
@@ -320,7 +302,6 @@ SDL2_GuiTK - GUI toolkit designed for SDL environnements.\n", program_name);
   printf ("\
 Options:\n\
   -f, --fullscreen           fullscreen output\n\
-  -G, --nogl                 use OpenGL mode\n\
   --width=WIDTH              set screen width\n\
   --height=HEIGHT            set screen height\n\
 \n\

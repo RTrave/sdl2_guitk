@@ -241,8 +241,6 @@ void SDLGuiTK_context_blitsurfaces()
 
   SDLGuiTK_list_unlock( current_context->activables );
   SDL_mutexV( current_context->mutex );
-
-  MySDL_UpdateWindowSurface();
 }
 
 

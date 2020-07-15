@@ -94,7 +94,7 @@ if test "x$enable_opengl" = "xyes"; then
 AC_CHECK_HEADERS( [GL/gl.h], [], export tgl=1 )
 if test "x$tgl" = "x1"; then
    echo " Humm ... OpenGL headers not found!";
-   echo " fatal (try --enable-opengl=no) ... exit"; exit;
+   echo " fatal (non GL support removed) ... exit"; exit;
 else
    GUI_LDFLAGS=" -lGL $GUI_LDFLAGS"
 fi
