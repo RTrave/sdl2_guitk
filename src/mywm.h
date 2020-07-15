@@ -61,9 +61,9 @@ extern int MyWM_push_KEYDOWN( SDL_Event *event );
 /* extern void MyWM_ref_wmwidget( SDLGuiTK_WMWidget * wm_widget ); */
 /* extern void MyWM_unref_wmwidget( SDLGuiTK_WMWidget * wm_widget ); */
 
-extern void * (*MyWM_blitsurface)( SDLGuiTK_WMWidget * wm_widget );
+extern void * MyWM_blitsurface( SDLGuiTK_WMWidget * wm_widget );
 
-extern void MyWM_blitsurface_setopengl( int flag );
+//extern void MyWM_blitsurface_setopengl( int flag );
 
 /* extern void MyWM_append_activable( SDLGuiTK_Widget * widget ); */
 

@@ -570,9 +570,8 @@ int MyWM_push_KEYDOWN( SDL_Event *event )
 
 
 
-#ifdef HAVE_GL_GL_H
 
-static void * MyWM_blitsurface_GL( SDLGuiTK_WMWidget * wm_widget )
+void * MyWM_blitsurface( SDLGuiTK_WMWidget * wm_widget )
 {
   SDLGuiTK_Surface2D * surface2D=wm_widget->surface2D;
   int mouse_x, mouse_y;
@@ -622,138 +621,14 @@ static void * MyWM_blitsurface_GL( SDLGuiTK_WMWidget * wm_widget )
   return (void *) NULL;
 }
 
-/* GL blit with active directly blitted on his parent before GL blit */
-/* like the *_noGL one (bug in active surface TODO before use it) */
-/* static void * MyWM_blitsurface_GL_2( SDLGuiTK_WMWidget * wm_widget ) */
-/* { */
-/*   int act_flag=0; */
-/*   SDLGuiTK_2DWidget * wmwidget_2D=wm_widget->wmwidget_2D; */
-  
-/*   if ( wmwidget_2D->texture_flag!=0 ) { */
-
-/*     wmwidget_2D->srf = MySDL_CopySurface( wmwidget_2D->srf, wm_widget->srf ); */
-/*     wmwidget_2D->w = wm_widget->srf->w; */
-/*     wmwidget_2D->h = wm_widget->srf->h; */
-
-/*   } */
-
-/*   if( active_widget!=NULL && active_widget->act_srf!=NULL ) { */
-/*   if( active_widget->top==wm_widget->widget ) { */
-
-/*     SDL_Rect act_area; */
-/*     /\* Call update function here *\/ */
-/*     act_flag = (int) (*active_widget->UpdateActive) ( active_widget ); */
-
-/*     if ( act_flag!=0 ) { */
-/*       wmwidget_2D->srf = MySDL_CopySurface( wmwidget_2D->srf, wm_widget->srf ); */
-/*   SDL_SetAlpha( wmwidget_2D->srf, SDL_RLEACCEL, 255 ); */
-/*   SDL_SetAlpha( active_widget->act_srf, 0, 255 ); */
-/*       wmwidget_2D->w = wm_widget->srf->w; */
-/*       wmwidget_2D->h = wm_widget->srf->h; */
-/*       act_area.x = active_widget->act_area.x - wm_widget->area.x; */
-/*       act_area.y = active_widget->act_area.y - wm_widget->area.y; */
-/*       act_area.w = active_widget->act_srf->w; */
-/*       act_area.h = active_widget->act_srf->h; */
-/*       SDL_BlitSurface( active_widget->act_srf, NULL, \ */
-/* 		       wmwidget_2D->srf, &act_area); */
-/*       SDL_UpdateRects( wmwidget_2D->srf, 1, &act_area); */
-/*       wm_widget->active_2D->texture_flag = 0; */
-/*       wm_widget->wmwidget_2D->texture_flag = 1; */
-/*     } */
-
-/*   } */
-/*   } */
-
-/*   if ( wm_widget->wmwidget_2D->texture_flag!=0 ) { */
-/*     MyWM_make2Dsurface( wm_widget->wmwidget_2D, wmwidget_2D->srf ); */
-/*     wm_widget->wmwidget_2D->texture_flag = 0; */
-/*   } */
-/*   MyWM_blit2Dsurface( wm_widget->wmwidget_2D, \ */
-/* 		      wm_widget->area.x, wm_widget->area.y ); */
-
-/*   return (void *) NULL; */
-/* } */
-
-
-#endif
-
-
-
-static void * MyWM_blitsurface_noGL( SDLGuiTK_WMWidget * wm_widget )
-{
-  int act_flag=0;
-  SDLGuiTK_Surface2D * surface2D=wm_widget->surface2D;
-  
-  if( active_widget!=NULL && active_widget->act_srf!=NULL ) {
-  if( active_widget->top==wm_widget->widget ) {
-    SDL_Rect act_area;
-    /* Call update function here */
-    act_flag = (int) (*active_widget->UpdateActive) ( active_widget );
-
-    if ( act_flag!=0 ) {
-      //surface2D->srf = MySDL_CopySurface( surface2D->srf, wm_widget->srf );
-      surface2D->srf = wm_widget->srf->srf;
-      surface2D->w = wm_widget->srf->srf->w;
-      surface2D->h = wm_widget->srf->srf->h;
-      wm_widget->surface2D_flag = 0;
-      act_area.x = active_widget->act_area.x - wm_widget->area.x;
-      act_area.y = active_widget->act_area.y - wm_widget->area.y;
-      act_area.w = active_widget->act_srf->srf->w;
-      act_area.h = active_widget->act_srf->srf->h;
-      //SDL_SetAlpha( active_widget->act_srf, SDL_RLEACCEL, 64 ); //SDL_SRCALPHA|
-      //MySDL_BlitSurface( active_widget->act_srf, NULL, \
-	  //	                    surface2D->srf, &act_area);
-      //2SDL_UpdateRects( surface2D->srf, 1, &act_area);
-	  //SDL_UpdateWindowSurface( active_widget->act_srf );
-    }
-  }
-  }
-
-  if ( wm_widget->surface2D_flag!=0 ) {
-    //surface2D->srf = MySDL_CopySurface( surface2D->srf, wm_widget->srf );
-      surface2D->srf = wm_widget->srf->srf;
-    surface2D->w = wm_widget->srf->srf->w;
-    surface2D->h = wm_widget->srf->srf->h;
-    wm_widget->surface2D_flag = 0;
-  }
-
-/*   SDL_SetAlpha( wmwidget_2D->srf, SDL_SRCALPHA|SDL_RLEACCEL, 0 ); */
-  SDL_BlitSurface( surface2D->srf, NULL, \
-		   current_context->surface, &wm_widget->area);
-  //2SDL_UpdateRects( current_context->surface, 1, &wmwidget_2D->wmwidget->area);
-  //SDL_UpdateWindowSurface( surface2D->srf );
-
-  return (void *) NULL;
-}
-
-
-void * (*MyWM_blitsurface)( SDLGuiTK_WMWidget * wm_widget );
-
-void MyWM_blitsurface_setopengl( int flag )
-{
-  if( flag==0 ) {
-    MyWM_blitsurface = MyWM_blitsurface_noGL;
-  } else {
-#ifdef HAVE_GL_GL_H
-    MyWM_blitsurface = MyWM_blitsurface_GL;
-#else
-    SDLGUITK_ERROR( "blitsurface_setopengl(): GL asked but not dispo!\n" );
-#endif
-  }
-}
-
-
 
 void MyWM_Init()
 {
-/*   current_id_mutex = SDL_CreateMutex(); */
   active_2D = MySDL_surface2D_new();
 }
 
 void MyWM_Uninit()
 {
   MySDL_surface2D_destroy( active_2D );
-/*   SDL_DestroyMutex( current_id_mutex ); */
-/*   current_id_mutex = NULL; */
 }
 
