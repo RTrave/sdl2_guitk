@@ -39,6 +39,11 @@ extern "C" {
   SDLGuiTK_Box *SDLGuiTK_BOX( SDLGuiTK_Widget *widget );
 
 
+  /* Define the type of boxes */
+#define SDLGUITK_BOX_H ((int) 0)   /* horizontal */
+#define SDLGUITK_BOX_V ((int) 1)   /* vertical */
+
+
 
   /*  */
   extern DECLSPEC
@@ -64,6 +69,9 @@ extern "C" {
 
   extern DECLSPEC
   SDL_bool SDLGuiTK_box_get_homogeneous( SDLGuiTK_Box *box );
+
+  extern DECLSPEC
+  void SDLGuiTK_box_set_orientation( SDLGuiTK_Box *box, int orientation);
 
 
 /* Ends C function definitions when using C++ */

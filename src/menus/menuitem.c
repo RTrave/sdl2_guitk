@@ -100,6 +100,14 @@ static void MenuItem_destroy( SDLGuiTK_MenuItem * menuitem )
    free( menuitem );
 }
 
+SDLGuiTK_Widget * PROT__menuitem_add( SDLGuiTK_MenuItem * menuitem,
+                                      SDLGuiTK_Widget * widget)
+{
+    menuitem->child = widget;
+    return widget;
+}
+
+
 static void Make_activesrf( SDLGuiTK_Widget * widget ) {
     SDLGuiTK_MenuItem * menuitem=widget->container->bin->menuitem;
     SDL_Rect          tmp_area;

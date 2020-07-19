@@ -86,13 +86,16 @@ void PROT__debug_log( char *flag, char *log_message )
   pid = (int) SDL_ThreadID(  );
   i = 0;
   while( i!=MAX_THREADS_DBG && pid!=threads_pid[i] ) { i++; };
-  if( i==MAX_THREADS_DBG ) {
+  if( i==MAX_THREADS_DBG && strcmp(flag, "")!=0) {
       printf( "[SGTK-%d]", pid );
-  } else {
+  } else if (strcmp(flag, "")!=0) {
       printf( "[SGTK-%s]", &threads_names[i][0] );
   }
   if( log_message!=NULL ) {
-    printf( "\t%s %s", flag, log_message);
+    if(strcmp(flag, "")!=0)
+      printf( "\t%s %s", flag, log_message);
+    else
+      printf( "%s\n", log_message);
   }else{
     printf( "\t%s UNCOMMENTED\n", flag );
   }

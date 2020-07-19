@@ -34,6 +34,8 @@
 #if DEBUG_LEVEL >= 1
 #define SDLGUITK_ERROR(error_message) \
         ( PROT__debug_log("E", error_message) )
+#define SDLGUITK_ERROR2(error_message) \
+        ( PROT__debug_log("", error_message) )
 #define SDLGUITK_OUTPUT(error_message) \
         ( PROT__debug_log("O", error_message) )
 #define SDLGUITK_THREAD_REF(name) \
@@ -42,6 +44,7 @@
         ( PROT__debug_threads_unref() )
 #else
 #define SDLGUITK_ERROR(error_message)
+#define SDLGUITK_ERROR2(error_message1, error_message2)
 #define SDLGUITK_OUTPUT(error_message)
 #define SDLGUITK_THREAD_REF(name)
 #define SDLGUITK_THREAD_UNREF()

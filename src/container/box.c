@@ -122,7 +122,6 @@ static void * Box_DrawUpdate( SDLGuiTK_Widget * widget )
     current_child = (BoxChild *) SDLGuiTK_list_ref_init( box->children );
     while( current_child!=NULL ) {
         current = current_child->child;
-        /*     SDL_mutexP( current->object->mutex ); */
 
         /* UPDATE CHILD ASCENDENTS */
         current->top = widget->top;
@@ -196,7 +195,6 @@ static void * Box_DrawBlit( SDLGuiTK_Widget * widget )
 {
     SDLGuiTK_Box * box=widget->container->box;
     BoxChild * current_child;
-    //SDLGuiTK_Widget * current=NULL;
 
     box->current_x=box->container->border_width;
     box->current_y=box->container->border_width;
@@ -204,8 +202,6 @@ static void * Box_DrawBlit( SDLGuiTK_Widget * widget )
     if( box->shown_nb<1 ) {
         current_child = (BoxChild *) SDLGuiTK_list_ref_init( box->children );
         while( current_child!=NULL ) {
-            //current = current_child->child;
-            /*       SDL_mutexV( current->object->mutex ); */
             current_child = (BoxChild *) SDLGuiTK_list_ref_next( box->children );
         } //TODO loop useless
 
@@ -215,27 +211,8 @@ static void * Box_DrawBlit( SDLGuiTK_Widget * widget )
         return 0;
     }
 
-    /* if( widget->abs_area.w>widget->rel_area.w ) { */
-    /*     if( box->type==SDLGUITK_BOX_H ) { */
-    /*         box->homogeneous_size = */
-    /*             (widget->abs_area.w - 2*box->container->border_width */
-    /*              - (box->shown_nb-1)*box->spacing ) */
-    /*             / box->shown_nb ; */
-    /*         box->expanded_size = widget->abs_area.w - widget->rel_area.w; */
-    /*     } */
-    /* } */
-    /* if( widget->abs_area.h>widget->rel_area.h ) { */
-    /*     if( box->type==SDLGUITK_BOX_V ) { */
-    /*         box->homogeneous_size = */
-    /*             (widget->abs_area.h - 2*box->container->border_width */
-    /*              - (box->shown_nb-1)*box->spacing ) */
-    /*             / box->shown_nb ; */
-    /*         box->expanded_size = widget->abs_area.h - widget->rel_area.h; */
-    /*     } */
-    /* } */
     int current_w = 0;
     int current_h = 0;
-    //if( widget->req_area.w>current_w ) {
         if( box->type==SDLGUITK_BOX_H ) {
             box->homogeneous_size =
                 (widget->req_area.w - 2*box->container->border_width
@@ -244,8 +221,6 @@ static void * Box_DrawBlit( SDLGuiTK_Widget * widget )
             current_w = box->base_size + 2*box->container->border_width;
             box->expanded_size = widget->req_area.w - current_w;
         }
-    //}
-    //if( widget->req_area.h>current_h ) {
         if( box->type==SDLGUITK_BOX_V ) {
             box->homogeneous_size =
                 (widget->req_area.h - 2*box->container->border_width
@@ -254,7 +229,6 @@ static void * Box_DrawBlit( SDLGuiTK_Widget * widget )
             current_h = box->base_size + 2*box->container->border_width;
             box->expanded_size = widget->req_area.h - current_h;
         }
-    //}
 #if DEBUG_LEVEL >= 3
     printf(" ** BOX %s: current_w=%d current_h=%d\n", widget->object->name, current_w, current_h);
     printf("        req_w=%d     req_h=%d\n", widget->req_area.w, widget->req_area.h);
@@ -278,7 +252,6 @@ static void * Box_DrawBlit( SDLGuiTK_Widget * widget )
 
     current_child = (BoxChild *) SDLGuiTK_list_ref_init( box->children );
     while( current_child!=NULL ) {
-        //current = current_child->child;
 
         if( widget->shown==1 && current_child->child->shown==1  ) {
 
@@ -323,7 +296,6 @@ static void * Box_DrawBlit( SDLGuiTK_Widget * widget )
             box->shown_nb++;
         }
 
-        /*     SDL_mutexV( current->object->mutex ); */
         current_child = (BoxChild *) SDLGuiTK_list_ref_next( box->children );
     }
 
@@ -353,17 +325,14 @@ static SDLGuiTK_Widget * Box_RecursiveEntering( SDLGuiTK_Widget * widget, \
     current_child = (BoxChild *) SDLGuiTK_list_ref_init( box->children );
     while( current_child!=NULL ) {
         child = current_child->child;
-        /*     SDL_mutexP( child->object->mutex ); */
         if( child->shown==1 ) {
             active = PROT__widget_is_entering( child, x, y );
             if( active!=NULL ) {
-                /*       SDL_mutexV( child->object->mutex ); */
                 PROT_List_ref_reinit( box->children );
                 SDLGuiTK_list_unlock( box->children );
                 return active;
             }
         }
-        /*     SDL_mutexV( child->object->mutex ); */
         current_child = (BoxChild *) SDLGuiTK_list_ref_next( box->children );
     }
 
@@ -488,7 +457,6 @@ void SDLGuiTK_box_pack_start( SDLGuiTK_Box * box, \
 {
     BoxChild * child;
 
-    /*   SDL_mutexP( widget->object->mutex ); */
     child = BoxChild_create( widget );
     child->expand = expand;
     child->fill = fill;
@@ -496,8 +464,6 @@ void SDLGuiTK_box_pack_start( SDLGuiTK_Box * box, \
 
     widget->parent = box->object->widget;
     widget->top = box->object->widget->top;
-
-    /*   SDL_mutexV( widget->object->mutex ); */
 
     SDLGuiTK_list_lock( box->children );
     SDLGuiTK_list_append( box->children, (SDLGuiTK_Object *) child );
@@ -508,9 +474,7 @@ void SDLGuiTK_box_pack_start( SDLGuiTK_Box * box, \
 
 void SDLGuiTK_box_set_spacing( SDLGuiTK_Box * box, int spacing )
 {
-    /*   SDL_mutexP( box->object->mutex ); */
     box->spacing = spacing;
-    /*   SDL_mutexV( box->object->mutex ); */
 }
 
 
@@ -518,9 +482,7 @@ int  SDLGuiTK_box_get_spacing( SDLGuiTK_Box * box )
 {
     int spacing;
 
-    /*   SDL_mutexP( box->object->mutex ); */
     spacing = box->spacing;
-    /*   SDL_mutexV( box->object->mutex ); */
 
     return spacing;
 }
@@ -528,22 +490,22 @@ int  SDLGuiTK_box_get_spacing( SDLGuiTK_Box * box )
 
 void SDLGuiTK_box_set_homogeneous( SDLGuiTK_Box * box, SDL_bool homogeneous )
 {
-    /*   SDL_mutexP( box->object->mutex ); */
     box->homogeneous = homogeneous;
-    /*   SDL_mutexV( box->object->mutex ); */
 }
 
 SDL_bool  SDLGuiTK_box_get_homogeneous( SDLGuiTK_Box * box )
 {
     SDL_bool homogeneous;
 
-    /*   SDL_mutexP( box->object->mutex ); */
     homogeneous = box->homogeneous;
-    /*   SDL_mutexV( box->object->mutex ); */
 
     return homogeneous;
 }
 
+void SDLGuiTK_box_set_orientation( SDLGuiTK_Box *box, int orientation)
+{
+    box->type = orientation;
+}
 
 void PROT__box_remove( SDLGuiTK_Box * this_box, \
                        SDLGuiTK_Widget * widget )

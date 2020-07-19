@@ -38,6 +38,17 @@ extern "C" {
   typedef struct SDLGuiTK_Object SDLGuiTK_Object;
 
 
+    /*  */
+  extern DECLSPEC
+  void SDLGuiTK_object_set_name (SDLGuiTK_Object *object,
+                                 char *name);
+
+    /*  */
+  extern DECLSPEC
+  char * SDLGuiTK_object_get_name (SDLGuiTK_Object *object);
+
+
+
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
 };

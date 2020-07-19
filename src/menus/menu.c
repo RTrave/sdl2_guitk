@@ -123,7 +123,7 @@ static void * Menu_DrawUpdate( SDLGuiTK_Widget * widget )
 
     /* Suggested values for container */
     widget->container->children_area.w = current->req_area.w+6; //TODO: why 6?
-    widget->container->children_area.h = current->req_area.h+6;
+    widget->container->children_area.h = current->req_area.h+10;
 
     PROT__container_DrawUpdate( widget->container );
 

@@ -72,6 +72,7 @@ SDLGuiTK_Adjustment * SDLGuiTK_adjustment_new(double value,
 
     new_adjustment = malloc( sizeof( struct SDLGuiTK_Adjustment ) );
     new_adjustment->object = PROT__object_new();
+    new_adjustment->object->adjustment = new_adjustment;
     sprintf( new_adjustment->object->name, "adjustment%d", ++current_id );
 
     for(int i=0; i<=5; i++)
@@ -88,6 +89,7 @@ SDLGuiTK_Adjustment * SDLGuiTK_adjustment_new(double value,
 void SDLGuiTK_adjustment_set_value(SDLGuiTK_Adjustment *adjustment,
                                    double               value)
 {
+    value = (adjustment->lower + value*(adjustment->upper-adjustment->lower));
     if(value<adjustment->lower)
         value = adjustment->lower;
     if(value>adjustment->upper)

@@ -19,10 +19,6 @@
 */
 
 
-/* Define the type of boxes */
-#define SDLGUITK_BOX_H ((int) 0)   /* horizontal */
-#define SDLGUITK_BOX_V ((int) 1)   /* vertical */
-
 
 /* SDLGuiTK_Box structure definition */
 struct SDLGuiTK_Box {

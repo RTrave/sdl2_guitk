@@ -41,6 +41,7 @@
 
 #include "container_prot.h"
 #include "container/scrolledwindow_prot.h"
+#include "menus/menuitem_prot.h"
 #include "bin_prot.h"
 
 
@@ -128,6 +129,9 @@ void PROT__bin_add( SDLGuiTK_Bin * bin, SDLGuiTK_Widget * widget )
     if( bin->scrolledwindow!=NULL )
         bin->child = PROT__scrolledwindow_add(bin->scrolledwindow,
                                               widget);
+    else if( bin->menuitem!=NULL )
+        bin->child = PROT__menuitem_add(bin->menuitem,
+                                        widget);
     else
         bin->child = widget;
     widget->parent = bin->object->widget;
@@ -175,7 +179,7 @@ void PROT__bin_remove( SDLGuiTK_Bin * bin, SDLGuiTK_Widget * widget )
 
 void PROT__bin_DrawUpdate( SDLGuiTK_Bin * bin )
 {
-    //SDLGuiTK_Widget *widget=bin->object->widget;
+    SDLGuiTK_Widget *widget=bin->object->widget;
 
     if(bin->child==NULL || bin->child->shown!=1) {
         bin->container->children_area.w = 4;
@@ -186,12 +190,12 @@ void PROT__bin_DrawUpdate( SDLGuiTK_Bin * bin )
     //if(bin->child!=NULL) {
 
         /* UPDATE CHILD ASCENDENTS */
-        //bin->child->parent = widget;
-        //if( widget->top!=NULL ) {
-            //bin->child->top = widget->top;
-        //} else {
-            //bin->child->top = widget;
-        //}
+        bin->child->parent = widget;
+        if( widget->top!=NULL ) {
+            bin->child->top = widget->top;
+        } else {
+            bin->child->top = widget;
+        }
 
         /* IF CHILD SHOWN */
         //if( bin->child->shown==1 ) {

@@ -369,7 +369,7 @@ SDLGuiTK_Widget *SDLGuiTK_scrollbar_new(int orientation,
     if(adjustment!=NULL)
         scrollbar->adjustment = adjustment;
     else
-        scrollbar->adjustment = SDLGuiTK_adjustment_new(0,0,1,0);
+        scrollbar->adjustment = SDLGuiTK_adjustment_new(0,0,100,1);
     PROT__adjustment_attach(scrollbar->adjustment,scrollbar->widget);
 
     Scrollbar_set_functions( scrollbar );

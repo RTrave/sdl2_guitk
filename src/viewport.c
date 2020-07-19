@@ -79,7 +79,7 @@ static SDLGuiTK_Viewport * Viewport_create()
     new_viewport->bin = PROT__bin_new();
     new_viewport->object = new_viewport->bin->object;
     new_viewport->bin->viewport = new_viewport;
-    sprintf( new_viewport->object->name, "vewport%d", ++current_id );
+    sprintf( new_viewport->object->name, "viewport%d", ++current_id );
     new_viewport->object->widget->top = NULL;
     new_viewport->object->widget->parent = NULL;
 

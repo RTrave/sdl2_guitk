@@ -1,5 +1,5 @@
 
-SUBDIRS = windows container texts buttons images menus
+SUBDIRS = windows container texts buttons images menus builder
 #utils buttons
 
 AM_CFLAGS = -I$(top_srcdir)/include $(GUI_CFLAGS)

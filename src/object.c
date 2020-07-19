@@ -58,6 +58,7 @@ static SDLGuiTK_Object * Object_create()
   SDL_mutexV( current_id_mutex );
 
   new_object->widget = NULL;
+  new_object->adjustment = NULL;
   new_object->tooltips = NULL;
 
   strcpy( new_object->name, "noname" );
@@ -110,6 +111,20 @@ void PROT__object_destroy( SDLGuiTK_Object * object )
 SDLGuiTK_Object * SDLGuiTK_OBJECT( SDLGuiTK_Widget *widget )
 {
   return widget->object;
+}
+
+
+void SDLGuiTK_object_set_name (SDLGuiTK_Object *object, char *name)
+{
+    char txt[256];
+    sprintf(txt, "Changing name %s in %s\n", object->name, name);
+    SDLGUITK_LOG (txt);
+    strcpy(object->name, name);
+}
+
+char * SDLGuiTK_object_get_name (SDLGuiTK_Object *object)
+{
+    return object->name;
 }
 
 

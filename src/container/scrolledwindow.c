@@ -154,7 +154,8 @@ static void * ScrolledWindow_DrawUpdate( SDLGuiTK_Widget * widget )
     PROT__bin_DrawUpdate( scrolledwindow->bin );
     widget->req_area.w+=SCROLLBAR_SIZE;
     widget->req_area.h+=SCROLLBAR_SIZE;
-    ScrolledWindow_Scrollbars_DrawUpdate(scrolledwindow);
+    if(scrolledwindow->hscrollbar && scrolledwindow->vscrollbar)
+        ScrolledWindow_Scrollbars_DrawUpdate(scrolledwindow);
 
     return (void *) NULL;
 }
@@ -425,7 +426,19 @@ SDLGuiTK_Widget * SDLGuiTK_scrolled_window_new()
 SDLGuiTK_Widget * PROT__scrolledwindow_add(SDLGuiTK_ScrolledWindow *scrolledwindow,
                                            SDLGuiTK_Widget *widget )
 {
-    SDLGuiTK_Widget *viewport = SDLGuiTK_viewport_new(NULL, NULL);
+    SDLGuiTK_Widget *viewport;
+    if(SDLGuiTK_VIEWPORT (widget))
+    {
+        viewport = widget;
+    }
+    else
+    {
+        SDLGUITK_LOG ("Viewport created for ScrolledWindow\n");
+        viewport = SDLGuiTK_viewport_new(NULL, NULL);
+        SDLGuiTK_widget_show( viewport );
+        SDLGuiTK_container_add(SDLGuiTK_CONTAINER(viewport), widget );
+    }
+    //viewport = SDLGuiTK_viewport_new(NULL, NULL);
     //SDLGuiTK_container_add( SDLGuiTK_CONTAINER(win_widget), viewport );
     scrolledwindow->hscrollbar = SDLGuiTK_scrollbar_new (SDLGUITK_ORIENTATION_HORIZONTAL,
                                                          SDLGuiTK_viewport_get_hadjustment(SDLGuiTK_VIEWPORT(viewport)));
@@ -433,11 +446,9 @@ SDLGuiTK_Widget * PROT__scrolledwindow_add(SDLGuiTK_ScrolledWindow *scrolledwind
                                                          SDLGuiTK_viewport_get_vadjustment(SDLGuiTK_VIEWPORT(viewport)));
     SDLGuiTK_widget_show (scrolledwindow->hscrollbar);
     SDLGuiTK_widget_show (scrolledwindow->vscrollbar);
-    SDLGuiTK_widget_show( viewport );
 
     //image = SDLGuiTK_image_new_from_file( "test.bmp" );
-    SDLGuiTK_container_add(SDLGuiTK_CONTAINER(viewport),
-                           widget );
+    //SDLGuiTK_container_add(SDLGuiTK_CONTAINER(viewport), widget );
     //SDLGuiTK_widget_show( image );
     return viewport;
 }

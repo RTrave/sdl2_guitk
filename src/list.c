@@ -325,8 +325,8 @@ SDLGuiTK_Object * SDLGuiTK_list_find( SDLGuiTK_List * list, \
 SDLGuiTK_Object * SDLGuiTK_list_ref_init( SDLGuiTK_List * list )
 {
   if( list->ref!=NULL ) {
-    SDLGUITK_ERROR( "_list_ref_init(): list->ref!=NULL ... exit\n" );
-    exit(1);
+    SDLGUITK_ERROR( "_list_ref_init(): list->ref!=NULL\n" );
+    //exit(1);
   }
   if( list->first==NULL ) { return NULL; };
   list->ref = list->first;
@@ -347,8 +347,8 @@ SDLGuiTK_Object * SDLGuiTK_list_ref_next( SDLGuiTK_List * list )
 SDLGuiTK_Object * SDLGuiTK_list_refrv_init( SDLGuiTK_List * list )
 {
   if( list->refrv!=NULL ) {
-    SDLGUITK_ERROR( "_list_refrv_init(): list->refrv!=NULL ... exit\n" );
-    exit(1);
+    SDLGUITK_ERROR( "_list_refrv_init(): list->refrv!=NULL\n" );
+    //exit(1);
   }
   if( list->last==NULL ) { return NULL; };
   list->refrv = list->last;

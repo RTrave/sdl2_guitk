@@ -31,6 +31,7 @@ struct SDLGuiTK_Object {
 /*   SDL_mutex   * mutex; */
 
   SDLGuiTK_Widget * widget;
+  SDLGuiTK_Adjustment * adjustment;
   SDLGuiTK_Tooltips * tooltips;
 
   int id;        /* Unique ID */

@@ -38,6 +38,8 @@ struct SDLGuiTK_MenuItem {
   SDL_Rect        parent_area;
 };
 
+extern SDLGuiTK_Widget * PROT__menuitem_add( SDLGuiTK_MenuItem * menuitem,
+                                             SDLGuiTK_Widget * widget);
 
 extern void MenuItem_DrawUpdate_Menu( SDLGuiTK_MenuItem * menuitem );
 extern void MenuItem_DrawBlit_Menu( SDLGuiTK_MenuItem * menuitem );
