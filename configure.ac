@@ -104,6 +104,20 @@ fi
 AC_SUBST(GUI_CFLAGS)
 AC_SUBST(GUI_LDFLAGS)
 
+dnl HAVE_XML_H
+AC_PATH_PROG(xml_config, xml2-config)
+if test "x$ac_cv_path_xml_config" = "x"; then
+   echo " libxml2 devel package needed to compile Glade/XML loader ..";
+   echo " fatal ... exit"; exit;
+else
+   GUI_CFLAGS="`$ac_cv_path_xml_config --cflags` $GUI_CFLAGS"
+   GUI_LDFLAGS="`$ac_cv_path_xml_config --libs` $GUI_LDFLAGS"
+fi
+
+
+AC_SUBST(GUI_CFLAGS)
+AC_SUBST(GUI_LDFLAGS)
+
 
 dnl Checks to enable debugging informations and library (debug.h)
 AC_ARG_ENABLE(debug, [  --enable-debug=[no/min/yes/full]  set debug level (default=no)],, enable_debug=no )
@@ -125,6 +139,7 @@ fi
 dnl Checks for library functions.
 
 AC_OUTPUT(
+src/builder/Makefile
 src/buttons/Makefile
 src/texts/Makefile
 src/container/Makefile
