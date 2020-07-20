@@ -75,7 +75,7 @@ SDLGuiTK_Adjustment * SDLGuiTK_adjustment_new(double value,
     new_adjustment->object->adjustment = new_adjustment;
     sprintf( new_adjustment->object->name, "adjustment%d", ++current_id );
 
-    for(int i=0; i<=5; i++)
+    for(int i=0; i<=4; i++)
         new_adjustment->parent[i] = NULL;
     new_adjustment->parent_nb = 0;
     new_adjustment->value = value;

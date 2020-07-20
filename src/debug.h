@@ -44,7 +44,7 @@
         ( PROT__debug_threads_unref() )
 #else
 #define SDLGUITK_ERROR(error_message)
-#define SDLGUITK_ERROR2(error_message1, error_message2)
+#define SDLGUITK_ERROR2(error_message)
 #define SDLGUITK_OUTPUT(error_message)
 #define SDLGUITK_THREAD_REF(name)
 #define SDLGUITK_THREAD_UNREF()
