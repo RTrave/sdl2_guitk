@@ -1,4 +1,4 @@
-/* 
+/*
    SDL_guitk - GUI toolkit designed for SDL environnements (GTK-style).
 
    Copyright (C) 2003 Trave Roman
@@ -15,7 +15,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
+   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 #include <stdio.h>
@@ -24,7 +24,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
- 
+
 #ifdef STDC_HEADERS
 #include <stdlib.h>
 #endif
@@ -37,7 +37,6 @@
 
 #include "debug.h"
 #include "mysdl.h"
-#include "mywm.h"
 #include "object_prot.h"
 #include "widget_prot.h"
 #include "signal.h"
@@ -61,7 +60,7 @@ static SDLGuiTK_List * destroy_list=NULL;
 static SDLGuiTK_Widget * Unset_RecursiveEntering( SDLGuiTK_Widget * widget, \
 						  int x, int y )
 {
-  
+
 #if DEBUG_LEVEL >= 1
   char tmpstr[512];
   sprintf( tmpstr, "*RecursiveEntering: not setted in %s.\n", \

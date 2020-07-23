@@ -38,7 +38,6 @@
 
 #include "debug.h"
 #include "mysdl.h"
-#include "mywm.h"
 #include "signal.h"
 #include "list.h"
 #include "theme_prot.h"

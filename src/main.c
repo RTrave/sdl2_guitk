@@ -1,4 +1,4 @@
-/* 
+/*
    sdl_guitk - GUI toolkit designed for SDL environnements (GTK-style).
 
    Copyright (C) 2003 Trave Roman
@@ -15,7 +15,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
+   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 
@@ -45,7 +45,6 @@
 #include "debug.h"
 #include "mysdl.h"
 #include "myttf.h"
-#include "mywm.h"
 #include "mycursor.h"
 #include "theme_prot.h"
 #include "object_prot.h"
@@ -168,7 +167,7 @@ void SDLGuiTK_init( int argc, char **argv )
   PROT__context_new( SDL_GetWindowSurface(video->window), SDLGUITK_CONTEXT_MODE_SELF );
   MySDL_MainSurface_clean();
   MySDL_SwapBuffers();
-  
+
 }
 
 void SDLGuiTK_main()
@@ -199,7 +198,7 @@ void SDLGuiTK_init_with_window( SDL_Window * window, SDL_Renderer * renderer )
 
   Init_internals();
   PROT__context_new( SDL_GetWindowSurface( window ), SDLGUITK_CONTEXT_MODE_SLAVE );
-  
+
   MyCursor_Init();
 }
 
@@ -237,19 +236,19 @@ decode_switches (int argc, char **argv)
   int c;
 
 #ifndef WIN32
-  while ((c = getopt_long (argc, argv, 
+  while ((c = getopt_long (argc, argv,
 			   "h"	/* help */
 			   "V"	/* version */
 			   "f"	/* version */
 			   "w"	/* version */,
 			   long_options, (int *) 0)) != EOF)
 #else
-  while ((c = getopt (argc, argv, 
+  while ((c = getopt (argc, argv,
 			   "h"	/* help */
 			   "V"	/* version */
 			   "f"	/* version */
 			   "W"	/* version */
-			   "H"	/* version */,
+			   "H"	/* version */
 		      )) != EOF)
 #endif
     {

@@ -33,7 +33,6 @@
 #include <string.h>
 #endif
 
-#include "GL/gl.h"
 #ifdef WIN32
 #include <GL/glew.h>
 
@@ -42,6 +41,7 @@
 //#include <GL3/gl3.h>
 
 #endif
+#include "GL/gl.h"
 
 #include <SDL2/SDL_syswm.h>
 #include <SDL2/SDL_guitk.h>
@@ -49,7 +49,6 @@
 #include "debug.h"
 #include "mysdl.h"
 #include "object_prot.h"
-#include "mywm.h"
 #include "context_prot.h"
 
 

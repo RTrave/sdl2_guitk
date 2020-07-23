@@ -1,4 +1,4 @@
-/* 
+/*
    sdl_guitk - GUI toolkit designed for SDL environnements (GTK-style).
 
    Copyright (C) 2003 Trave Roman
@@ -15,7 +15,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
+   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 
@@ -35,7 +35,6 @@
 
 #include "debug.h"
 #include "mysdl.h"
-#include "mywm.h"
 #include "signal.h"
 #include "object_prot.h"
 #include "context_prot.h"
@@ -48,7 +47,7 @@
 static SDLGuiTK_Context * Context_create()
 {
   SDLGuiTK_Context * new_context;
- 
+
   new_context = malloc( sizeof( struct SDLGuiTK_Context ) );
   new_context->surface = NULL;
   new_context->type = SDLGUITK_CONTEXT_MODE_NULL;
@@ -91,7 +90,7 @@ void PROT__context_quit()
     SDLGuiTK_widget_destroy( rest->widget );
     rest = (SDLGuiTK_WMWidget *) \
       SDLGuiTK_list_ref_next( current_context->activables );
-  }  
+  }
   SDLGuiTK_list_unlock( current_context->activables );
 
 /*   SDLGuiTK_list_lock( current_context->activables ); */
