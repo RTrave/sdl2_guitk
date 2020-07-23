@@ -27,15 +27,11 @@ struct SDLGuiTK_Window {
     SDLGuiTK_WMWidget * wm_widget;/* herits from */
 
   /* "public" data */
-    char title[64];
     int  position;
-    int  show_title;
 
   /* "private" data */
     MySDL_Surface * srf;
     SDL_Rect        area;
-    MySDL_Surface * title_srf;
-    SDL_Rect        title_area;
 };
 
 

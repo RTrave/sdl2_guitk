@@ -29,6 +29,9 @@ struct SDLGuiTK_WMWidget {
     int               border_width;
     int               title_shown;
     char              title[256];
+    MySDL_Surface     * title_srf;
+    SDL_Rect          title_area;
+
 
     /* "private" data */
     int                 enter;
@@ -53,3 +56,6 @@ extern void                 WMWidget_DrawUpdate( SDLGuiTK_WMWidget * wm_widget )
 extern void                 WMWidget_DrawBlit( SDLGuiTK_WMWidget * wm_widget,
         MySDL_Surface * surface);
 
+// Set title
+void WMWidget_set_title( SDLGuiTK_WMWidget * wm_widget,\
+                         const char *title );

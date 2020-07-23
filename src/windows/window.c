@@ -91,20 +91,13 @@ static SDLGuiTK_Window * Window_create()
     new_window->object->widget->top = NULL;
     new_window->object->widget->parent = NULL;
 
-    strcpy( new_window->title, new_window->object->name );
     new_window->position = SDLGUITK_WINDOW_CENTER;
-    new_window->show_title = 0;
 
     new_window->srf = MySDL_Surface_new("Window_srf");
     new_window->area.x = 0;
     new_window->area.y = 0;
     new_window->area.w = 0;
     new_window->area.h = 0;
-    new_window->title_srf = MySDL_Surface_new("Window_title_srf");
-    new_window->title_area.x = 0;
-    new_window->title_area.y = 0;
-    new_window->title_area.w = 0;
-    new_window->title_area.h = 0;
 
     new_window->wm_widget = WMWidget_New( new_window->object->widget );
 
@@ -113,63 +106,11 @@ static SDLGuiTK_Window * Window_create()
 
 static void Window_destroy( SDLGuiTK_Window * window )
 {
-    /*   MySDL_FreeSurface( window->active_srf ); */
-    /*   MySDL_FreeSurface( window->shaded_srf ); */
-    if( window->title_srf->srf!=NULL ) {
-        SDL_FreeSurface (window->title_srf->srf);
-        window->title_srf->srf = NULL;
-    }
-    MySDL_Surface_free( window->title_srf );
     MySDL_Surface_free( window->srf );
 
     PROT__bin_destroy( window->bin );
     WMWidget_Delete( window->wm_widget );
     free( window );
-}
-
-static void Window_MakeTitleSurface( SDLGuiTK_Window * window )
-{
-    SDLGuiTK_Theme * theme;
-
-    if(window->title_srf->srf!=NULL) return;
-    theme = PROT__theme_get_and_lock();
-    window->title_srf->srf = MyTTF_Render_Blended( window->title_srf->srf, \
-                                                   window->title, 18, \
-                                                   MyTTF_STYLE_BOLD, \
-                                                   theme->bgcolor );
-    PROT__theme_unlock( theme );
-}
-
-static void Window_DrawTitleSurface( SDLGuiTK_Window * window )
-{
-    Uint32 bdcolor;
-    SDLGuiTK_Theme * theme;
-
-    theme = PROT__theme_get_and_lock();
-    bdcolor = SDL_MapRGBA( window->srf->srf->format, \
-                           theme->bdcolor.r, \
-                           theme->bdcolor.g, \
-                           theme->bdcolor.b, \
-                           255 );
-    PROT__theme_unlock( theme );
-
-    window->title_area.x = 0;
-    window->title_area.y = 0;
-    window->title_area.w = window->srf->srf->w;
-    window->title_area.h = window->title_srf->srf->h;
-    MySDL_FillRect( window->srf, &window->title_area, bdcolor );
-    /* //SDL_UpdateRects( window->srf, 1, &window->title_area ); */
-    /* //SDL_UpdateWindowSurface( window->srf ); */
-
-    window->title_area.x = ( window->srf->srf->w - window->title_srf->srf->w )/2;
-    window->title_area.y = 0;
-    window->title_area.w = window->title_srf->srf->w;
-    window->title_area.h = window->title_srf->srf->h;
-
-
-    MySDL_BlitSurface( window->title_srf, NULL, \
-                     window->srf, &window->title_area );
-    //SDL_UpdateRect( window->srf, 0, 0, 0, 0 );
 }
 
 
@@ -211,65 +152,18 @@ static void Window_UpdatePosition( SDLGuiTK_Window * window )
 
 static void Window_MakeBaseSurface( SDLGuiTK_Window * window )
 {
-    //Uint32 bgcolor;
-    //Uint32 bdcolor;
-    //SDLGuiTK_Theme * theme;
-
-    Window_MakeTitleSurface( window );
-
     /* Prepare surface */
     MySDL_CreateRGBSurface( window->srf,\
                             window->wm_widget->child_area.w, \
                             window->wm_widget->child_area.h );
 
-    /* Load theme values */
-    //theme = PROT__theme_get_and_lock();
-    /* bdcolor = SDL_MapRGBA( window->srf->format, \ */
-    /* 	 theme->bdcolor.r, \ */
-    /* 	 theme->bdcolor.g, \ */
-    /* 	 theme->bdcolor.b, \ */
-    /* 	 255 ); */
-    /* bgcolor = SDL_MapRGBA( window->srf->format, \ */
-    /* 	 theme->bgcolor.r, \ */
-    /* 	 theme->bgcolor.g, \ */
-    /* 	 theme->bgcolor.b, \ */
-    /* 	 255 ); */
-    /*   SDL_FillRect( window->object->widget->srf, &window->area, bgcolor ); */
-    /* PROT__theme_unlock( theme ); */
-
-    Window_DrawTitleSurface( window );
-
-    /* Blit border, backgroud and title */
-    /*   SDL_FillRect( window->active_srf, NULL, bdcolor ); */
-    /*   SDL_UpdateRect( window->active_srf, 0, 0, 0, 0 ); */
-
     window->area.x = 0;
-    if( window->show_title )
-        window->area.y = window->title_srf->srf->h;
-    else
-        window->area.y = 0;
+    window->area.y = 0;
     window->area.w = window->object->widget->abs_area.w;
     window->area.h = window->object->widget->abs_area.h;
 
-    if( window->show_title )
-        window->wm_widget->area.y -= window->title_srf->srf->h;
-
-    /*   SDL_FillRect( window->active_srf, &window->area, bgcolor ); */
-    /*   SDL_UpdateRect( window->active_srf, 0, 0, 0, 0 ); */
-
-    /*   printf( " window->area %d %d %d %d\n", window->area.x, window->area.y, window->area.w, window->area.h ); */
     MySDL_BlitSurface( window->object->widget->srf, NULL, \
                        window->srf, &window->area );
-    //2SDL_UpdateRects( window->srf, 1, &window->area );
-    //SDL_UpdateWindowSurface( window->object->widget->srf );
-}
-
-
-static void Window_MakeShadedSurface( SDLGuiTK_Window * window )
-{
-    /*   window->shaded_srf = MySDL_CopySurface_with_alpha( window->shaded_srf, \ */
-    /* 						     window->active_srf,\ */
-    /* 						     128 ); */
 }
 
 
@@ -278,32 +172,20 @@ static void * Window_DrawUpdate( SDLGuiTK_Widget * widget )
     SDLGuiTK_Window * window=widget->container->bin->window;
 
     PROT__widget_reset_req_area( widget );
-    Window_MakeTitleSurface( window );
 
     /* UPDATE SELF ASCENDENTS */
     widget->parent = widget;
     widget->top = widget;
 
     PROT__bin_DrawUpdate( window->bin );
-
-    if( window->show_title ) {
-        if( widget->req_area.w<window->title_srf->srf->w ) {
-            widget->req_area.w = window->title_srf->srf->w;
-            //widget->abs_area.w = window->title_srf->w;
-        }
-    } else {
-        if( widget->req_area.w<50 ) {
-            widget->req_area.w = 50;
-            //widget->abs_area.w = 50;
-        }
+    if( widget->req_area.w<50 ) {
+        widget->req_area.w = 50;
+        //widget->abs_area.w = 50;
     }
 
     /* Prepare WMWidget dimensions */
     window->wm_widget->child_area.w = widget->req_area.w;
-    if( window->show_title )
-        window->wm_widget->child_area.h = widget->req_area.h + window->title_srf->srf->h;
-    else
-        window->wm_widget->child_area.h = widget->req_area.h;
+    window->wm_widget->child_area.h = widget->req_area.h;
 
     window->wm_widget->surface2D_flag = 1;
 
@@ -350,36 +232,21 @@ static void * Window_DrawBlit( SDLGuiTK_Widget * widget )
     PROT__theme_unlock( theme );
 
     if( window->bin->child!=NULL ) {
-        /*     SDL_mutexP( window->bin->child->object->mutex ); */
         if( window->bin->child->shown==1 ) {
             MySDL_FillRect( widget->srf, &widget->rel_area, bgcolor );
             MySDL_BlitSurface( window->bin->child->srf, NULL, \
                                widget->srf, &window->bin->child->rel_area );
-            //2SDL_UpdateRects( widget->srf, 1, &window->bin->child->rel_area );
-            //SDL_UpdateWindowSurface( window->bin->child->srf );
         }
-        /*     SDL_mutexV( window->bin->child->object->mutex ); */
     }
 
     Window_MakeBaseSurface( window );
-
-    Window_MakeShadedSurface( window );
-
-    //widget->rel_area.w = widget->abs_area.w;
-    //widget->rel_area.h = widget->abs_area.h;
 
     widget->act_area.x = widget->abs_area.x;
     widget->act_area.y = widget->abs_area.y;
     widget->act_area.w = widget->abs_area.w;
     widget->act_area.h = widget->abs_area.h;
 
-    //MyWM_WMWidget_DrawBlit( window->wm_widget );
-
-    //MySDL_BlitSurface(  window->srf, NULL,
-    //                    window->wm_widget->srf, &window->wm_widget->child_area );
     WMWidget_DrawBlit(window->wm_widget, window->srf);
-    //2SDL_UpdateRects( window->wm_widget->srf, 1, &window->wm_widget->child_area );
-    //SDL_UpdateWindowSurface( window->srf );
 
     return (void *) NULL;
 }
@@ -461,9 +328,7 @@ static void * Window_Show( SDLGuiTK_Widget * widget, \
     if( widget->shown==1 ) return (void *) NULL;
     widget->shown = 1;
     Window_UpdatePosition( window );
-    /*   SDL_mutexV( widget->object->mutex ); */
     PROT__context_ref_wmwidget( window->wm_widget );
-    /*   SDL_mutexP( widget->object->mutex ); */
 
     return (void *) NULL;
 }
@@ -474,9 +339,7 @@ static void * Window_Hide( SDLGuiTK_Widget * widget, \
     SDLGuiTK_Window * window=widget->container->bin->window;
 
     if( widget->shown==0 ) return (void *) NULL;
-    /*   SDL_mutexV( widget->object->mutex ); */
     PROT__context_unref_wmwidget( window->wm_widget );
-    /*   SDL_mutexP( widget->object->mutex ); */
     widget->shown = 0;
 
     return (void *) NULL;
@@ -603,11 +466,7 @@ SDLGuiTK_Widget * SDLGuiTK_window_new()
 void SDLGuiTK_window_set_title( SDLGuiTK_Widget * window,\
                                 const char *title )
 {
-    /*   SDL_mutexP( window->object->mutex ); */
-    strcpy( window->container->bin->window->title, title );
-    window->container->bin->window->show_title = 1;
-    /*   SDL_mutexV( window->object->mutex ); */
-
+    WMWidget_set_title (window->container->bin->window->wm_widget, title);
     PROT__signal_push( window->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
 }
 
@@ -615,11 +474,7 @@ void SDLGuiTK_window_set_position( SDLGuiTK_Widget * window, \
                                    int position, \
                                    void *data )
 {
-    /*   SDL_mutexP( window->object->mutex ); */
-
     window->container->bin->window->position = position;
     PROT__signal_push( window->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-
-    /*   SDL_mutexV( window->object->mutex ); */
 }
 
