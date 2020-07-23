@@ -43,8 +43,10 @@
 #include "myttf.h"
 #include "mycursor.h"
 #include "theme_prot.h"
+#include "render/surface2d.h"
 #include "object_prot.h"
 #include "widget_prot.h"
+#include "wmwidget.h"
 
 #include "tooltips_prot.h"
 
@@ -66,7 +68,7 @@ SDLGuiTK_Tooltips *SDLGuiTK_tooltips_new() {
   new_tooltips->object->tooltips = new_tooltips;
   new_tooltips->enabled = 1;
   new_tooltips->srf = NULL;
-  new_tooltips->surface2D = MySDL_surface2D_new();
+  new_tooltips->surface2D = Surface2D_new();
 
   if( !tooltips_list ) tooltips_list = SDLGuiTK_list_new();
   SDLGuiTK_list_append( tooltips_list, (SDLGuiTK_Object *) new_tooltips );
@@ -76,7 +78,7 @@ SDLGuiTK_Tooltips *SDLGuiTK_tooltips_new() {
 
 static void Tooltips_Destroy( SDLGuiTK_Tooltips *tooltips ) {
 
-  MySDL_surface2D_destroy( tooltips->surface2D );
+  Surface2D_destroy( tooltips->surface2D );
   PROT__object_destroy( tooltips->object );
   free(tooltips);
 }

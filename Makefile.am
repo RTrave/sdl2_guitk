@@ -16,6 +16,7 @@ libSDL2_guitk_la_LDFLAGS = -release 1.0 -version-info $(VERSION) \
 	src/images/libimages.la \
 	src/menus/libmenus.la \
 	src/builder/libbuilder.la \
+	src/render/librender.la \
 	src/libguitk.la
 
 EXTRA_DIST=sdl_guitk.lsm.in sdl_guitk.spec.in sdl_guitk.texinfo

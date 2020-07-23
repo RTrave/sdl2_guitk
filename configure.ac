@@ -139,6 +139,7 @@ fi
 dnl Checks for library functions.
 
 AC_OUTPUT(
+src/render/Makefile
 src/builder/Makefile
 src/buttons/Makefile
 src/texts/Makefile

@@ -40,6 +40,8 @@
 #include "object_prot.h"
 #include "context_prot.h"
 #include "widget_prot.h"
+#include "wmwidget.h"
+#include "render/surface2d.h"
 #include "tooltips_prot.h"
 
 
@@ -184,7 +186,7 @@ void SDLGuiTK_context_check()
   current = \
     (SDLGuiTK_WMWidget *) SDLGuiTK_list_pop_head( current_context->ref );
   while( current!=NULL ) {
-    current->surface2D = MySDL_surface2D_new();
+    current->surface2D = Surface2D_new();
     SDLGuiTK_list_append( current_context->activables, \
 			  (SDLGuiTK_Object *) current );
     SDLGuiTK_list_unlock( current_context->activables );
@@ -198,7 +200,7 @@ void SDLGuiTK_context_check()
   current2D = \
     (SDLGuiTK_Surface2D *) SDLGuiTK_list_pop_head( current_context->unref );
   while( current2D!=NULL ) {
-    MySDL_surface2D_destroy( current2D );
+    Surface2D_destroy( current2D );
     current2D = \
       (SDLGuiTK_Surface2D *) SDLGuiTK_list_pop_head( current_context->unref );
   }

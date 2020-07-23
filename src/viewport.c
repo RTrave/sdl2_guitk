@@ -42,7 +42,8 @@
 #include "container_prot.h"
 #include "bin_prot.h"
 #include "adjustment_prot.h"
-#include "mywm.h"
+//#include "mywm.h"
+#include "wmwidget.h"
 #include "viewport_prot.h"
 
 
@@ -253,7 +254,7 @@ static void * Viewport_Destroy( SDLGuiTK_Widget * widget, \
 static void * Viewport_Show( SDLGuiTK_Widget * widget, \
                            void * data, void * event )
 {
-    SDLGuiTK_Viewport * viewport=widget->container->bin->viewport;
+    //SDLGuiTK_Viewport * viewport=widget->container->bin->viewport;
 
     if( widget->shown==1 ) return (void *) NULL;
     widget->shown = 1;
@@ -268,7 +269,7 @@ static void * Viewport_Show( SDLGuiTK_Widget * widget, \
 static void * Viewport_Hide( SDLGuiTK_Widget * widget, \
                            void * data, void * event )
 {
-    SDLGuiTK_Viewport * viewport=widget->container->bin->viewport;
+    //SDLGuiTK_Viewport * viewport=widget->container->bin->viewport;
 
     if( widget->shown==0 ) return (void *) NULL;
     /*   SDL_mutexV( widget->object->mutex ); */
@@ -353,8 +354,8 @@ static void Viewport_setsignals( SDLGuiTK_Viewport * viewport )
     handler->fdefault[SDLGUITK_SIGNAL_TYPE_LEAVE]->function = \
             Viewport_MouseLeave;
 
-    /*   handler->fdefault[SDLGUITK_SIGNAL_TYPE_PRESSED]->function = \ */
-    /*     Window_MousePressed; */
+    /* handler->fdefault[SDLGUITK_SIGNAL_TYPE_PRESSED]->function = \ */
+    /*         Viewport_MousePressed; */
     handler->fdefault[SDLGUITK_SIGNAL_TYPE_RELEASED]->function = \
             Viewport_MouseReleased;
 }

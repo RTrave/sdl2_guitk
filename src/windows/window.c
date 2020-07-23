@@ -42,11 +42,12 @@
 #include "../object_prot.h"
 #include "../widget_prot.h"
 #include "../signal.h"
-#include "../mywm.h"
+#include "../render/mywm.h"
 #include "../theme_prot.h"
 #include "../context_prot.h"
 #include "../container_prot.h"
 #include "../bin_prot.h"
+#include "../wmwidget.h"
 #include "window_prot.h"
 
 
@@ -105,7 +106,7 @@ static SDLGuiTK_Window * Window_create()
     new_window->title_area.w = 0;
     new_window->title_area.h = 0;
 
-    new_window->wm_widget = MyWM_WMWidget_New( new_window->object->widget );
+    new_window->wm_widget = WMWidget_New( new_window->object->widget );
 
     return new_window;
 }
@@ -122,7 +123,7 @@ static void Window_destroy( SDLGuiTK_Window * window )
     MySDL_Surface_free( window->srf );
 
     PROT__bin_destroy( window->bin );
-    MyWM_WMWidget_Delete( window->wm_widget );
+    WMWidget_Delete( window->wm_widget );
     free( window );
 }
 
@@ -306,7 +307,7 @@ static void * Window_DrawUpdate( SDLGuiTK_Widget * widget )
 
     window->wm_widget->surface2D_flag = 1;
 
-    MyWM_WMWidget_DrawUpdate( window->wm_widget );
+    WMWidget_DrawUpdate( window->wm_widget );
 
     return (void *) NULL;
 }
@@ -372,10 +373,11 @@ static void * Window_DrawBlit( SDLGuiTK_Widget * widget )
     widget->act_area.w = widget->abs_area.w;
     widget->act_area.h = widget->abs_area.h;
 
-    MyWM_WMWidget_DrawBlit( window->wm_widget );
+    //MyWM_WMWidget_DrawBlit( window->wm_widget );
 
-    MySDL_BlitSurface(  window->srf, NULL, \
-                        window->wm_widget->srf, &window->wm_widget->child_area );
+    //MySDL_BlitSurface(  window->srf, NULL,
+    //                    window->wm_widget->srf, &window->wm_widget->child_area );
+    WMWidget_DrawBlit(window->wm_widget, window->srf);
     //2SDL_UpdateRects( window->wm_widget->srf, 1, &window->wm_widget->child_area );
     //SDL_UpdateWindowSurface( window->srf );
 
@@ -485,7 +487,7 @@ static void * Window_FrameEvent( SDLGuiTK_Widget * widget, \
 {
     Window_DrawUpdate( widget );
     Window_DrawBlit( widget );
-    PROT_MyWM_checkactive( widget );
+    PROT_MyWM_checkactive( widget ); //TODO: is coherent here ?
 
     return (void *) NULL;
 }

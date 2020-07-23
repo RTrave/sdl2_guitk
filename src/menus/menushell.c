@@ -47,8 +47,9 @@
 #include "../container_prot.h"
 #include "../bin_prot.h"
 #include "../signal.h"
-#include "../mywm.h"
+//#include "../mywm.h"
 #include "../mycursor.h"
+#include "../wmwidget.h"
 
 #include "menushell_prot.h"
 #include "menu_prot.h"
@@ -124,7 +125,7 @@ static void * MenuShell_DrawUpdate( SDLGuiTK_Widget * widget )
     menushell->wm_widget->child_area.w = widget->req_area.w; //TODO: abs_area ???
     menushell->wm_widget->child_area.h = widget->req_area.h;
     menushell->wm_widget->surface2D_flag = 1;
-    MyWM_WMWidget_DrawUpdate( menushell->wm_widget );
+    WMWidget_DrawUpdate( menushell->wm_widget );
 
     return (void *) NULL;
 }
@@ -191,10 +192,10 @@ static void * MenuShell_DrawBlit( SDLGuiTK_Widget * widget )
 
     SDLGuiTK_list_unlock( menushell->children );
 
-    MyWM_WMWidget_DrawBlit( menushell->wm_widget );
+    WMWidget_DrawBlit( menushell->wm_widget, widget->srf );
 
-    MySDL_BlitSurface(  widget->srf, NULL, \
-                        menushell->wm_widget->srf, &menushell->wm_widget->child_area );
+    //MySDL_BlitSurface(  widget->srf, NULL,
+    //                    menushell->wm_widget->srf, &menushell->wm_widget->child_area );
     //SDL_UpdateRect( menushell->wm_widget->srf, 0, 0, 0, 0 );
 
     return (void *) NULL;
@@ -262,7 +263,7 @@ static void * MenuShell_Hide( SDLGuiTK_Widget * widget, \
 
     widget->shown = 0;
     PROT__context_unref_wmwidget( menushell->wm_widget );
-    MyWM_WMWidget_Delete( menushell->wm_widget );
+    WMWidget_Delete( menushell->wm_widget );
     menushell->wm_widget = NULL;
 
     return (void *) NULL;
@@ -401,7 +402,7 @@ void SDLGuiTK_menu_shell_append( SDLGuiTK_Menu *menu, \
 
 void
 PROT__menushell_start( SDLGuiTK_Menu * menu ) {
-    menu->menushell->wm_widget = MyWM_WMWidget_New( menu->menushell->object->widget );
+    menu->menushell->wm_widget = WMWidget_New( menu->menushell->object->widget );
     menu->menushell->wm_widget->border_width = 1;
     PROT__signal_push( menu->menushell->object, SDLGUITK_SIGNAL_TYPE_ACTIVATE );
 

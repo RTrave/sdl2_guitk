@@ -112,37 +112,3 @@ extern
 void MySDL_ModeSetHeight( int height );
 
 
-/* SDLGuiTK_2DWidget structure definition */
-struct SDLGuiTK_Surface2D {
-    SDLGuiTK_Object    * object;      /* referent widget */
-
-    SDL_Surface * srf;                /* "private" data */
-    int           w, h;               /* "private" data */
-    //SDL_Texture * mtexture;
-    GLfloat   alpha;                  /* "private" data */
-    GLuint    texture[1];             /* "private" data */
-    GLfloat   texMinX, texMinY;       /* "private" data */
-    GLfloat   texMaxX, texMaxY;       /* "private" data */
-};
-
-extern
-SDLGuiTK_Surface2D * MySDL_surface2D_new();
-extern
-void MySDL_surface2D_destroy(     SDLGuiTK_Surface2D * surface2D );
-
-extern
-void MySDL_surface2D_update(      SDLGuiTK_Surface2D * surface2D, \
-                                  SDL_Surface *srf );
-extern
-void MySDL_surface2D_blitsurface( SDLGuiTK_Surface2D * surface2D, \
-                                  int x, int y );
-
-extern
-void MySDL_GL_Enter2DMode();
-extern
-void MySDL_GL_Leave2DMode();
-extern
-GLuint MySDL_GL_LoadTexture(SDL_Surface *surface,
-                            GLfloat *texcoord,
-                            GLuint *tex);
-

@@ -42,11 +42,12 @@
 #include "../object_prot.h"
 #include "../widget_prot.h"
 #include "../signal.h"
-#include "../mywm.h"
+//#include "../mywm.h"
 #include "../theme_prot.h"
 #include "../context_prot.h"
 #include "../container_prot.h"
 #include "../bin_prot.h"
+#include "../wmwidget.h"
 #include "panel_prot.h"
 
 
@@ -100,7 +101,7 @@ static SDLGuiTK_Panel * Panel_create()
 /*   new_panel->title_area.x = 0; new_panel->title_area.y = 0; */
 /*   new_panel->title_area.w = 0; new_panel->title_area.h = 0; */
 
-  new_panel->wm_widget = MyWM_WMWidget_New( new_panel->object->widget );
+  new_panel->wm_widget = WMWidget_New( new_panel->object->widget );
 
   return new_panel;
 }
@@ -113,7 +114,7 @@ static void Panel_destroy( SDLGuiTK_Panel * panel )
   MySDL_Surface_free( panel->srf );
 
   PROT__bin_destroy( panel->bin );
-  MyWM_WMWidget_Delete( panel->wm_widget );
+  WMWidget_Delete( panel->wm_widget );
   free( panel );
 }
 
@@ -269,7 +270,7 @@ static void * Panel_DrawUpdate( SDLGuiTK_Widget * widget )
 
   panel->wm_widget->surface2D_flag = 1;
 
-  MyWM_WMWidget_DrawUpdate( panel->wm_widget );
+  WMWidget_DrawUpdate( panel->wm_widget );
 
   return (void *) NULL;
 }
@@ -326,10 +327,10 @@ static void * Panel_DrawBlit( SDLGuiTK_Widget * widget )
   widget->act_area.w = widget->abs_area.w;
   widget->act_area.h = widget->abs_area.h;
 
-  MyWM_WMWidget_DrawBlit( panel->wm_widget );
+  WMWidget_DrawBlit( panel->wm_widget, panel->srf);
 
-  MySDL_BlitSurface(    panel->srf, NULL, \
-		                panel->wm_widget->srf, &panel->wm_widget->child_area );
+  //MySDL_BlitSurface(    panel->srf, NULL,
+    //		                panel->wm_widget->srf, &panel->wm_widget->child_area );
   //2SDL_UpdateRects( panel->wm_widget->srf, 1, &panel->wm_widget->child_area );
   //SDL_UpdateWindowSurface( panel->srf );
 
@@ -439,7 +440,7 @@ static void * Panel_FrameEvent( SDLGuiTK_Widget * widget, \
 {
   Panel_DrawUpdate( widget );
   Panel_DrawBlit( widget );
-  PROT_MyWM_checkactive( widget );
+  //PROT_MyWM_checkactive( widget ); //TODO: wm call here ?
 
   return (void *) NULL;
 }

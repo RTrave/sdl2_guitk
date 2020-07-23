@@ -1,5 +1,5 @@
 
-SUBDIRS = windows container texts buttons images menus builder
+SUBDIRS = windows container texts buttons images menus builder render
 #utils buttons
 
 AM_CFLAGS = -I$(top_srcdir)/include $(GUI_CFLAGS)
@@ -14,7 +14,6 @@ libguitk_la_SOURCES = xmalloc.c getopt.c getopt.h \
 	myttf.c myttf.h \
 	tooltips.c tooltips_prot.h \
 	mycursor.c mycursor.h \
-	mywm.c mywm.h \
 	list.c list.h \
 	theme.c theme.h \
 	signal.c signal.h \
@@ -25,6 +24,7 @@ libguitk_la_SOURCES = xmalloc.c getopt.c getopt.h \
 	bin.c bin_prot.h \
 	viewport.c viewport_prot.h \
 	adjustment.c adjustment_prot.h \
-	scrollbar.c scrollbar_prot.h
+	scrollbar.c scrollbar_prot.h \
+	wmwidget.c wmwidget.h
 
 libguitk_la_LDFLAGS = $(GUI_LDFLAGS)

@@ -280,11 +280,11 @@ static SDLGuiTK_Widget * Scrollbar_RecursiveEntering( SDLGuiTK_Widget * widget, 
     SDL_GetMouseState (&mx, &my);
     //printf("TEST mouse_recurseenter: %d/%d --- %d/%d\n", mx, my, x, y);
     int mdiff = 0;
-    int wdiff = 0;
+    //int wdiff = 0;
     if(scrollbar->orientation==SDLGUITK_ORIENTATION_HORIZONTAL) {
         mdiff = mx-scrollbar->mbutton_x;
         if(scrollbar->buttonOn==1 && mdiff!=0){
-            wdiff = scrollbar->button_area.x;
+            //wdiff = scrollbar->button_area.x;
             //printf("Mx:%d / AbsX:%d, AbsW:%d\n ", mx, widget->abs_area.x, widget->abs_area.w);
             double value =
                 (((double)mx - (double)widget->abs_area.x) / ((double)widget->abs_area.w));
@@ -297,7 +297,7 @@ static SDLGuiTK_Widget * Scrollbar_RecursiveEntering( SDLGuiTK_Widget * widget, 
     } else {
         mdiff = my-scrollbar->mbutton_y;
         if(scrollbar->buttonOn==1 && mdiff!=0){
-            wdiff = scrollbar->button_area.y;
+            //wdiff = scrollbar->button_area.y;
             //printf("Mx:%d / AbsX:%d, AbsW:%d\n ", mx, widget->abs_area.x, widget->abs_area.w);
             double value =
                 (((double)my - (double)widget->abs_area.y) /

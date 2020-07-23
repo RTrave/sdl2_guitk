@@ -42,7 +42,7 @@
 #include "../object_prot.h"
 #include "../widget_prot.h"
 #include "../signal.h"
-#include "../mywm.h"
+//#include "../mywm.h"
 #include "../theme_prot.h"
 #include "../context_prot.h"
 #include "../container_prot.h"
@@ -209,7 +209,7 @@ static void * ScrolledWindow_DrawBlit( SDLGuiTK_Widget * widget )
 
             //2SDL_UpdateRects( widget->srf, 1, &button->bin->child->rel_area );
             //SDL_UpdateWindowSurface( button->bin->child->srf );
-            //MySDL_BlitSurface(  srf, NULL, \
+            //MySDL_BlitSurface(  srf, NULL,
             //                    widget->srf, &scrolledwindow->bin->child->rel_area );
 
         }
@@ -227,7 +227,7 @@ static void * ScrolledWindow_DrawBlit( SDLGuiTK_Widget * widget )
 static void * ScrolledWindow_Realize( SDLGuiTK_Widget * widget, \
                               void * data, void * event )
 {
-    SDLGuiTK_ScrolledWindow * scrolledwindow=widget->container->bin->scrolledwindow;
+    //SDLGuiTK_ScrolledWindow * scrolledwindow=widget->container->bin->scrolledwindow;
 
     /*   widget->changed = 0; */
 
@@ -299,7 +299,7 @@ static void * ScrolledWindow_Free( SDLGuiTK_Widget * widget )
 static void * ScrolledWindow_MouseEnter( SDLGuiTK_Widget * widget, \
                                  void * data, void * event )
 {
-    SDLGuiTK_ScrolledWindow * scrolledwindow=widget->container->bin->scrolledwindow;
+    //SDLGuiTK_ScrolledWindow * scrolledwindow=widget->container->bin->scrolledwindow;
 
     //if( button->srf!=button->active_srf ) {
         //button->srf = button->active_srf;
@@ -317,7 +317,7 @@ static void * ScrolledWindow_MouseEnter( SDLGuiTK_Widget * widget, \
 static void * ScrolledWindow_MouseLeave( SDLGuiTK_Widget * widget, \
                                  void * data, void * event )
 {
-    SDLGuiTK_ScrolledWindow * scrolledwindow=widget->container->bin->scrolledwindow;
+    //SDLGuiTK_ScrolledWindow * scrolledwindow=widget->container->bin->scrolledwindow;
 
     /*   if( button->srf!=button->inactive_srf ) { */
     /*     button->srf = button->inactive_srf; */
@@ -338,7 +338,7 @@ static void * ScrolledWindow_MouseLeave( SDLGuiTK_Widget * widget, \
 static void * ScrolledWindow_MousePressed( SDLGuiTK_Widget * widget, \
                                    void * data, void * event )
 {
-    SDLGuiTK_ScrolledWindow * scrolledwindow=widget->container->bin->scrolledwindow;
+    //SDLGuiTK_ScrolledWindow * scrolledwindow=widget->container->bin->scrolledwindow;
 
     /*   SDL_mutexP( button->mutex ); */
     /*   if( button->activate_srf!=button->button->clicked_srf ) { */
@@ -354,7 +354,7 @@ static void * ScrolledWindow_MousePressed( SDLGuiTK_Widget * widget, \
 static void * ScrolledWindow_MouseReleased( SDLGuiTK_Widget * widget, \
                                     void * data, void * event )
 {
-    SDLGuiTK_ScrolledWindow * scrolledwindow=widget->container->bin->scrolledwindow;
+    //SDLGuiTK_ScrolledWindow * scrolledwindow=widget->container->bin->scrolledwindow;
     /*   SDL_mutexP( button->mutex ); */
     /*   if( button->activate_srf==button->button->clicked_srf ) { */
     /*     button->activate_srf = button->button->active_srf; */
