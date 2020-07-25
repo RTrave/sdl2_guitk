@@ -41,13 +41,13 @@
 #include "../signal.h"
 #include "../list.h"
 #include "../theme_prot.h"
-#include "../context_prot.h"
 #include "../object_prot.h"
 #include "../widget_prot.h"
-#include "../wmwidget.h"
-#include "../tooltips_prot.h"
 #include "surface2d.h"
+#include "../wmwidget.h"
 #include "mywm.h"
+#include "../tooltips_prot.h"
+#include "../context_prot.h"
 
 
 static SDLGuiTK_Widget    * active_widget=NULL;

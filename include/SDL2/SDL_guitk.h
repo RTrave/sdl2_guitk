@@ -30,7 +30,6 @@
 #endif
 
 /* Down-level includes for GuiTK */
-#include "SDL_guitk_context.h"
 #include "SDL_guitk_main.h"
 #include "SDL_guitk_object.h"
 #include "SDL_guitk_list.h"

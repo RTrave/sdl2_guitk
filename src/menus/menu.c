@@ -45,6 +45,9 @@
 #include "../container_prot.h"
 #include "../bin_prot.h"
 #include "../signal.h"
+#include "../render/surface2d.h"
+#include "../wmwidget.h"
+#include "../render/mywm.h"
 
 #include "menushell_prot.h"
 #include "menu_prot.h"

@@ -42,10 +42,11 @@
 #include "list.h"
 #include "theme_prot.h"
 #include "myttf.h"
-#include "context_prot.h"
 #include "object_prot.h"
 #include "widget_prot.h"
+#include "render/surface2d.h"
 #include "wmwidget.h"
+#include "context_prot.h"
 
 
 SDLGuiTK_WMWidget * WMWidget_New( SDLGuiTK_Widget * widget )

@@ -37,10 +37,11 @@
 #include "mysdl.h"
 #include "signal.h"
 #include "object_prot.h"
-#include "context_prot.h"
 #include "widget_prot.h"
-#include "wmwidget.h"
 #include "render/surface2d.h"
+#include "wmwidget.h"
+#include "render/mywm.h"
+#include "context_prot.h"
 #include "tooltips_prot.h"
 
 
@@ -172,7 +173,7 @@ void PROT__context_unref_wmwidget( SDLGuiTK_WMWidget * wm_widget )
 
 
 
-void SDLGuiTK_context_check()
+void SDLGuiTK_update()
 {
   SDLGuiTK_WMWidget * current=NULL;
   SDLGuiTK_Surface2D * current2D=NULL;
@@ -212,7 +213,7 @@ void SDLGuiTK_context_check()
   PROT__signal_check();
 }
 
-void SDLGuiTK_context_blitsurfaces()
+void SDLGuiTK_blitsurfaces()
 {
   SDLGuiTK_WMWidget * current=NULL;
 
@@ -245,7 +246,7 @@ void SDLGuiTK_context_blitsurfaces()
 }
 
 
-int  SDLGuiTK_context_pushevent( SDL_Event *event )
+int  SDLGuiTK_pushevent( SDL_Event *event )
 {
   int flag;
 

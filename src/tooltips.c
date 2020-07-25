@@ -47,6 +47,7 @@
 #include "object_prot.h"
 #include "widget_prot.h"
 #include "wmwidget.h"
+#include "render/mywm.h"
 
 #include "tooltips_prot.h"
 

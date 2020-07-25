@@ -43,11 +43,14 @@
 #include "../widget_prot.h"
 #include "../signal.h"
 //#include "../mywm.h"
+#include "../render/surface2d.h"
 #include "../theme_prot.h"
+#include "../wmwidget.h"
 #include "../context_prot.h"
 #include "../container_prot.h"
 #include "../bin_prot.h"
-#include "../wmwidget.h"
+#include "../render/mywm.h"
+#include "../render/render.h"
 #include "panel_prot.h"
 
 
@@ -169,7 +172,7 @@ static void Panel_UpdatePosition( SDLGuiTK_Panel * panel )
   SDLGuiTK_Widget * widget=panel->object->widget;
   SDL_Surface * surface;
 
-  surface = MySDL_GetVideoSurface();
+  surface = Render_GetVideoSurface();
   switch( panel->position ) {
   case SDLGUITK_PANEL_TOP:
     break;

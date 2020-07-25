@@ -18,6 +18,7 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+  typedef struct SDLGuiTK_Surface2D SDLGuiTK_Surface2D;
 
 /* SDLGuiTK_2DWidget structure definition */
 struct SDLGuiTK_Surface2D {
@@ -32,26 +33,21 @@ struct SDLGuiTK_Surface2D {
     GLfloat   texMaxX, texMaxY;       /* "private" data */
 };
 
-extern
+
 SDLGuiTK_Surface2D * Surface2D_new();
-extern
+
 void Surface2D_destroy(     SDLGuiTK_Surface2D * surface2D );
 
 // Update the surface
-extern
 void Surface2D_update(      SDLGuiTK_Surface2D * surface2D, \
                             SDL_Surface *srf );
 // Low level blit surface (openGL)
-extern
 void Surface2D_blitsurface( SDLGuiTK_Surface2D * surface2D, \
                             int x, int y );
 
 // Low level functions (now internall code)
-extern
 void MySDL_GL_Enter2DMode();
-extern
 void MySDL_GL_Leave2DMode();
-extern
 GLuint MySDL_GL_LoadTexture(SDL_Surface *surface,
                             GLfloat *texcoord,
                             GLuint *tex);

@@ -49,14 +49,38 @@ extern "C" {
   /* - uses gived surface to initialize himself */
   extern DECLSPEC
   void SDLGuiTK_init_with_window( SDL_Window * window, SDL_Renderer * renderer );
-  /* - draw function is SDLGuiTK_context_blitsurfaces() */
-  /* - event function is SDLGuiTK_context_propagate_event() */
+  /* - update function is SDLGuiTK_update() */
+  /* - draw function is SDLGuiTK_blitsurfaces() */
+  /* - event function is SDLGuiTK_pushevent() */
+
+  /* This function have a effect only with MODE_SLAVE context !! */
+  /* Check the textures states (Gen and Delete) */
+  extern DECLSPEC
+  void SDLGuiTK_update();
+
+  /* This function have a effect only with MODE_SLAVE context !! */
+  /* Draw active objects on main surface */
+  extern DECLSPEC
+  void SDLGuiTK_blitsurfaces();
+
+  /* Push an SDL_Event in current context */
+  extern DECLSPEC
+  int  SDLGuiTK_pushevent( SDL_Event *event );
 
 
 
   /* Quit engine in both mode, MODE_SELF and MODE_SLAVE. */
   extern DECLSPEC
   void SDLGuiTK_main_quit();
+
+
+  /* Lock context to perform actions */
+  extern DECLSPEC
+  void  SDLGuiTK_threads_enter();
+  /* Unlock context after actions */
+  extern DECLSPEC
+  void  SDLGuiTK_threads_leave();
+
 
 
 

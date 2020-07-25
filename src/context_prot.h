@@ -26,6 +26,8 @@
 #define SDLGUITK_CONTEXT_MODE_SLAVE ( (int) 2 )
 
 
+typedef struct SDLGuiTK_Context SDLGuiTK_Context;
+
 /* SDLGuiTK_Context structure definition */
 struct SDLGuiTK_Context {
   SDLGuiTK_Object * object;
@@ -56,17 +58,14 @@ SDLGuiTK_Context * current_context;
 
 
 /* Create and destroy context */
-extern
 void PROT__context_new( SDL_Surface *surface, int type );
-extern
+
 void PROT__context_quit();
-extern
+
 void PROT__context_uninit();
 
 /* Add and remove WMWidget in current_context->activables */
-extern
 void PROT__context_ref_wmwidget( SDLGuiTK_WMWidget * wm_widget );
-extern
 void PROT__context_unref_wmwidget( SDLGuiTK_WMWidget * wm_widget );
 
 

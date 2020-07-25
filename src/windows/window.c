@@ -42,12 +42,14 @@
 #include "../object_prot.h"
 #include "../widget_prot.h"
 #include "../signal.h"
-#include "../render/mywm.h"
+#include "../render/surface2d.h"
+#include "../render/render.h"
 #include "../theme_prot.h"
-#include "../context_prot.h"
 #include "../container_prot.h"
 #include "../bin_prot.h"
 #include "../wmwidget.h"
+#include "../context_prot.h"
+#include "../render/mywm.h"
 #include "window_prot.h"
 
 
@@ -121,7 +123,7 @@ static void Window_UpdatePosition( SDLGuiTK_Window * window )
     SDL_Window * mwindow;
     int w,h;
 
-    mwindow = MySDL_GetVideoWindow();
+    mwindow = Render_GetVideoWindow();
     switch( window->position ) {
     case SDLGUITK_WINDOW_CENTER:
         SDL_GetWindowSize(mwindow,&w,&h);

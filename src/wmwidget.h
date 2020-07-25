@@ -19,6 +19,8 @@
 */
 
 
+typedef struct SDLGuiTK_WMWidget SDLGuiTK_WMWidget;
+
 /* SDLGuiTK_WMWidget structure definition */
 struct SDLGuiTK_WMWidget {
     SDLGuiTK_Object    * object;      /* referent widget */

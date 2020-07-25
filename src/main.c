@@ -50,7 +50,11 @@
 #include "object_prot.h"
 #include "widget_prot.h"
 #include "signal.h"
+#include "render/render.h"
+#include "render/surface2d.h"
+#include "wmwidget.h"
 #include "context_prot.h"
+#include "render/mywm.h"
 
 static int           main_loop=0;
 static SDL_mutex   * main_loop_mutex=NULL;
@@ -130,13 +134,13 @@ static void Main_loop()
   while( main_loop==1 ) {
     SDL_mutexV( main_loop_mutex );
 
-    SDLGuiTK_context_check();
-    MySDL_MainSurface_clean();
-    SDLGuiTK_context_blitsurfaces();
-    MySDL_SwapBuffers();
+    SDLGuiTK_update();
+    Render_clean();
+    SDLGuiTK_blitsurfaces();
+    Render_swapbuffers();
 
     while( ( SDL_PollEvent(&event))==1 ) {
-      SDLGuiTK_context_pushevent( &event );
+      SDLGuiTK_pushevent( &event );
     }
 
     SDL_mutexP( main_loop_mutex );
@@ -152,22 +156,25 @@ static int decode_switches (int argc, char **argv);
 void SDLGuiTK_init( int argc, char **argv )
 {
   int i;
-  SDLGUITK_Video * video;
+    SDLGUITK_Render * render;
+  //SDLGUITK_Video * video;
 
   program_name = argv[0];
 
-  MySDL_Init();
+  //MySDL_Init();
+  SDL_Init( SDL_INIT_VIDEO|SDL_INIT_TIMER|SDL_INIT_EVENTS );
+    PROT__debug_init();
   MyTTF_Init();
   MyWM_Init();
 
   Init_internals();
   i = decode_switches (argc, argv);
-  video = MySDL_MainSurface_create();
+  render = Render_create();
   MyCursor_Init();
-  PROT__context_new( SDL_GetWindowSurface(video->window), SDLGUITK_CONTEXT_MODE_SELF );
-  MySDL_MainSurface_clean();
-  MySDL_SwapBuffers();
-
+  PROT__context_new(SDL_GetWindowSurface(render->window),
+                    SDLGUITK_CONTEXT_MODE_SELF);
+  Render_clean();
+  Render_swapbuffers ();
 }
 
 void SDLGuiTK_main()
@@ -180,7 +187,9 @@ void SDLGuiTK_main()
 
   MyWM_Uninit();
   MyTTF_Uninit();
-  MySDL_Uninit();
+  //MySDL_Uninit();
+    PROT__debug_stop();
+    SDL_Quit();
 }
 
 void SDLGuiTK_init_with_window( SDL_Window * window, SDL_Renderer * renderer )
@@ -191,7 +200,7 @@ void SDLGuiTK_init_with_window( SDL_Window * window, SDL_Renderer * renderer )
 
   PROT__debug_init();
 
-  MySDL_MainSurface_set( window, renderer );
+  Render_set( window, renderer );
 
   MyTTF_Init();
   MyWM_Init();
@@ -262,16 +271,16 @@ decode_switches (int argc, char **argv)
 	  usage (0);
 
 	case 'f':
-	  MySDL_ModeFullScreen( SDL_TRUE );
+	  Render_ModeFullScreen( SDL_TRUE );
 	  break;
 #ifndef WIN32
 	case WIDTH_CODE:
 	  width = xstrdup(optarg);
-	  MySDL_ModeSetWidth( atoi(width) );
+	  Render_ModeSetWidth( atoi(width) );
 	  break;
 	case HEIGHT_CODE:
 	  height = xstrdup(optarg);
-	  MySDL_ModeSetHeight( atoi(height) );
+	  Render_ModeSetHeight( atoi(height) );
 	  break;
 /* #else */
 /* 	case 'W': */

@@ -18,7 +18,6 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-
 /* SDLGuiTK_WMWidget structure definition */
 struct SDLGuiTK_WMWidget2 {
     SDLGuiTK_Object    * object;      /* referent widget */
@@ -42,20 +41,20 @@ struct SDLGuiTK_WMWidget2 {
 };
 
 
-extern void MyWM_Init();
-extern void MyWM_Uninit();
+void MyWM_Init();
+void MyWM_Uninit();
 
 // Context callbacks for events
-extern int MyWM_push_MOUSEMOTION( SDL_Event *event );
-extern int MyWM_push_MOUSEBUTTONDOWN( SDL_Event *event );
-extern int MyWM_push_MOUSEBUTTONUP( SDL_Event *event );
-extern int MyWM_push_TEXTINPUT( SDL_Event *event );
-extern int MyWM_push_KEYDOWN( SDL_Event *event );
+int MyWM_push_MOUSEMOTION( SDL_Event *event );
+int MyWM_push_MOUSEBUTTONDOWN( SDL_Event *event );
+int MyWM_push_MOUSEBUTTONUP( SDL_Event *event );
+int MyWM_push_TEXTINPUT( SDL_Event *event );
+int MyWM_push_KEYDOWN( SDL_Event *event );
 
 // Blit a WMWidget on main surface
-extern void * MyWM_blitsurface( SDLGuiTK_WMWidget * wm_widget );
+void * MyWM_blitsurface( SDLGuiTK_WMWidget * wm_widget );
 
 // Release all active WMWidget
-extern void PROT_MyWM_leaveall();
+void PROT_MyWM_leaveall();
 // Check if Widget is active
-extern void PROT_MyWM_checkactive( SDLGuiTK_Widget * widget );
+void PROT_MyWM_checkactive( SDLGuiTK_Widget * widget );

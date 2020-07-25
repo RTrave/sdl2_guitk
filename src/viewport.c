@@ -43,6 +43,7 @@
 #include "bin_prot.h"
 #include "adjustment_prot.h"
 //#include "mywm.h"
+#include "render/surface2d.h"
 #include "wmwidget.h"
 #include "viewport_prot.h"
 
