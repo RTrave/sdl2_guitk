@@ -171,8 +171,11 @@ static void Panel_UpdatePosition( SDLGuiTK_Panel * panel )
 {
   SDLGuiTK_Widget * widget=panel->object->widget;
   SDL_Surface * surface;
-
-  surface = Render_GetVideoSurface();
+/*
+  if(window->wm_widget!=NULL)
+    surface = Render_GetVideoSurface();
+  if(!mwindow) return;
+*/
   switch( panel->position ) {
   case SDLGUITK_PANEL_TOP:
     break;

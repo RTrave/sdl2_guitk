@@ -18,7 +18,12 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-  typedef struct SDLGuiTK_Surface2D SDLGuiTK_Surface2D;
+#pragma once
+
+#include <GL/gl.h>
+#include <SDL2/SDL_guitk.h>
+
+typedef struct SDLGuiTK_Surface2D SDLGuiTK_Surface2D;
 
 /* SDLGuiTK_2DWidget structure definition */
 struct SDLGuiTK_Surface2D {

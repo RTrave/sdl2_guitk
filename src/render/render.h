@@ -18,40 +18,43 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#pragma once
+
 #include <GL/gl.h>
-#include <SDL2/SDL.h>
 #include <SDL2/SDL_guitk.h>
 
-typedef struct SDLGUITK_Render SDLGUITK_Render;
+typedef struct SDLGuiTK_Render SDLGuiTK_Render;
 
-struct SDLGUITK_Render {
+struct SDLGuiTK_Render {
+
     int width, height;          /* public data */
     int bpp;                    /* public data */
     int fullscreen;             /* public data */
-    int opengl_ask;             /* public data */
+    //int opengl_ask;             /* public data */
 
     Uint32 flags;               /* private data */
     SDL_Window    * window;     /* private data */
     SDL_Renderer  *renderer;    /* private data */
     SDL_GLContext *context;     /* Our opengl context handle */
+    int id;
 };
 
 
 
-SDLGUITK_Render * Render_set( SDL_Window * window, SDL_Renderer * renderer );
+SDLGuiTK_Render * Render_set( SDL_Window * window, SDL_Renderer * renderer );
 
-SDLGUITK_Render * Render_create();
+SDLGuiTK_Render * Render_create();
 
-void              Render_destroy(SDLGUITK_Render * render);
+void              Render_destroy(SDLGuiTK_Render * render);
 
 void              Render_clean();
 
-void              Render_swapbuffers();
+void              Render_swapbuffers(SDLGuiTK_Render * render);
 
 
-SDL_Window  * Render_GetVideoWindow();
+SDL_Window  * Render_GetVideoWindow(SDLGuiTK_Render * render);
 
-SDL_Surface * Render_GetVideoSurface();
+SDL_Surface * Render_GetVideoSurface(SDLGuiTK_Render * render);
 
 
 void Render_ModeFullScreen( SDL_bool state );

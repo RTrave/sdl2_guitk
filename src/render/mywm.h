@@ -18,6 +18,13 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#pragma once
+
+#include <SDL2/SDL_guitk.h>
+#include "../mysdl.h"
+#include "surface2d.h"
+#include "../wmwidget.h"
+
 /* SDLGuiTK_WMWidget structure definition */
 struct SDLGuiTK_WMWidget2 {
     SDLGuiTK_Object    * object;      /* referent widget */
@@ -50,6 +57,7 @@ int MyWM_push_MOUSEBUTTONDOWN( SDL_Event *event );
 int MyWM_push_MOUSEBUTTONUP( SDL_Event *event );
 int MyWM_push_TEXTINPUT( SDL_Event *event );
 int MyWM_push_KEYDOWN( SDL_Event *event );
+int MyWM_push_WINDOWEVENT( SDL_Event *event );
 
 // Blit a WMWidget on main surface
 void * MyWM_blitsurface( SDLGuiTK_WMWidget * wm_widget );
@@ -58,3 +66,4 @@ void * MyWM_blitsurface( SDLGuiTK_WMWidget * wm_widget );
 void PROT_MyWM_leaveall();
 // Check if Widget is active
 void PROT_MyWM_checkactive( SDLGuiTK_Widget * widget );
+

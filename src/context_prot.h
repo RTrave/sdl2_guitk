@@ -18,13 +18,17 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
 */
 
+#pragma once
+
+#include <SDL2/SDL_guitk.h>
+#include "wmwidget.h"
 
 
 /* SDLGuiTK_Context modes */
-#define SDLGUITK_CONTEXT_MODE_NULL  ( (int) 0 )
-#define SDLGUITK_CONTEXT_MODE_SELF  ( (int) 1 )
-#define SDLGUITK_CONTEXT_MODE_SLAVE ( (int) 2 )
-
+#define SDLGUITK_CONTEXT_MODE_NULL        ( (int) 0 )
+#define SDLGUITK_CONTEXT_MODE_SELF        ( (int) 1 )
+#define SDLGUITK_CONTEXT_MODE_MULTIPLE    ( (int) 2 )
+#define SDLGUITK_CONTEXT_MODE_EMBED       ( (int) 3 )
 
 typedef struct SDLGuiTK_Context SDLGuiTK_Context;
 
@@ -42,6 +46,9 @@ struct SDLGuiTK_Context {
   int opengl;               /* SDL setting: OpenGL enabled */
   int resizable;            /* SDL setting: resizing ability */
 
+  //SDLGuiTK_List   * renders;  /* list of Render (SDL windows) */
+  SDLGuiTK_Render *main_render;
+  SDLGuiTK_Render *active_render;
   /* Shared list of actives objects */
   /* They are added in fifo: ref->activables->unref */
   SDLGuiTK_List   * activables;  /* activables WMWidgets */
@@ -58,7 +65,7 @@ SDLGuiTK_Context * current_context;
 
 
 /* Create and destroy context */
-void PROT__context_new( SDL_Surface *surface, int type );
+void PROT__context_new( int type, SDL_Window * window, SDL_Renderer * renderer );
 
 void PROT__context_quit();
 
@@ -68,4 +75,6 @@ void PROT__context_uninit();
 void PROT__context_ref_wmwidget( SDLGuiTK_WMWidget * wm_widget );
 void PROT__context_unref_wmwidget( SDLGuiTK_WMWidget * wm_widget );
 
+void PROT__context_renderclean();
+void PROT__context_renderswap();
 

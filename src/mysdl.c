@@ -33,6 +33,7 @@
 #include <string.h>
 #endif
 
+/*
 #ifdef WIN32
 #include <GL/glew.h>
 
@@ -46,13 +47,15 @@
 #include <SDL2/SDL_syswm.h>
 #include <SDL2/SDL_guitk.h>
 
-#include "debug.h"
+*/
 #include "mysdl.h"
+#include "debug.h"
+/*
 #include "object_prot.h"
 #include "render/surface2d.h"
 #include "wmwidget.h"
 #include "context_prot.h"
-
+*/
 
 
 static int srfid=0;

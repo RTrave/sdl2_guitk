@@ -18,6 +18,10 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
 */
 
+#pragma once
+
+#include <SDL2/SDL_guitk.h>
+#include "mysdl.h"
 
 /* SDLGuiTK_Widget structure definition */
 struct SDLGuiTK_Widget {

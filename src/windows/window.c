@@ -120,10 +120,13 @@ static void Window_UpdatePosition( SDLGuiTK_Window * window )
 {
     SDLGuiTK_Widget * widget=window->object->widget;
     //SDL_Surface * surface;
-    SDL_Window * mwindow;
+    SDL_Window * mwindow=NULL;
     int w,h;
 
-    mwindow = Render_GetVideoWindow();
+    //if(window->wm_widget && window->wm_widget->render)
+    //mwindow = Render_GetVideoWindow(WMWidget_getrender (window->wm_widget));
+    mwindow = WMWidget_getwindow(window->wm_widget);
+    if(!mwindow) return;
     switch( window->position ) {
     case SDLGUITK_WINDOW_CENTER:
         SDL_GetWindowSize(mwindow,&w,&h);

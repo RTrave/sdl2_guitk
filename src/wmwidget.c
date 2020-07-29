@@ -57,6 +57,12 @@ SDLGuiTK_WMWidget * WMWidget_New( SDLGuiTK_Widget * widget )
     wm_widget->widget = widget;
     wm_widget->object = widget->object;
 
+    wm_widget->children = SDLGuiTK_list_new ();
+    wm_widget->render = NULL;
+    wm_widget->is_wmchild = 0;
+    wm_widget->parent = NULL;
+    wm_widget->wmparent = NULL;
+
     wm_widget->border_width = 3;
     wm_widget->title_shown = 0;
     wm_widget->title_srf = MySDL_Surface_new("Window_title_srf");
@@ -85,6 +91,7 @@ SDLGuiTK_WMWidget * WMWidget_New( SDLGuiTK_Widget * widget )
 
 void              WMWidget_Delete( SDLGuiTK_WMWidget * wm_widget )
 {
+    SDLGuiTK_list_destroy (wm_widget->children);
     if( wm_widget->title_srf->srf!=NULL ) {
         SDL_FreeSurface (wm_widget->title_srf->srf);
         wm_widget->title_srf->srf = NULL;
@@ -137,6 +144,26 @@ static void WMWidget_DrawTitleSurface( SDLGuiTK_WMWidget * wm_widget )
 }
 
 
+SDLGuiTK_Render * WMWidget_getrender( SDLGuiTK_WMWidget * wm_widget )
+{
+    if(wm_widget->render)
+        return wm_widget->render;
+    if(wm_widget->is_wmchild && wm_widget->wmparent && wm_widget->wmparent->render)
+        return wm_widget->wmparent->render;
+    //printf("No render founded !!!\n");
+    return NULL;
+}
+
+SDL_Window * WMWidget_getwindow( SDLGuiTK_WMWidget * wm_widget )
+{
+    SDLGuiTK_Render * render;
+    if(current_context->type==SDLGUITK_CONTEXT_MODE_MULTIPLE)
+        render = WMWidget_getrender(wm_widget);
+    else
+        render = current_context->main_render;
+    return Render_GetVideoWindow (render);
+}
+
 void WMWidget_DrawUpdate( SDLGuiTK_WMWidget * wm_widget )
 {
     /*   SDLGuiTK_Widget * widget=wm_widget->widget; */
@@ -149,11 +176,38 @@ void WMWidget_DrawUpdate( SDLGuiTK_WMWidget * wm_widget )
     wm_widget->area.w = wm_widget->child_area.w + 2*wm_widget->border_width;
     wm_widget->area.h = wm_widget->child_area.h + 2*wm_widget->border_width;
 
-    if(wm_widget->title_shown) {
+    if(wm_widget->title_shown && current_context->type!=SDLGUITK_CONTEXT_MODE_MULTIPLE) {
         WMWidget_MakeTitleSurface (wm_widget);
         wm_widget->child_area.y += wm_widget->title_srf->srf->h;
         wm_widget->area.y -= wm_widget->title_srf->srf->h;
         wm_widget->area.h += wm_widget->title_srf->srf->h;
+    }
+    SDLGuiTK_Render * render;
+    if(current_context->type==SDLGUITK_CONTEXT_MODE_MULTIPLE)
+        render = WMWidget_getrender(wm_widget);
+    else
+        render = current_context->main_render;
+    if( render && wm_widget->is_wmchild )
+    {
+        SDL_Window * mwindow = Render_GetVideoWindow(render);
+        int w,h;
+        SDL_GetWindowSize(mwindow,&w,&h);
+        //printf("render: %d %d\n", w, h);
+        if(wm_widget->area.x+wm_widget->area.w>w) {
+            int xdiff1 = wm_widget->area.x + wm_widget->area.w - w;
+            wm_widget->area.x -= xdiff1;
+            wm_widget->widget->abs_area.x -= xdiff1;
+        }
+        if(wm_widget->area.x<0) {
+            wm_widget->widget->abs_area.x -= wm_widget->area.x;
+            wm_widget->area.x  = 0;
+        }
+        if(wm_widget->area.y+wm_widget->area.h>h) {
+            int ydiff1 = wm_widget->area.y + wm_widget->area.h - h;
+            wm_widget->area.y -= ydiff1;
+            wm_widget->widget->abs_area.y -= ydiff1;
+        }
+
     }
 }
 
@@ -183,7 +237,7 @@ void                 WMWidget_DrawBlit( SDLGuiTK_WMWidget * wm_widget,
                                         MySDL_Surface * surface)
 {
     WMWidget_Clean( wm_widget );
-    if(wm_widget->title_shown) {
+    if(wm_widget->title_shown && current_context->type!=SDLGUITK_CONTEXT_MODE_MULTIPLE) {
         WMWidget_DrawTitleSurface (wm_widget);
     }
 

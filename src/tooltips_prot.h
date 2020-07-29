@@ -18,6 +18,10 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
 */
 
+#pragma once
+
+#include <SDL2/SDL_guitk.h>
+#include "render/surface2d.h"
 
 /* SDLGuiTK_Tooltips structure definition */
 struct SDLGuiTK_Tooltips {

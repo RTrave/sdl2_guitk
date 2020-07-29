@@ -83,7 +83,7 @@ static SDLGuiTK_Menu * Menu_create()
 
     new_menu = malloc( sizeof( struct SDLGuiTK_Menu ) );
     new_menu->container = PROT__container_new();
-    new_menu->object = new_menu->container->object;
+    new_menu->object = new_menu->container->widget->object;
     new_menu->container->menu = new_menu;
     sprintf( new_menu->object->name, "menu%d", ++current_id );
 

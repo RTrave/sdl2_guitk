@@ -50,7 +50,7 @@
 #include "object_prot.h"
 #include "widget_prot.h"
 #include "signal.h"
-#include "render/render.h"
+//#include "render/render.h"
 #include "render/surface2d.h"
 #include "wmwidget.h"
 #include "context_prot.h"
@@ -85,6 +85,7 @@ static struct option const long_options[] =
   {"help", no_argument, 0, 'h'},
   {"version", no_argument, 0, 'V'},
   {"fullscreen", no_argument, 0, 'f'},
+  {"multiples", no_argument, 0, 'm'},
 #ifndef WIN32
   {"width", required_argument, 0, WIDTH_CODE},
   {"height", required_argument, 0, HEIGHT_CODE},
@@ -135,9 +136,12 @@ static void Main_loop()
     SDL_mutexV( main_loop_mutex );
 
     SDLGuiTK_update();
-    Render_clean();
+
+      //Render_clean();
+      PROT__context_renderclean ();
     SDLGuiTK_blitsurfaces();
-    Render_swapbuffers();
+    //Render_swapbuffers();
+      PROT__context_renderswap ();
 
     while( ( SDL_PollEvent(&event))==1 ) {
       SDLGuiTK_pushevent( &event );
@@ -153,10 +157,12 @@ static void Main_loop()
 
 static int decode_switches (int argc, char **argv);
 
+static int ask_multiples_mode = 0;
+
 void SDLGuiTK_init( int argc, char **argv )
 {
   int i;
-    SDLGUITK_Render * render;
+    //SDLGuiTK_Render * render;
   //SDLGUITK_Video * video;
 
   program_name = argv[0];
@@ -169,12 +175,22 @@ void SDLGuiTK_init( int argc, char **argv )
 
   Init_internals();
   i = decode_switches (argc, argv);
-  render = Render_create();
+  //render = Render_create();
   MyCursor_Init();
-  PROT__context_new(SDL_GetWindowSurface(render->window),
-                    SDLGUITK_CONTEXT_MODE_SELF);
-  Render_clean();
-  Render_swapbuffers ();
+  //PROT__context_new(SDL_GetWindowSurface(render->window),
+  //                  SDLGUITK_CONTEXT_MODE_SELF);
+    if(ask_multiples_mode==0)
+    {
+        PROT__context_new(SDLGUITK_CONTEXT_MODE_SELF, NULL, NULL);
+        PROT__context_renderclean ();
+        PROT__context_renderswap ();
+        //Render_clean();
+        //Render_swapbuffers ();
+    }
+    else
+    {
+        PROT__context_new (SDLGUITK_CONTEXT_MODE_MULTIPLE, NULL, NULL);
+    }
 }
 
 void SDLGuiTK_main()
@@ -194,19 +210,20 @@ void SDLGuiTK_main()
 
 void SDLGuiTK_init_with_window( SDL_Window * window, SDL_Renderer * renderer )
 {
+    //SDLGuiTK_Render * render;
   SDL_mutexP( main_loop_mutex );
   main_loop = 2;
   SDL_mutexV( main_loop_mutex );
 
   PROT__debug_init();
 
-  Render_set( window, renderer );
+  //render = Render_set( window, renderer );
 
   MyTTF_Init();
   MyWM_Init();
 
   Init_internals();
-  PROT__context_new( SDL_GetWindowSurface( window ), SDLGUITK_CONTEXT_MODE_SLAVE );
+  PROT__context_new( SDLGUITK_CONTEXT_MODE_EMBED, window, renderer );
 
   MyCursor_Init();
 }
@@ -222,7 +239,7 @@ void SDLGuiTK_main_quit()
   if( main_loop==2 ) {
     SDL_mutexV( main_loop_mutex );
 
-    if( current_context->type==SDLGUITK_CONTEXT_MODE_SLAVE ) {
+    if( current_context->type==SDLGUITK_CONTEXT_MODE_EMBED ) {
       MyCursor_Uninit();
       MyWM_Uninit();
       MyTTF_Uninit();
@@ -249,8 +266,10 @@ decode_switches (int argc, char **argv)
 			   "h"	/* help */
 			   "V"	/* version */
 			   "f"	/* version */
-			   "w"	/* version */,
-			   long_options, (int *) 0)) != EOF)
+			   "W"	/* version */
+               "H"	/* version */
+			   "m"	/* version */
+               , long_options, (int *) 0)) != EOF)
 #else
   while ((c = getopt (argc, argv,
 			   "h"	/* help */
@@ -258,6 +277,7 @@ decode_switches (int argc, char **argv)
 			   "f"	/* version */
 			   "W"	/* version */
 			   "H"	/* version */
+               "m"	/* version */
 		      )) != EOF)
 #endif
     {
@@ -273,6 +293,9 @@ decode_switches (int argc, char **argv)
 	case 'f':
 	  Render_ModeFullScreen( SDL_TRUE );
 	  break;
+    case 'm':
+      ask_multiples_mode = 1;
+      break;
 #ifndef WIN32
 	case WIDTH_CODE:
 	  width = xstrdup(optarg);
@@ -310,6 +333,7 @@ SDL2_GuiTK - GUI toolkit designed for SDL environnements.\n", program_name);
   printf ("\
 Options:\n\
   -f, --fullscreen           fullscreen output\n\
+  -m, --multiples            use multiples windows\n\
   --width=WIDTH              set screen width\n\
   --height=HEIGHT            set screen height\n\
 \n\

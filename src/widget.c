@@ -172,7 +172,7 @@ static SDLGuiTK_Widget * Widget_create()
   new_widget->req_area.w = 0; new_widget->req_area.h = 0;
   new_widget->rel_area.x = 0; new_widget->rel_area.y = 0;
   new_widget->rel_area.w = 0; new_widget->rel_area.h = 0;
-  new_widget->abs_area.x = 0; new_widget->abs_area.y = 0;
+  new_widget->abs_area.x = 20; new_widget->abs_area.y = 20;
   new_widget->abs_area.w = 0; new_widget->abs_area.h = 0;
   new_widget->act_area.x = 0; new_widget->act_area.y = 0;
   new_widget->act_area.w = 0; new_widget->act_area.h = 0;
@@ -440,7 +440,7 @@ SDLGuiTK_Widget * PROT__widget_is_entering( SDLGuiTK_Widget * widget, \
 {
   SDLGuiTK_Widget * current=NULL;
 
-/*   printf( "Test entering (%s); %d %d  ...\n ", widget->object->name, x, y ); */
+   //printf( "Test entering (%s); %d %d  ...\n ", widget->object->name, x, y );
   if( ( x>=widget->act_area.x &&
 	x<=(widget->act_area.x+ \
 	    widget->act_area.w) ) &&

@@ -31,78 +31,93 @@
 #endif
 
 
-#include <SDL2/SDL_guitk.h>
-
-#include "debug.h"
-#include "mysdl.h"
-#include "signal.h"
+#include "context_prot.h"
+#include "render/surface2d.h"
+#include "render/render.h"
+#include "render/mywm.h"
 #include "object_prot.h"
 #include "widget_prot.h"
-#include "render/surface2d.h"
-#include "wmwidget.h"
-#include "render/mywm.h"
-#include "context_prot.h"
 #include "tooltips_prot.h"
+#include "signal.h"
+#include "debug.h"
+#include "list.h"
 
 
 static SDLGuiTK_Context * Context_create()
 {
-  SDLGuiTK_Context * new_context;
+    SDLGuiTK_Context * new_context;
 
-  new_context = malloc( sizeof( struct SDLGuiTK_Context ) );
-  new_context->surface = NULL;
-  new_context->type = SDLGUITK_CONTEXT_MODE_NULL;
-  new_context->mutex = SDL_CreateMutex();
+    new_context = malloc( sizeof( struct SDLGuiTK_Context ) );
+    new_context->surface = NULL;
+    new_context->type = SDLGUITK_CONTEXT_MODE_NULL;
+    new_context->mutex = SDL_CreateMutex();
 
-  new_context->activables = SDLGuiTK_list_new();
-  new_context->ref = SDLGuiTK_list_new();
-  new_context->unref = SDLGuiTK_list_new();
-  new_context->active_wmwidget = NULL;
+    //new_context->renders = SDLGuiTK_list_new();
+    new_context->main_render = NULL;
+    new_context->activables = SDLGuiTK_list_new();
+    new_context->ref = SDLGuiTK_list_new();
+    new_context->unref = SDLGuiTK_list_new();
+    new_context->active_wmwidget = NULL;
+    new_context->active_render = NULL;
 
-  return new_context;
+    return new_context;
 }
 
 static void Context_destroy( SDLGuiTK_Context * context )
 {
-  SDLGuiTK_list_destroy( context->ref );
-  SDLGuiTK_list_destroy( context->unref );
-  SDLGuiTK_list_destroy( context->activables );
-  SDL_DestroyMutex( context->mutex );
-  free( context );
+    SDLGuiTK_list_destroy( context->ref );
+    SDLGuiTK_list_destroy( context->unref );
+    SDLGuiTK_list_destroy( context->activables );
+    //SDLGuiTK_list_destroy( context->renders );
+    SDL_DestroyMutex( context->mutex );
+    free( context );
 }
 
 
-void PROT__context_new( SDL_Surface *surface, int type )
+void PROT__context_new( int type, SDL_Window * window, SDL_Renderer * renderer )
 {
+    SDLGuiTK_Render * new_render;
     current_context = Context_create();
-    current_context->surface = surface;
     current_context->type = type;
+    if(type==SDLGUITK_CONTEXT_MODE_SELF) {
+        new_render = Render_create();
+        current_context->surface = SDL_GetWindowSurface(new_render->window);
+        current_context->main_render = new_render;
+    } else if(type==SDLGUITK_CONTEXT_MODE_EMBED) {
+        new_render = Render_set( window, renderer );
+        current_context->surface = SDL_GetWindowSurface(new_render->window);
+        current_context->main_render = new_render;
+    } else if(type==SDLGUITK_CONTEXT_MODE_MULTIPLE) {
+        Render_ModeSetWidth (10);
+        Render_ModeSetHeight (10);
+    }
+    //SDLGuiTK_list_append(current_context->renders, (SDLGuiTK_Object*)new_render);
 }
 
 
 void PROT__context_quit()
 {
-  SDLGuiTK_WMWidget * rest=NULL;
+    SDLGuiTK_WMWidget * rest=NULL;
 
-  SDLGuiTK_list_lock( current_context->activables );
-  rest = (SDLGuiTK_WMWidget *) \
-    SDLGuiTK_list_ref_init( current_context->activables );
-  while( rest!=NULL ) {
-    SDLGuiTK_widget_destroy( rest->widget );
+    SDLGuiTK_list_lock( current_context->activables );
     rest = (SDLGuiTK_WMWidget *) \
-      SDLGuiTK_list_ref_next( current_context->activables );
-  }
-  SDLGuiTK_list_unlock( current_context->activables );
+           SDLGuiTK_list_ref_init( current_context->activables );
+    while( rest!=NULL ) {
+        SDLGuiTK_widget_destroy( rest->widget );
+        rest = (SDLGuiTK_WMWidget *) \
+               SDLGuiTK_list_ref_next( current_context->activables );
+    }
+    SDLGuiTK_list_unlock( current_context->activables );
 
-/*   SDLGuiTK_list_lock( current_context->activables ); */
-/*   while( SDLGuiTK_list_length(current_context->activables)!=0 ) { */
-/*     SDLGuiTK_list_unlock( current_context->activables ); */
-/*     SDL_Delay(100); */
-/*     SDLGuiTK_list_lock( current_context->activables ); */
-/*   } */
-/*   SDLGuiTK_list_unlock( current_context->activables ); */
+    /*   SDLGuiTK_list_lock( current_context->activables ); */
+    /*   while( SDLGuiTK_list_length(current_context->activables)!=0 ) { */
+    /*     SDLGuiTK_list_unlock( current_context->activables ); */
+    /*     SDL_Delay(100); */
+    /*     SDLGuiTK_list_lock( current_context->activables ); */
+    /*   } */
+    /*   SDLGuiTK_list_unlock( current_context->activables ); */
 
-  PROT__Tooltips_DestroyAll();  /* Hack to free tooltips struct */
+    PROT__Tooltips_DestroyAll();  /* Hack to free tooltips struct */
     PROT__signal_check();
     SDL_Delay( 200 );
     PROT__signal_check();
@@ -110,21 +125,21 @@ void PROT__context_quit()
 
 void PROT__context_uninit()
 {
-  Context_destroy( current_context );
+    Context_destroy( current_context );
 }
 
 
 void PROT__context_ref_wmwidget( SDLGuiTK_WMWidget * wm_widget )
 {
-  SDLGuiTK_list_lock( current_context->ref );
-  SDLGuiTK_list_append( current_context->ref, \
-			(SDLGuiTK_Object *) wm_widget );
-  SDLGuiTK_list_unlock( current_context->ref );
-/*   PROT_MyWM_checkfornew( wm_widget->widget ); */
+    SDLGuiTK_list_lock( current_context->ref );
+    SDLGuiTK_list_append( current_context->ref, \
+                          (SDLGuiTK_Object *) wm_widget );
+    SDLGuiTK_list_unlock( current_context->ref );
+    /*   PROT_MyWM_checkfornew( wm_widget->widget ); */
 #if DEBUG_LEVEL >= 2
-  char tmpstr[512];
+    char tmpstr[512];
     sprintf( tmpstr, \
-	     "_context_ref_wmwidget(): %s\n", wm_widget->object->name );
+             "_context_ref_wmwidget(): %s\n", wm_widget->object->name );
     SDLGUITK_LOG( tmpstr );
 #endif
 }
@@ -132,181 +147,338 @@ void PROT__context_ref_wmwidget( SDLGuiTK_WMWidget * wm_widget )
 void PROT__context_unref_wmwidget( SDLGuiTK_WMWidget * wm_widget )
 {
 #if DEBUG_LEVEL >= 2
-  char tmpstr[512];
+    char tmpstr[512];
 #endif
-  SDLGuiTK_WMWidget * rem_widget=NULL;
+    SDLGuiTK_WMWidget * rem_widget=NULL;
 
-  SDLGuiTK_list_lock( current_context->activables );
+    SDLGuiTK_list_lock( current_context->activables );
 
-  rem_widget = \
-    (SDLGuiTK_WMWidget *) SDLGuiTK_list_remove(current_context->activables,\
-					       (SDLGuiTK_Object *) wm_widget );
-  if( rem_widget!=NULL ) {
-  SDLGuiTK_list_lock( current_context->unref );
-  SDLGuiTK_list_append( current_context->unref, \
-			(SDLGuiTK_Object *) wm_widget->surface2D );
-  SDLGuiTK_list_unlock( current_context->unref );
-  if( rem_widget==wm_widget ) {
+    rem_widget = \
+                 (SDLGuiTK_WMWidget *) SDLGuiTK_list_remove(current_context->activables,\
+                         (SDLGuiTK_Object *) wm_widget );
+    if( rem_widget!=NULL ) {
+        SDLGuiTK_list_lock( current_context->unref );
+        SDLGuiTK_list_append( current_context->unref, \
+                              (SDLGuiTK_Object *) wm_widget->surface2D );
+        SDLGuiTK_list_unlock( current_context->unref );
+        if(wm_widget->render && !wm_widget->is_wmchild) {
+            Render_destroy (wm_widget->render);
+            wm_widget->render = NULL;
+        } else if(wm_widget->is_wmchild) {
+
+            SDLGuiTK_list_remove (wm_widget->wmparent->children,
+                                  (SDLGuiTK_Object *)wm_widget);
+
+        }
+        if( rem_widget==wm_widget ) {
 #if DEBUG_LEVEL >= 2
-    sprintf( tmpstr, \
-	     "_context_unref_wmwidget(): %s\n", rem_widget->object->name );
-    SDLGUITK_LOG( tmpstr );
+            sprintf( tmpstr, \
+                     "_context_unref_wmwidget(): %s\n", rem_widget->object->name );
+            SDLGUITK_LOG( tmpstr );
 #endif
-  } else {
-    SDLGUITK_ERROR( "_context_unref_wmwidget(): cancel!\n" );
-    exit(0);
-  }
-  }
-
-/*   PROT_MyWM_checkactive( rem_widget->widget ); */
-/*   if( current_context->active_wmwidget==rem_widget ) { */
-/*     PROT__signal_push( current_context->active_wmwidget->widget->object, \ */
-/* 		       SDLGUITK_SIGNAL_TYPE_LEAVE ); */
-/*     current_context->active_wmwidget = NULL; */
-/*     SDLGUITK_LOG( "_context_unref_wmwidget(): Active widget unref\n" ); */
-/*   } */
-
-  SDLGuiTK_list_unlock( current_context->activables );
-  PROT_MyWM_leaveall();
-  PROT_MyWM_checkactive( rem_widget->widget );
+        } else {
+            SDLGUITK_ERROR( "_context_unref_wmwidget(): cancel!\n" );
+            exit(0);
+        }
+    }
+    SDLGuiTK_list_unlock( current_context->activables );
+    PROT_MyWM_leaveall();
+    PROT_MyWM_checkactive( rem_widget->widget );
 }
 
-
+static SDLGuiTK_WMWidget * Context_get_wmwidget(SDLGuiTK_Widget * widget)
+{
+    SDLGuiTK_WMWidget * current;
+    current = (SDLGuiTK_WMWidget *) \
+        SDLGuiTK_list_ref_init( current_context->activables );
+    while( current!=NULL ) {
+        if(current->widget==widget)
+            return current;
+        current = (SDLGuiTK_WMWidget *) \
+              SDLGuiTK_list_ref_next( current_context->activables );
+    }
+    SDLGUITK_ERROR ("WMWidget top not found !\n");
+    return NULL;
+}
 
 void SDLGuiTK_update()
 {
-  SDLGuiTK_WMWidget * current=NULL;
-  SDLGuiTK_Surface2D * current2D=NULL;
+    SDLGuiTK_WMWidget * current=NULL;
+    SDLGuiTK_Surface2D * current2D=NULL;
 
-  SDL_mutexP( current_context->mutex );
-  SDLGuiTK_list_lock( current_context->activables );
-  SDLGuiTK_list_lock( current_context->ref );
-  SDLGuiTK_list_lock( current_context->unref );
-
-  current = \
-    (SDLGuiTK_WMWidget *) SDLGuiTK_list_pop_head( current_context->ref );
-  while( current!=NULL ) {
-    current->surface2D = Surface2D_new();
-    SDLGuiTK_list_append( current_context->activables, \
-			  (SDLGuiTK_Object *) current );
-    SDLGuiTK_list_unlock( current_context->activables );
-    PROT_MyWM_leaveall();
-    PROT_MyWM_checkactive( current->widget );
+    SDL_mutexP( current_context->mutex );
     SDLGuiTK_list_lock( current_context->activables );
+    SDLGuiTK_list_lock( current_context->ref );
+    SDLGuiTK_list_lock( current_context->unref );
+
     current = \
-      (SDLGuiTK_WMWidget *) SDLGuiTK_list_pop_head( current_context->ref );
-  }
+              (SDLGuiTK_WMWidget *) SDLGuiTK_list_pop_head( current_context->ref );
+    while( current!=NULL ) {
+        current->surface2D = Surface2D_new();
+        if(current_context->type==SDLGUITK_CONTEXT_MODE_MULTIPLE) {
+            if(!current->is_wmchild) {
+                current->render = Render_create ();
+                if(current->title_shown)
+                    SDL_SetWindowTitle(current->render->window,
+                                   current->title);
+                else
+                    SDL_SetWindowTitle(current->render->window,
+                                   current->widget->object->name);
 
-  current2D = \
-    (SDLGuiTK_Surface2D *) SDLGuiTK_list_pop_head( current_context->unref );
-  while( current2D!=NULL ) {
-    Surface2D_destroy( current2D );
-    current2D = \
-      (SDLGuiTK_Surface2D *) SDLGuiTK_list_pop_head( current_context->unref );
-  }
+                SDL_SetWindowSize (current->render->window,
+                                   current->area.w-2*current->border_width,
+                                   current->area.h-2*current->border_width);
+                Render_clean ();
+                SDL_RenderPresent (current->render->renderer);
+                //Render_swapbuffers (current->render);
+            } else {
+                //SDLGuiTK_WMWidget * top;
+                //top = Context_get_wmwidget(current->widget->top);
+                //if(top) {
+                    current->render = NULL;
+                //    SDLGuiTK_list_append (top->children,
+                //                          (SDLGuiTK_Object *)current);
+                    //current->wmchild = 1;
+            }
+        }
+        if(current->is_wmchild) {
+            SDLGuiTK_WMWidget * top;
+            top = Context_get_wmwidget(current->parent);
+            //top = current->wmparent;
+            if(top) {
+                //current->render = top->render;
+                current->wmparent = top;
+                SDLGuiTK_list_append (top->children,
+                                      (SDLGuiTK_Object *)current);
+                //current->wmchild = 1;
+            }
+        }
+        SDLGuiTK_list_append( current_context->activables, \
+                              (SDLGuiTK_Object *) current );
+        SDLGuiTK_list_unlock( current_context->activables );
+        PROT__signal_push( current->widget->object, SDLGUITK_SIGNAL_TYPE_REALIZE );
+        PROT_MyWM_leaveall();
+        PROT_MyWM_checkactive( current->widget );
+        SDLGuiTK_list_lock( current_context->activables );
+        current = \
+                  (SDLGuiTK_WMWidget *) SDLGuiTK_list_pop_head( current_context->ref );
+    }
 
-  SDLGuiTK_list_unlock( current_context->unref );
-  SDLGuiTK_list_unlock( current_context->ref );
-  SDLGuiTK_list_unlock( current_context->activables );
-  SDL_mutexV( current_context->mutex );
+    current2D = (SDLGuiTK_Surface2D *) SDLGuiTK_list_pop_head( current_context->unref );
+    while( current2D!=NULL ) {
+        Surface2D_destroy( current2D );
+        current2D = (SDLGuiTK_Surface2D *)
+                    SDLGuiTK_list_pop_head( current_context->unref );
+    }
 
-  PROT__signal_check();
+    SDLGuiTK_list_unlock( current_context->unref );
+    SDLGuiTK_list_unlock( current_context->ref );
+    SDLGuiTK_list_unlock( current_context->activables );
+    SDL_mutexV( current_context->mutex );
+
+    PROT__signal_check();
+}
+
+static void Context_blit_children(SDLGuiTK_WMWidget * wmwidget)
+{
+    SDLGuiTK_WMWidget * current;
+    current = (SDLGuiTK_WMWidget *)
+              SDLGuiTK_list_ref_init( wmwidget->children );
+    while(current)
+    {
+        MyWM_blitsurface( current );
+        current =   (SDLGuiTK_WMWidget *)
+                    SDLGuiTK_list_ref_next( wmwidget->children );
+    }
 }
 
 void SDLGuiTK_blitsurfaces()
 {
-  SDLGuiTK_WMWidget * current=NULL;
+    SDLGuiTK_WMWidget * current=NULL;
 
-  SDL_mutexP( current_context->mutex );
-  SDLGuiTK_list_lock( current_context->activables );
+    SDL_mutexP( current_context->mutex );
+    SDLGuiTK_list_lock( current_context->activables );
 
-  if( SDLGuiTK_list_length( current_context->activables )==0 ) {
+    if( SDLGuiTK_list_length( current_context->activables )==0 ) {
+        SDLGuiTK_list_unlock( current_context->activables );
+        SDL_mutexV( current_context->mutex );
+        return;
+    }
+    current = (SDLGuiTK_WMWidget *) \
+              SDLGuiTK_list_ref_init( current_context->activables );
+    while( current!=NULL ) {
+
+        if(!current->is_wmchild) {
+            if(current_context->type==SDLGUITK_CONTEXT_MODE_MULTIPLE) {
+                SDL_GL_MakeCurrent (current->render->window, current->render->renderer);
+                SDL_RenderPresent (current->render->renderer);
+            }
+            MySDL_GL_Enter2DMode();
+             if(current_context->type==SDLGUITK_CONTEXT_MODE_MULTIPLE) {
+                Render_clean();
+            }
+            MyWM_blitsurface( current );
+            Context_blit_children(current);
+            if(current_context->type!=SDLGUITK_CONTEXT_MODE_MULTIPLE)
+                MySDL_GL_Leave2DMode();
+        }
+        current = (SDLGuiTK_WMWidget *) \
+                  SDLGuiTK_list_ref_next( current_context->activables );
+    }
+
     SDLGuiTK_list_unlock( current_context->activables );
     SDL_mutexV( current_context->mutex );
-    return;
-  }
-#ifdef HAVE_GL_GL_H
-  MySDL_GL_Enter2DMode();
-#endif
-  current = (SDLGuiTK_WMWidget *) \
-    SDLGuiTK_list_ref_init( current_context->activables );
-  while( current!=NULL ) {
-
-    MyWM_blitsurface( current );
-
-    current = (SDLGuiTK_WMWidget *) \
-      SDLGuiTK_list_ref_next( current_context->activables );
-  }
-#ifdef HAVE_GL_GL_H
-  MySDL_GL_Leave2DMode();
-#endif
-
-  SDLGuiTK_list_unlock( current_context->activables );
-  SDL_mutexV( current_context->mutex );
 }
 
 
+static SDLGuiTK_WMWidget * Context_getwmwidget_withwindowid(int id)
+{
+    SDLGuiTK_WMWidget * current=NULL;
+    current = (SDLGuiTK_WMWidget *) \
+                  SDLGuiTK_list_refrv_init( current_context->activables );
+    while(current) {
+        if(SDL_GetWindowID(current->render->window)==id) {
+            printf("FOUND: id:%d for %s\n", id, current->widget->object->name);
+            return current;
+        }
+        current = (SDLGuiTK_WMWidget *) \
+                  SDLGuiTK_list_refrv_next( current_context->activables );
+    }
+    return NULL;
+}
+
 int  SDLGuiTK_pushevent( SDL_Event *event )
 {
-  int flag;
+    int flag;
 
-  SDL_mutexP( current_context->mutex );
+    SDL_mutexP( current_context->mutex );
 
-  if( event->type==SDL_MOUSEMOTION ) {
-    flag = MyWM_push_MOUSEMOTION( event );
-    SDL_mutexV( current_context->mutex );
-    return flag;
-  }
-
-  SDLGuiTK_list_lock( current_context->activables );
-
-  if( current_context->active_wmwidget!=NULL ) {
-    SDLGuiTK_list_unlock( current_context->activables );
-    switch( event->type ) {
-    case SDL_MOUSEBUTTONDOWN:
-      flag = MyWM_push_MOUSEBUTTONDOWN( event );
-      SDL_mutexV( current_context->mutex );
-      return flag;
-    case SDL_MOUSEBUTTONUP:
-      flag = MyWM_push_MOUSEBUTTONUP( event );
-      SDL_mutexV( current_context->mutex );
-      return flag;
-/*     case SDL_KEYUP: */
-/*       return MyWM_push_KEYUP( event ); */
-    case SDL_KEYDOWN:
-      flag = MyWM_push_KEYDOWN( event );
-      SDL_mutexV( current_context->mutex );
-      return flag;
-    case SDL_TEXTINPUT:
-      flag = MyWM_push_TEXTINPUT( event );
-      SDL_mutexV( current_context->mutex );
-      return flag;
-    default:
-      SDL_mutexV( current_context->mutex );
-      return 0;
+    if( event->type==SDL_MOUSEMOTION ) {
+        flag = MyWM_push_MOUSEMOTION( event );
+        SDL_mutexV( current_context->mutex );
+        return flag;
     }
-  } else {
-    SDLGuiTK_list_unlock( current_context->activables );
-    SDL_mutexV( current_context->mutex );
-  }
-
-  if( event->type==SDL_QUIT ) {
-    if( current_context->type==SDLGUITK_CONTEXT_MODE_SELF ) {
-      SDLGuiTK_main_quit();
+    if( event->type==SDL_WINDOWEVENT ) {
+        if(current_context->type==SDLGUITK_CONTEXT_MODE_MULTIPLE) {
+            if(event->window.event==SDL_WINDOWEVENT_LEAVE) {
+                if(current_context->active_wmwidget!=NULL) {
+                    //PROT__signal_push( current_context->active_wmwidget->object,		\
+                    //       SDLGUITK_SIGNAL_TYPE_LEAVE );
+                    //current_context->active_wmwidget->enter = 0;
+                    //current_context->active_wmwidget = NULL;
+                    current_context->active_render = NULL;
+                    PROT_MyWM_leaveall();
+                    SDL_mutexV( current_context->mutex );
+                    return 0;
+                }
+            }
+            if(event->window.event==SDL_WINDOWEVENT_ENTER) {
+                if(current_context->active_wmwidget==NULL) {
+                    SDLGuiTK_WMWidget * wmwidget =
+                        Context_getwmwidget_withwindowid(event->window.windowID);
+                    if(wmwidget) {
+                        //current_context->active_wmwidget->enter = 1;
+                        current_context->active_render = wmwidget->render;
+                        SDL_mutexV( current_context->mutex );
+                        return 0;
+                    }
+                }
+            }
+            if(event->window.event==SDL_WINDOWEVENT_CLOSE) {
+                if(current_context->active_wmwidget==NULL) {
+                    SDLGuiTK_WMWidget * wmwidget =
+                        Context_getwmwidget_withwindowid(event->window.windowID);
+                    if(wmwidget) {
+                        //current_context->active_wmwidget->enter = 1;
+                        //current_context->active_render = wmwidget->render;
+                        SDLGuiTK_widget_destroy (wmwidget->widget);
+                        SDL_mutexV( current_context->mutex );
+                        return 0;
+                    }
+                }
+            }
+        }
+        MyWM_push_WINDOWEVENT( event );
+        SDL_mutexV( current_context->mutex );
+        return 0;
     }
-  }
 
-  return 0;
+    SDLGuiTK_list_lock( current_context->activables );
+
+    if( current_context->active_wmwidget!=NULL ) {
+        SDLGuiTK_list_unlock( current_context->activables );
+        switch( event->type ) {
+        case SDL_MOUSEBUTTONDOWN:
+            flag = MyWM_push_MOUSEBUTTONDOWN( event );
+            SDL_mutexV( current_context->mutex );
+            return flag;
+        case SDL_MOUSEBUTTONUP:
+            flag = MyWM_push_MOUSEBUTTONUP( event );
+            SDL_mutexV( current_context->mutex );
+            return flag;
+        /*     case SDL_KEYUP: */
+        /*       return MyWM_push_KEYUP( event ); */
+        case SDL_KEYDOWN:
+            flag = MyWM_push_KEYDOWN( event );
+            SDL_mutexV( current_context->mutex );
+            return flag;
+        case SDL_TEXTINPUT:
+            flag = MyWM_push_TEXTINPUT( event );
+            SDL_mutexV( current_context->mutex );
+            return flag;
+        default:
+            SDL_mutexV( current_context->mutex );
+            return 0;
+        }
+    } else {
+        SDLGuiTK_list_unlock( current_context->activables );
+        SDL_mutexV( current_context->mutex );
+    }
+
+    if( event->type==SDL_QUIT ) {
+        if( current_context->type==SDLGUITK_CONTEXT_MODE_SELF ) {
+            SDLGuiTK_main_quit();
+        }
+        if( current_context->type==SDLGUITK_CONTEXT_MODE_MULTIPLE ) {
+            if(current_context->active_render)
+            {
+                SDLGuiTK_WMWidget *wmcurrent;
+                wmcurrent = Context_getwmwidget_withwindowid (
+                    SDL_GetWindowID (
+                        Render_GetVideoWindow (current_context->active_render)));
+
+                if(wmcurrent)
+                    SDLGuiTK_widget_destroy (wmcurrent->widget);
+            }
+        }
+    }
+
+    return 0;
+}
+
+void PROT__context_renderclean()
+{
+    if(current_context->type==SDLGUITK_CONTEXT_MODE_MULTIPLE)
+        return;
+    Render_clean();
+}
+
+void PROT__context_renderswap()
+{
+    if(current_context->type==SDLGUITK_CONTEXT_MODE_MULTIPLE)
+        return;
+    if(current_context->main_render)
+        Render_swapbuffers(current_context->main_render);
 }
 
 
 void  SDLGuiTK_threads_enter()
 {
-  SDL_mutexP( current_context->mutex );
+    SDL_mutexP( current_context->mutex );
 }
 
 void  SDLGuiTK_threads_leave()
 {
-  SDL_mutexV( current_context->mutex );
+    SDL_mutexV( current_context->mutex );
 }
 

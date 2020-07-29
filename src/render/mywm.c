@@ -34,20 +34,16 @@
 #include <string.h>
 #endif
 
-#include <SDL2/SDL_guitk.h>
 
-#include "../debug.h"
-#include "../mysdl.h"
+#include "mywm.h"
+#include "../widget_prot.h"
+#include "../wmwidget.h"
 #include "../signal.h"
 #include "../list.h"
-#include "../theme_prot.h"
-#include "../object_prot.h"
-#include "../widget_prot.h"
-#include "surface2d.h"
-#include "../wmwidget.h"
-#include "mywm.h"
-#include "../tooltips_prot.h"
+
+//TODO: why ?
 #include "../context_prot.h"
+#include "../tooltips_prot.h"
 
 
 static SDLGuiTK_Widget    * active_widget=NULL;
@@ -101,6 +97,11 @@ static void Desactive_WMWidget( SDLGuiTK_WMWidget * wm_widget )
 }
 
 static int Is_MOUSEMOTION_in( SDLGuiTK_WMWidget * wm_widget, int x, int y ) {
+    if(current_context->type==SDLGUITK_CONTEXT_MODE_MULTIPLE)
+        if (wm_widget->render!=current_context->active_render &&
+            !(wm_widget->is_wmchild &&
+             wm_widget->wmparent->render==current_context->active_render))
+            return 0;
     if( ( x>=wm_widget->area.x &&
             x<=(wm_widget->area.x+wm_widget->area.w) ) &&
             ( y>=wm_widget->area.y &&
@@ -113,6 +114,11 @@ static int Is_MOUSEMOTION_in( SDLGuiTK_WMWidget * wm_widget, int x, int y ) {
 static int Is_MOUSEMOTION_enter( int x, int y,				\
                                  SDLGuiTK_WMWidget * wm_widget )
 {
+    if(current_context->type==SDLGUITK_CONTEXT_MODE_MULTIPLE)
+        if (wm_widget->render!=current_context->active_render &&
+            !(wm_widget->is_wmchild &&
+             wm_widget->wmparent->render==current_context->active_render))
+            return 0;
     if( Is_MOUSEMOTION_in( wm_widget, x, y )==1 )
     {
         if( wm_widget->enter==0 ) {
@@ -209,11 +215,16 @@ int MyWM_push_MOUSEMOTION_in( int x, int y )
         current = (SDLGuiTK_WMWidget *) \
                   SDLGuiTK_list_refrv_init( current_context->activables );
         while( current!=NULL && current!=current_context->active_wmwidget ) {
-            if( Is_MOUSEMOTION_enter(x,y,current)==1 ) {
-                Activables_check( x, y );
-                PROT_List_refrv_reinit( current_context->activables );
-                SDLGuiTK_list_unlock( current_context->activables );
-                return 1;
+            if(current->render==current_context->active_render ||
+               (current->is_wmchild &&
+                current->wmparent->render==current_context->active_render))
+            {
+                if( Is_MOUSEMOTION_enter(x,y,current)==1 ) {
+                    Activables_check( x, y );
+                    PROT_List_refrv_reinit( current_context->activables );
+                    SDLGuiTK_list_unlock( current_context->activables );
+                    return 1;
+                }
             }
             current = (SDLGuiTK_WMWidget *) \
                       SDLGuiTK_list_refrv_next( current_context->activables );
@@ -339,6 +350,79 @@ int MyWM_push_KEYDOWN( SDL_Event *event )
     return 0;
 }
 
+int MyWM_push_WINDOWEVENT( SDL_Event *event )
+{
+    switch (event->window.event) {
+    case SDL_WINDOWEVENT_SHOWN:
+        SDL_Log("Window %d shown", event->window.windowID);
+        break;
+    case SDL_WINDOWEVENT_HIDDEN:
+        SDL_Log("Window %d hidden", event->window.windowID);
+        break;
+    case SDL_WINDOWEVENT_EXPOSED:
+        SDL_Log("Window %d exposed", event->window.windowID);
+        break;
+    case SDL_WINDOWEVENT_MOVED:
+        //SDL_Log("Window %d moved to %d,%d",
+        //        event->window.windowID, event->window.data1,
+        //        event->window.data2);
+        break;
+    case SDL_WINDOWEVENT_RESIZED:
+        SDL_Log("Window %d resized to %dx%d",
+                event->window.windowID, event->window.data1,
+                event->window.data2);
+        break;
+    case SDL_WINDOWEVENT_SIZE_CHANGED:
+        SDL_Log("Window %d size changed to %dx%d",
+                event->window.windowID, event->window.data1,
+                event->window.data2);
+        break;
+    case SDL_WINDOWEVENT_MINIMIZED:
+        SDL_Log("Window %d minimized", event->window.windowID);
+        break;
+    case SDL_WINDOWEVENT_MAXIMIZED:
+        SDL_Log("Window %d maximized", event->window.windowID);
+        break;
+    case SDL_WINDOWEVENT_RESTORED:
+        SDL_Log("Window %d restored", event->window.windowID);
+        break;
+    case SDL_WINDOWEVENT_ENTER:
+        SDL_Log("Mouse entered window %d",
+                event->window.windowID);
+        break;
+    case SDL_WINDOWEVENT_LEAVE:
+        SDL_Log("Mouse left window %d", event->window.windowID);
+        break;
+    case SDL_WINDOWEVENT_FOCUS_GAINED:
+        SDL_Log("Window %d gained keyboard focus",
+                event->window.windowID);
+        break;
+    case SDL_WINDOWEVENT_FOCUS_LOST:
+        SDL_Log("Window %d lost keyboard focus",
+                event->window.windowID);
+        break;
+    case SDL_WINDOWEVENT_CLOSE:
+        SDL_Log("Window %d closed", event->window.windowID);
+        break;
+#if SDL_VERSION_ATLEAST(2, 0, 5)
+    case SDL_WINDOWEVENT_TAKE_FOCUS:
+        SDL_Log("Window %d is offered a focus (%d activables)",
+                event->window.windowID,
+                SDLGuiTK_list_length (current_context->activables));
+        break;
+    case SDL_WINDOWEVENT_HIT_TEST:
+        SDL_Log("Window %d has a special hit test", event->window.windowID);
+        break;
+#endif
+    }
+    /* if( active_widget!=NULL ) { */
+    /*     PROT__signal_pushkey( active_widget->object, \ */
+    /*                           SDLGUITK_SIGNAL_TYPE_KEYBOARD, \ */
+    /*                           &event->key ); */
+    /*     return 1; */
+    /* } */
+    return 0;
+}
 
 void * MyWM_blitsurface( SDLGuiTK_WMWidget * wm_widget )
 {

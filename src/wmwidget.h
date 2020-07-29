@@ -18,6 +18,12 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#pragma once
+
+#include <SDL2/SDL_guitk.h>
+#include "mysdl.h"
+#include "render/render.h"
+#include "render/surface2d.h"
 
 typedef struct SDLGuiTK_WMWidget SDLGuiTK_WMWidget;
 
@@ -26,6 +32,12 @@ struct SDLGuiTK_WMWidget {
     SDLGuiTK_Object    * object;      /* referent widget */
 
     SDLGuiTK_Widget * widget;         /* herits from */
+
+    SDLGuiTK_List * children;
+    SDLGuiTK_Render * render;         /* Render of WMWirget if MULTI mode */
+    int               is_wmchild;      /* 0 if top, 1 if have a parent */
+    SDLGuiTK_Widget * parent;
+    SDLGuiTK_WMWidget * wmparent;
 
     /* "public" data */
     int               border_width;
@@ -49,6 +61,11 @@ struct SDLGuiTK_WMWidget {
 
 extern SDLGuiTK_WMWidget  * WMWidget_New( SDLGuiTK_Widget * widget );
 extern void                 WMWidget_Delete( SDLGuiTK_WMWidget * wm_widget );
+
+// Get the render associated with, in MULTIPLES mode
+SDLGuiTK_Render * WMWidget_getrender( SDLGuiTK_WMWidget * wm_widget );
+// Get the window associated with
+SDL_Window * WMWidget_getwindow( SDLGuiTK_WMWidget * wm_widget );
 
 // Fill surface with bgcolor
 extern void                 WMWidget_Clean( SDLGuiTK_WMWidget * wm_widget );

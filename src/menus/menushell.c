@@ -123,6 +123,9 @@ static void * MenuShell_DrawUpdate( SDLGuiTK_Widget * widget )
 
     PROT__widget_DrawUpdate( widget );
 
+    /* Prepare WM coords */
+    widget->abs_area.x = menushell->menu->object->widget->abs_area.x+3;
+    widget->abs_area.y = menushell->menu->object->widget->abs_area.y+3;
     /* Prepare WM sizes */
     menushell->wm_widget->child_area.w = widget->req_area.w; //TODO: abs_area ???
     menushell->wm_widget->child_area.h = widget->req_area.h;
@@ -194,6 +197,8 @@ static void * MenuShell_DrawBlit( SDLGuiTK_Widget * widget )
 
     SDLGuiTK_list_unlock( menushell->children );
 
+    menushell->wm_widget->is_wmchild = 1;
+    menushell->wm_widget->parent = menushell->menu->object->widget->top;
     WMWidget_DrawBlit( menushell->wm_widget, widget->srf );
 
     //MySDL_BlitSurface(  widget->srf, NULL,
@@ -299,7 +304,7 @@ static void * MenuShell_Realize( SDLGuiTK_Widget * widget, \
     /*   MenuShell_Show( widget, NULL ); */
     MenuShell_DrawUpdate( widget );
     MenuShell_DrawBlit( widget );
-    MenuShell_UpdatePosition( menushell );
+    //MenuShell_UpdatePosition( menushell );
     return (void *) NULL;
 }
 

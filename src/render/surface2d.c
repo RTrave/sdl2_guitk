@@ -33,10 +33,9 @@
 #include <string.h>
 #endif
 
-#include "../debug.h"
-#include "../mysdl.h"
-#include "../object_prot.h"
+
 #include "surface2d.h"
+#include "../debug.h"
 
 
 

@@ -41,79 +41,85 @@
 //#include <GL3/gl3.h>
 
 #endif
-#include "GL/gl.h"
+
 
 #include <SDL2/SDL_syswm.h>
-#include <SDL2/SDL_guitk.h>
-
+#include "render.h"
 #include "../debug.h"
-#include "../mysdl.h"
-#include "../object_prot.h"
-#include "surface2d.h"
-#include "../wmwidget.h"
 #include "../context_prot.h"
 
-#include "render.h"
-
-
-static SDLGUITK_Render * main_render=NULL;
+//static SDLGuiTK_Render * main_render=NULL;
 
 
 void Render_clean()
 {
-    SDLGuiTK_threads_enter();
+    //SDLGuiTK_threads_enter();
+//    if(!main_render) return;
     glMatrixMode( GL_MODELVIEW );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
-    SDLGuiTK_threads_leave();
+    //SDLGuiTK_threads_leave();
 }
 
 
-void Render_swapbuffers()
+void Render_swapbuffers(SDLGuiTK_Render *render)
 {
-    SDLGuiTK_threads_enter();
-    SDL_GL_SwapWindow(main_render->window);
-    SDLGuiTK_threads_leave();
+    //SDLGuiTK_threads_enter();
+//    if(!main_render) return;
+    SDL_GL_SwapWindow(render->window);
+    //SDLGuiTK_threads_leave();
 }
 
+static int ask_fullscreen = 0;
+static int ask_width = 800;
+static int ask_height = 800;
+static int render_id=0;
 
-static SDLGUITK_Render * Render_new()
+
+static SDLGuiTK_Render * Render_new()
 {
-    SDLGUITK_Render * new_render;
-    new_render = malloc( sizeof( struct SDLGUITK_Render ) );
-    new_render->width = 800;
-    new_render->height = 600;
-    new_render->fullscreen = 0;
+    SDLGuiTK_Render * new_render;
+    new_render = malloc( sizeof( struct SDLGuiTK_Render ) );
+
+    new_render->width = ask_width;
+    new_render->height = ask_height;
+    new_render->fullscreen = ask_fullscreen;
     new_render->bpp = 24;
+    new_render->context = NULL;
+    new_render->renderer = NULL;
+    new_render->window = NULL;
+    new_render->id = render_id++;
     return new_render;
 }
 
 void Render_ModeFullScreen( SDL_bool state )
 {
     if( state==SDL_TRUE ) {
-        main_render->fullscreen = 1;
+        ask_fullscreen = 1;
     }
-    else main_render->fullscreen = 0;
+    else ask_fullscreen = 0;
 }
 
 void Render_ModeSetWidth( int width )
 {
-    main_render->width = width;
+    ask_width = width;
 }
 
 void Render_ModeSetHeight( int height )
 {
-    main_render->height = height;
+    ask_height = height;
 }
 
-SDLGUITK_Render * Render_set( SDL_Window * window, SDL_Renderer * renderer )
+SDLGuiTK_Render * Render_set( SDL_Window * window, SDL_Renderer * renderer )
 {
-    main_render = Render_new ();
-    main_render->window = window;
-    main_render->renderer = renderer;
-    return main_render;
+    SDLGuiTK_Render * render = Render_new ();
+    render->window = window;
+    render->renderer = renderer;
+    return render;
 }
 
-SDLGUITK_Render * Render_create()
+static int context_exists=0;
+
+SDLGuiTK_Render * Render_create()
 {
     int i;
 #if DEBUG_LEVEL >= 1
@@ -134,16 +140,17 @@ SDLGUITK_Render * Render_create()
         return NULL;
     }
 
-    main_render = Render_new ();
-
-    SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+    SDLGuiTK_Render * main_render = Render_new ();
     main_render->flags = SDL_WINDOW_OPENGL;
     if( main_render->fullscreen==1 ) {
         main_render->flags |= SDL_WINDOW_FULLSCREEN;
         main_render->width = mode.w;
         main_render->height = mode.h;
     }
-
+    if(current_context->type==SDLGUITK_CONTEXT_MODE_MULTIPLE)
+        SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, context_exists);
+    context_exists=1;
+    SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
     main_render->window = SDL_CreateWindow( "SDL_GuiTK main display (MainRenderWindow)",
                                            SDL_WINDOWPOS_UNDEFINED,
                                            SDL_WINDOWPOS_UNDEFINED,
@@ -163,6 +170,9 @@ SDLGUITK_Render * Render_create()
     }
     main_render->renderer = SDL_CreateRenderer(main_render->window, -1, SDL_RENDERER_ACCELERATED);
     main_render->context = SDL_GL_CreateContext(main_render->window);
+    //SDL_GL_MakeCurrent (main_render->window, main_render->renderer);
+    //SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, main_render->id);
+    //SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
 #if DEBUG_LEVEL >= 1
 
@@ -202,7 +212,7 @@ SDLGUITK_Render * Render_create()
         //printf( "CREATE0a\n" );
         glClearColor(0.0f, 0.5f, 1.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        SDL_GL_SwapWindow(main_render->window);
+        //SDL_GL_SwapWindow(main_render->window);
         glClearColor( (GLclampf)0.0, (GLclampf)0.0, (GLclampf)0.3, (GLclampf)1.0 );
 
 #ifdef WIN32
@@ -215,21 +225,28 @@ SDLGUITK_Render * Render_create()
 }
 
 
-void Render_destroy(SDLGUITK_Render * render)
+void Render_destroy(SDLGuiTK_Render * render)
 {
     //TODO
     /*   PROT__context_quit(); */
+    SDL_DestroyRenderer(render->renderer);
+    SDL_DestroyWindow(render->window);
+    free(render);
 }
 
 
-SDL_Window * Render_GetVideoWindow()
+SDL_Window * Render_GetVideoWindow(SDLGuiTK_Render * render)
 {
-    return main_render->window;
+    if(render)
+        return render->window;
+    return NULL;
 }
 
-SDL_Surface * Render_GetVideoSurface()
+SDL_Surface * Render_GetVideoSurface(SDLGuiTK_Render * render)
 {
-    return SDL_GetWindowSurface( main_render->window );
+    if(render)
+        return SDL_GetWindowSurface( render->window );
+    return NULL;
 }
 
 

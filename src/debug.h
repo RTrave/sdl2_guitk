@@ -22,6 +22,10 @@
 /* Debug libs are empty with DEBUG_LEVEL=0 */
 /* Call debug_init before all others init functions */
 
+#pragma once
+
+#include <SDL2/SDL_guitk.h>
+
 //#define DEBUG_LEVEL 2
 
 #if DEBUG_LEVEL >= 2
