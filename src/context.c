@@ -310,17 +310,24 @@ void SDLGuiTK_blitsurfaces()
 
         if(!current->is_wmchild) {
             if(current_context->type==SDLGUITK_CONTEXT_MODE_MULTIPLE) {
-                SDL_GL_MakeCurrent (current->render->window, current->render->renderer);
-                SDL_RenderPresent (current->render->renderer);
+                SDL_GL_MakeCurrent (current->render->window, current->render->context);
+                //SDL_RenderPresent (current->render->renderer);
+                //SDL_GL_SwapWindow(current->render->window);
             }
             MySDL_GL_Enter2DMode();
              if(current_context->type==SDLGUITK_CONTEXT_MODE_MULTIPLE) {
-                Render_clean();
+                //Render_clean();
             }
             MyWM_blitsurface( current );
             Context_blit_children(current);
             if(current_context->type!=SDLGUITK_CONTEXT_MODE_MULTIPLE)
                 MySDL_GL_Leave2DMode();
+            else {
+                //MySDL_GL_Leave2DMode();
+                //SDL_RenderPresent (current->render->renderer);
+                glFlush();
+                SDL_GL_SwapWindow(current->render->window);
+            }
         }
         current = (SDLGuiTK_WMWidget *) \
                   SDLGuiTK_list_ref_next( current_context->activables );

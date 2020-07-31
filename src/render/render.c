@@ -147,10 +147,13 @@ SDLGuiTK_Render * Render_create()
         main_render->width = mode.w;
         main_render->height = mode.h;
     }
-    if(current_context->type==SDLGUITK_CONTEXT_MODE_MULTIPLE)
-        SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, context_exists);
+    //if(current_context->type==SDLGUITK_CONTEXT_MODE_MULTIPLE)
+    //    SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, context_exists);
     context_exists=1;
-    SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    //SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
+    //SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
     main_render->window = SDL_CreateWindow( "SDL_GuiTK main display (MainRenderWindow)",
                                            SDL_WINDOWPOS_UNDEFINED,
                                            SDL_WINDOWPOS_UNDEFINED,
@@ -170,9 +173,11 @@ SDLGuiTK_Render * Render_create()
     }
     main_render->renderer = SDL_CreateRenderer(main_render->window, -1, SDL_RENDERER_ACCELERATED);
     main_render->context = SDL_GL_CreateContext(main_render->window);
-    //SDL_GL_MakeCurrent (main_render->window, main_render->renderer);
+    //SDL_GLContext * glcontext = SDL_GL_CreateContext(main_render->window);
+    SDL_GL_MakeCurrent (main_render->window, main_render->context);
     //SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, main_render->id);
     //SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+    //SDL_GL_SetSwapInterval(0);
 
 #if DEBUG_LEVEL >= 1
 
@@ -209,11 +214,15 @@ SDLGuiTK_Render * Render_create()
 
 #endif
 
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         //printf( "CREATE0a\n" );
-        glClearColor(0.0f, 0.5f, 1.0f, 0.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClearColor(0.0f, 0.5f, 1.0f, 1.0f);
+        //glClear(GL_COLOR_BUFFER_BIT);
         //SDL_GL_SwapWindow(main_render->window);
-        glClearColor( (GLclampf)0.0, (GLclampf)0.0, (GLclampf)0.3, (GLclampf)1.0 );
+        //glClearColor( (GLclampf)0.0, (GLclampf)0.0, (GLclampf)0.3, (GLclampf)1.0 );
 
 #ifdef WIN32
     // initialise GLEW

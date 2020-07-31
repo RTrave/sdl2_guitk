@@ -169,6 +169,10 @@ void SDLGuiTK_init( int argc, char **argv )
 
   //MySDL_Init();
   SDL_Init( SDL_INIT_VIDEO|SDL_INIT_TIMER|SDL_INIT_EVENTS );
+        //Use OpenGL 2.1
+        SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 2 );
+        SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 1 );
+
     PROT__debug_init();
   MyTTF_Init();
   MyWM_Init();
