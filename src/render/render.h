@@ -30,7 +30,6 @@ struct SDLGuiTK_Render {
     int width, height;          /* public data */
     int bpp;                    /* public data */
     int fullscreen;             /* public data */
-    //int opengl_ask;             /* public data */
 
     Uint32 flags;               /* private data */
     SDL_Window    * window;     /* private data */
@@ -53,8 +52,6 @@ void              Render_swapbuffers(SDLGuiTK_Render * render);
 
 
 SDL_Window  * Render_GetVideoWindow(SDLGuiTK_Render * render);
-
-SDL_Surface * Render_GetVideoSurface(SDLGuiTK_Render * render);
 
 
 void Render_ModeFullScreen( SDL_bool state );

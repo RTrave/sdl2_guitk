@@ -46,9 +46,8 @@ struct SDLGuiTK_Context {
   int opengl;               /* SDL setting: OpenGL enabled */
   int resizable;            /* SDL setting: resizing ability */
 
-  //SDLGuiTK_List   * renders;  /* list of Render (SDL windows) */
-  SDLGuiTK_Render *main_render;
-  SDLGuiTK_Render *active_render;
+  SDLGuiTK_Render *main_render;   /* main render in SELF and EMBED modes */
+  SDLGuiTK_Render *active_render; /* current active render in MULTIPLE mode */
   /* Shared list of actives objects */
   /* They are added in fifo: ref->activables->unref */
   SDLGuiTK_List   * activables;  /* activables WMWidgets */

@@ -48,13 +48,10 @@
 #include "../debug.h"
 #include "../context_prot.h"
 
-//static SDLGuiTK_Render * main_render=NULL;
-
 
 void Render_clean()
 {
     //SDLGuiTK_threads_enter();
-//    if(!main_render) return;
     glMatrixMode( GL_MODELVIEW );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
     //SDLGuiTK_threads_leave();
@@ -64,7 +61,6 @@ void Render_clean()
 void Render_swapbuffers(SDLGuiTK_Render *render)
 {
     //SDLGuiTK_threads_enter();
-//    if(!main_render) return;
     SDL_GL_SwapWindow(render->window);
     //SDLGuiTK_threads_leave();
 }
@@ -152,8 +148,7 @@ SDLGuiTK_Render * Render_create()
     context_exists=1;
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    //SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
-    //SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+    //SDL_GL_SetSwapInterval(0);
     main_render->window = SDL_CreateWindow( "SDL_GuiTK main display (MainRenderWindow)",
                                            SDL_WINDOWPOS_UNDEFINED,
                                            SDL_WINDOWPOS_UNDEFINED,
@@ -173,11 +168,7 @@ SDLGuiTK_Render * Render_create()
     }
     main_render->renderer = SDL_CreateRenderer(main_render->window, -1, SDL_RENDERER_ACCELERATED);
     main_render->context = SDL_GL_CreateContext(main_render->window);
-    //SDL_GLContext * glcontext = SDL_GL_CreateContext(main_render->window);
     SDL_GL_MakeCurrent (main_render->window, main_render->context);
-    //SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, main_render->id);
-    //SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-    //SDL_GL_SetSwapInterval(0);
 
 #if DEBUG_LEVEL >= 1
 
@@ -214,15 +205,9 @@ SDLGuiTK_Render * Render_create()
 
 #endif
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        //printf( "CREATE0a\n" );
-        glClearColor(0.0f, 0.5f, 1.0f, 1.0f);
-        //glClear(GL_COLOR_BUFFER_BIT);
-        //SDL_GL_SwapWindow(main_render->window);
-        //glClearColor( (GLclampf)0.0, (GLclampf)0.0, (GLclampf)0.3, (GLclampf)1.0 );
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 #ifdef WIN32
     // initialise GLEW
@@ -237,7 +222,6 @@ SDLGuiTK_Render * Render_create()
 void Render_destroy(SDLGuiTK_Render * render)
 {
     //TODO
-    /*   PROT__context_quit(); */
     SDL_DestroyRenderer(render->renderer);
     SDL_DestroyWindow(render->window);
     free(render);
@@ -246,16 +230,16 @@ void Render_destroy(SDLGuiTK_Render * render)
 
 SDL_Window * Render_GetVideoWindow(SDLGuiTK_Render * render)
 {
-    if(render)
+    if(render && render->window)
         return render->window;
     return NULL;
 }
-
+/*
 SDL_Surface * Render_GetVideoSurface(SDLGuiTK_Render * render)
 {
     if(render)
         return SDL_GetWindowSurface( render->window );
     return NULL;
 }
-
+*/
 
