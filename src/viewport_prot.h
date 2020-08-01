@@ -19,23 +19,32 @@
 
 */
 
+
+#pragma once
+
+#include <SDL2/SDL_guitk.h>
+#include "wmwidget.h"
+
+
 /* SDLGuiTK_Viewport structure definition */
 struct SDLGuiTK_Viewport {
     SDLGuiTK_Object * object;     /* referent object */
 
     SDLGuiTK_Bin      * bin;      /* herits from */
 
-  /* "public" data */
-  SDLGuiTK_Adjustment *hadjustment;
-  SDLGuiTK_Adjustment *vadjustment;
+    /* "public" data */
+    SDLGuiTK_Adjustment *hadjustment;
+    SDLGuiTK_Adjustment *vadjustment;
 
-  /* "private" data */
-    MySDL_Surface * srf;
+    /* "private" data */
+    //SDLGuiTK_WMWidget  * wm_widget;  /* herits from */
+    //int                  wm_flag;
+    //MySDL_Surface * srf;
     SDL_Rect        area;
     int force_width, force_height;
     int is_active;
 };
 
-extern
+
 void PROT_viewport_setsize(SDLGuiTK_Viewport * viewport,
                            int width, int height);

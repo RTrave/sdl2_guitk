@@ -43,8 +43,9 @@
 #include "bin_prot.h"
 #include "adjustment_prot.h"
 //#include "mywm.h"
-#include "render/surface2d.h"
+//#include "render/surface2d.h"
 #include "wmwidget.h"
+#include "context_prot.h"
 #include "viewport_prot.h"
 
 
@@ -85,7 +86,7 @@ static SDLGuiTK_Viewport * Viewport_create()
     new_viewport->object->widget->top = NULL;
     new_viewport->object->widget->parent = NULL;
 
-    new_viewport->srf = MySDL_Surface_new("Viewport_srf");
+    //new_viewport->srf = MySDL_Surface_new("Viewport_srf");
     new_viewport->area.x = 0;
     new_viewport->area.y = 0;
     new_viewport->area.w = 0;
@@ -94,17 +95,18 @@ static SDLGuiTK_Viewport * Viewport_create()
     new_viewport->force_height = 0;
     new_viewport->is_active = 0;
 
-    //new_viewport->wm_widget = MyWM_WMWidget_New( new_viewport->object->widget );
+    //new_viewport->wm_widget = WMWidget_New( new_viewport->object->widget );
+    //new_viewport->wm_widget->border_width = 0;
 
     return new_viewport;
 }
 
 static void Viewport_destroy( SDLGuiTK_Viewport * viewport )
 {
-    MySDL_Surface_free( viewport->srf );
+    //MySDL_Surface_free( viewport->srf );
 
     PROT__bin_destroy( viewport->bin );
-    //MyWM_WMWidget_Delete( viewport->wm_widget );
+    //WMWidget_Delete( viewport->wm_widget );
     free( viewport );
 }
 
@@ -119,15 +121,15 @@ static void * Viewport_DrawUpdate( SDLGuiTK_Widget * widget )
 
     widget->req_area.w = 0;
     widget->req_area.h = 0;
-    //viewport->bin->container->children_area.w = 0;
-    //viewport->bin->container->children_area.h = 0;
 
-    /* Prepare WMWidget dimensions */
-    /* viewport->wm_widget->child_area.w = widget->req_area.w; */
-    /* viewport->wm_widget->child_area.h = widget->req_area.h; */
-    /* viewport->wm_widget->surface2D_flag = 1; */
-    /* MyWM_WMWidget_DrawUpdate( viewport->wm_widget ); */
-
+     /* Prepare WM coords */
+    //widget->abs_area.x = viewport->object->widget->abs_area.x+3;
+    //widget->abs_area.y = viewport->object->widget->abs_area.y+3;
+    /* Prepare WM sizes */
+    //viewport->wm_widget->child_area.w = widget->req_area.w; //TODO: abs_area ???
+    //viewport->wm_widget->child_area.h = widget->req_area.h;
+    //viewport->wm_widget->surface2D_flag = 1;
+    //WMWidget_DrawUpdate( viewport->wm_widget );
     return (void *) NULL;
 }
 
@@ -141,9 +143,6 @@ static void * Viewport_DrawBlit( SDLGuiTK_Widget * widget )
     SDLGuiTK_Viewport   * viewport=widget->container->bin->viewport;
     SDLGuiTK_Widget * child = viewport->bin->child;
 
-    //widget->container->children_area.w = widget->req_area.w;
-    //widget->container->children_area.h = widget->req_area.h;
-
     PROT__bin_DrawBlit( viewport->bin );
 
     viewport->area.w = widget->container->children_area.w;
@@ -152,10 +151,14 @@ static void * Viewport_DrawBlit( SDLGuiTK_Widget * widget )
     int diff_h = viewport->bin->child->rel_area.h - viewport->area.h;
     viewport->area.x = (int) diff_w*Adjustment_ratio(viewport->hadjustment);
     viewport->area.y = (int) diff_h*Adjustment_ratio(viewport->vadjustment);
-    //viewport->area.x = 50; //widget->container->children_area.x;
-    //viewport->area.y = 50; //widget->container->children_area.y;
+
     MySDL_BlitSurface( viewport->bin->child->srf, &viewport->area, \
                         widget->srf, &viewport->bin->child->rel_area );
+
+    //MySDL_CreateRGBSurface (viewport->srf,
+    //                        viewport->area.w, viewport->area.h);
+    //MySDL_BlitSurface( viewport->bin->child->srf, &viewport->area, \
+    //                    viewport->srf, &viewport->bin->child->rel_area );
 
     widget->act_area.x = widget->abs_area.x;
     widget->act_area.y = widget->abs_area.y;
@@ -172,6 +175,9 @@ static void * Viewport_DrawBlit( SDLGuiTK_Widget * widget )
         child->act_area.w = widget->act_area.w;
     if(child->act_area.h>widget->act_area.h)
         child->act_area.h = widget->act_area.h;
+
+    //WMWidget_DrawUpdate (viewport->wm_widget);
+    //WMWidget_DrawBlit( viewport->wm_widget, viewport->srf );
 
     return (void *) NULL;
 }
@@ -197,7 +203,7 @@ static SDLGuiTK_Widget * Viewport_RecursiveEntering( SDLGuiTK_Widget * widget, \
     {
         viewport->is_active = 1;
         return active = PROT__widget_is_entering( child, x, y );
-    } else if(-viewport->is_active==1) {
+    } else if(viewport->is_active==1) {
         viewport->is_active = 0;
         //PROT__signal_push( child->object, SDLGUITK_SIGNAL_TYPE_LEAVE );
         //PROT_MyWM_leaveall ();
@@ -209,10 +215,7 @@ static void * Viewport_RecursiveDestroy( SDLGuiTK_Widget * widget )
 {
     SDLGuiTK_Widget * child;
 
-    //PROT__context_unref_wmwidget( widget->container->bin->window->wm_widget );
     child = SDLGuiTK_bin_get_child( widget->container->bin );
-    /*   PROT__bin_remove( widget->container->bin, child ); */
-
     if( child!=NULL ) {
         SDLGuiTK_widget_destroy( child );
     }
@@ -231,8 +234,6 @@ static void * Viewport_Free( SDLGuiTK_Widget * widget )
 static void * Viewport_Realize( SDLGuiTK_Widget * widget, \
                               void * data, void * event )
 {
-
-    //Window_UpdatePosition( widget->container->bin->window );
     Viewport_DrawUpdate( widget );
     Viewport_DrawBlit( widget );
 
@@ -242,11 +243,6 @@ static void * Viewport_Realize( SDLGuiTK_Widget * widget, \
 static void * Viewport_Destroy( SDLGuiTK_Widget * widget, \
                               void * data, void * event )
 {
-    /*   SDLGuiTK_Window * window=widget->container->bin->window; */
-
-    /*   SDL_mutexV( widget->object->mutex ); */
-    /*   PROT__context_unref_wmwidget( window->wm_widget ); */
-    /*   SDL_mutexP( widget->object->mutex ); */
     widget->shown = 0;
 
     return (void *) NULL;
@@ -255,14 +251,13 @@ static void * Viewport_Destroy( SDLGuiTK_Widget * widget, \
 static void * Viewport_Show( SDLGuiTK_Widget * widget, \
                            void * data, void * event )
 {
-    //SDLGuiTK_Viewport * viewport=widget->container->bin->viewport;
+    SDLGuiTK_Viewport * viewport=widget->container->bin->viewport;
 
     if( widget->shown==1 ) return (void *) NULL;
     widget->shown = 1;
-    //Window_UpdatePosition( window );
-    /*   SDL_mutexV( widget->object->mutex ); */
+    //viewport->wm_widget->is_wmchild = 1;
+    //viewport->wm_widget->parent = viewport->object->widget->top;
     //PROT__context_ref_wmwidget( viewport->wm_widget );
-    /*   SDL_mutexP( widget->object->mutex ); */
 
     return (void *) NULL;
 }
@@ -270,13 +265,11 @@ static void * Viewport_Show( SDLGuiTK_Widget * widget, \
 static void * Viewport_Hide( SDLGuiTK_Widget * widget, \
                            void * data, void * event )
 {
-    //SDLGuiTK_Viewport * viewport=widget->container->bin->viewport;
+    SDLGuiTK_Viewport * viewport=widget->container->bin->viewport;
 
     if( widget->shown==0 ) return (void *) NULL;
-    /*   SDL_mutexV( widget->object->mutex ); */
-    //PROT__context_unref_wmwidget( viewport->wm_widget );
-    /*   SDL_mutexP( widget->object->mutex ); */
     widget->shown = 0;
+    //PROT__context_unref_wmwidget( viewport->wm_widget );
 
     return (void *) NULL;
 }
@@ -286,7 +279,6 @@ static void * Viewport_FrameEvent( SDLGuiTK_Widget * widget, \
 {
     Viewport_DrawUpdate( widget );
     Viewport_DrawBlit( widget );
-    //PROT_MyWM_checkactive( widget );
 
     return (void *) NULL;
 }
@@ -326,8 +318,6 @@ static void * Viewport_MouseReleased( SDLGuiTK_Widget * widget, \
     /*   if( SDL_GetMouseState( &x, &y) ) { */
     /*     printf( "Mouse released in: x=%d y=%d\n", x, y ); */
     /*   } */
-    /*   printf( "Mouse released in: x=%d y=%d\n", x, y ); */
-    /*   PROT__box_update_relwin( widget->window->main_box->box ); */
     Viewport_DrawUpdate( widget );
     Viewport_DrawBlit( widget );
 

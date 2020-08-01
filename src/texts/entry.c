@@ -108,7 +108,8 @@ static void Entry_make_surface( SDLGuiTK_Entry * entry )
 {
   SDLGuiTK_Theme * theme;
 
-  theme = PROT__theme_get_and_lock();
+  if(entry->text_flag==0) return;
+    theme = PROT__theme_get_and_lock();
 /*   strcat( entry->text, "/2588" ); */
 /*   strcat( entry->text, "\u2588" ); */
   PROT__editable_makeblended( entry->srf, \
@@ -490,6 +491,7 @@ static void * Entry_TextInput( SDLGuiTK_Widget * widget, \
   SDLGUITK_LOG(tmpstr);
 
   Push_textinput( entry, tievent );
+    entry->text_flag = 1;
   if( widget->top!=NULL ) {
     PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
   }

@@ -37,12 +37,12 @@
 /* #include <SDL/SDL_thread.h> */
 
 #include "debug.h"
-#include "mysdl.h"
+//#include "mysdl.h"
 #include "object_prot.h"
 #include "widget_prot.h"
-#include "render/surface2d.h"
-#include "wmwidget.h"
-#include "context_prot.h"
+//#include "render/surface2d.h"
+//#include "wmwidget.h"
+//#include "context_prot.h"
 #include "signal.h"
 
 
@@ -141,6 +141,8 @@ static char * Signal_translate( SDLGuiTK_Signal * signal )
 }
 
 
+static SDLGuiTK_Signal * previous = NULL;
+
 static void Signal_process( SDLGuiTK_Signal * signal )
 {
 #if DEBUG_LEVEL >= 2
@@ -157,6 +159,17 @@ static void Signal_process( SDLGuiTK_Signal * signal )
 #endif
 /*   parent = signal->widget->parent; */
 /*   SDL_mutexP( signal->widget->mutex ); */
+
+    if(previous) {
+        if(previous->type==signal->type && previous->object==signal->object) {
+            Signal_destroy (signal);
+            return;
+        } else {
+            Signal_destroy (previous);
+            previous = signal;
+        }
+    } else
+        previous = signal;
 
   handler = (SDLGuiTK_SignalHandler *) signal->object->signalhandler;
   if( signal->type==SDLGUITK_SIGNAL_TYPE_TEXTINPUT ) {
@@ -202,7 +215,7 @@ static void Signal_process( SDLGuiTK_Signal * signal )
 /* 	SDL_mutexV( parent->mutex ); */
 /*       } */
 /*   } */
-  Signal_destroy( signal );
+  //Signal_destroy( signal );
 }
 
 //static SDL_Thread * signal_thread;

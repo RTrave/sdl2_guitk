@@ -113,8 +113,6 @@ SDLGuiTK_Render * Render_set( SDL_Window * window, SDL_Renderer * renderer )
     return render;
 }
 
-static int context_exists=0;
-
 SDLGuiTK_Render * Render_create()
 {
     int i;
@@ -144,8 +142,7 @@ SDLGuiTK_Render * Render_create()
         main_render->height = mode.h;
     }
     if(current_context->type==SDLGUITK_CONTEXT_MODE_MULTIPLE)
-        SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, context_exists);
-    context_exists=1;
+        SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     //SDL_GL_SetSwapInterval(0);
@@ -234,12 +231,4 @@ SDL_Window * Render_GetVideoWindow(SDLGuiTK_Render * render)
         return render->window;
     return NULL;
 }
-/*
-SDL_Surface * Render_GetVideoSurface(SDLGuiTK_Render * render)
-{
-    if(render)
-        return SDL_GetWindowSurface( render->window );
-    return NULL;
-}
-*/
 
