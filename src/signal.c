@@ -119,6 +119,8 @@ static char * Signal_translate( SDLGuiTK_Signal * signal )
     return SDLGUITK_SIGNAL_TEXT_RELEASED;
   case SDLGUITK_SIGNAL_TYPE_CLICKED:
     return SDLGUITK_SIGNAL_TEXT_CLICKED;
+  case SDLGUITK_SIGNAL_TYPE_TOGGLED:
+    return SDLGUITK_SIGNAL_TEXT_TOGGLED;
   case SDLGUITK_SIGNAL_TYPE_ACTIVATE:
     return SDLGUITK_SIGNAL_TEXT_ACTIVATE;
   case SDLGUITK_SIGNAL_TYPE_DEACTIVATE:
@@ -507,6 +509,9 @@ static int Signal_get_type( char *ctype )
   }
   if( strcmp(ctype,SDLGUITK_SIGNAL_TEXT_CLICKED)==0 ) {
     return SDLGUITK_SIGNAL_TYPE_CLICKED;
+  }
+  if( strcmp(ctype,SDLGUITK_SIGNAL_TEXT_TOGGLED)==0 ) {
+    return SDLGUITK_SIGNAL_TYPE_TOGGLED;
   }
   if( strcmp(ctype,SDLGUITK_SIGNAL_TEXT_ACTIVATE)==0 ) {
     return SDLGUITK_SIGNAL_TYPE_ACTIVATE;

@@ -18,15 +18,15 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include <GL/gl.h>
-#include <SDL2/SDL.h>
 #include <SDL2/SDL_guitk.h>
+#include <libxml2/libxml/parser.h>
 
 
 SDLGuiTK_Object * Extract_Adjustment(xmlNode * node);
 SDLGuiTK_Widget * Extract_Scrollbar(xmlNode * node);
 SDLGuiTK_Widget * Extract_Entry(xmlNode * node);
 SDLGuiTK_Widget * Extract_Button(xmlNode * node);
+SDLGuiTK_Widget * Extract_ToggleButton(xmlNode * node);
 SDLGuiTK_Widget * Extract_MenuButton(xmlNode * node);
 SDLGuiTK_Widget * Extract_Label(xmlNode * node);
 SDLGuiTK_Widget * Extract_Image(xmlNode * node);

@@ -83,6 +83,8 @@ SDLGuiTK_Widget * Extract_object(xmlNode * node)
         widget = Extract_Entry(node);
     else if(propcmp(node, "class", "GtkButton"))
         widget = Extract_Button(node);
+    else if(propcmp(node, "class", "GtkToggleButton"))
+        widget = Extract_ToggleButton(node);
     else if(propcmp(node, "class", "GtkMenuButton"))
         widget = Extract_MenuButton(node);
     else if(propcmp(node, "class", "GtkLabel"))

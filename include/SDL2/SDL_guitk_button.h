@@ -50,6 +50,26 @@ extern "C" {
   extern DECLSPEC
   void * gtk_button_set_label( SDLGuiTK_Widget * button, char * text );
 
+
+  /* SDLGuiTK_ToggleButton structure definition */
+  typedef struct SDLGuiTK_ToggleButton SDLGuiTK_ToggleButton;
+
+  extern DECLSPEC
+  SDLGuiTK_ToggleButton *SDLGuiTK_TOGGLE_BUTTON( SDLGuiTK_Widget *widget );
+
+  /*  */
+  extern DECLSPEC
+  SDLGuiTK_Widget * SDLGuiTK_toggle_button_new();
+  extern DECLSPEC
+  SDLGuiTK_Widget * SDLGuiTK_toggle_button_new_with_label( char * text );
+
+  extern DECLSPEC
+  SDL_bool SDLGuiTK_toggle_button_get_active( SDLGuiTK_ToggleButton * togglebutton );
+  extern DECLSPEC
+  void SDLGuiTK_toggle_button_set_active( SDLGuiTK_ToggleButton * togglebutton,
+                                          SDL_bool is_active );
+
+
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
 };

@@ -217,6 +217,54 @@ SDLGuiTK_Widget * Extract_Button(xmlNode * node)
     return button;
 }
 
+SDLGuiTK_Widget * Extract_ToggleButton(xmlNode * node)
+{
+    SDLGuiTK_Widget *togglebutton = NULL, *label = NULL;
+    xmlNode * child;
+    SDL_bool visible = SDL_FALSE;
+    SDL_bool active = SDL_FALSE;
+    SDLGUITK_LOG ("Extract ToggleButton ..\n");
+    child = node->children;
+    while(child)
+    {
+        if(namecmp(child,"property")) {
+            if(propcmp(child, "name", "visible")) {
+                SDLGUITK_LOG ("Extract ToggleButton property: visible\n");
+                if(contentcmp(child, "True"))
+                    visible = SDL_TRUE;
+            }
+            else if(propcmp(child, "name", "active")) {
+                SDLGUITK_LOG ("Extract ToggleButton property: active\n");
+                if(contentcmp(child, "True"))
+                    active = SDL_TRUE;
+            }
+            else if(propcmp(child, "name", "label")) {
+                SDLGUITK_LOG ("Extract ToggleButton property: label\n");
+                label = SDLGuiTK_label_new (contentget(child));
+                SDLGuiTK_widget_show (label);
+            }
+            else {
+                SDLGUITK_ERROR("Node ToggleButton property unknown: ");
+                SDLGUITK_ERROR2(propget(child,"name"));
+            }
+        }
+        else if (isnode(child)) {
+            SDLGUITK_ERROR("Node ToggleButton name unknown: ");
+            SDLGUITK_ERROR2(nameget(child));
+        }
+        child = child->next;
+    }
+    togglebutton = SDLGuiTK_toggle_button_new ();
+    if(label)
+        SDLGuiTK_container_add (SDLGuiTK_CONTAINER (togglebutton), label);
+    if(togglebutton && active)
+        SDLGuiTK_toggle_button_set_active(SDLGuiTK_TOGGLE_BUTTON( togglebutton ),
+                                          active);
+    if(togglebutton && visible)
+        SDLGuiTK_widget_show (togglebutton);
+    return togglebutton;
+}
+
 SDLGuiTK_Widget * Extract_MenuButton(xmlNode * node)
 {
     SDLGuiTK_Widget *menubutton = NULL;
