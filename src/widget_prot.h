@@ -1,4 +1,4 @@
-/* 
+/*
    SDL_guitk - GUI toolkit designed for SDL environnements (GTK-style).
 
    Copyright (C) 2003 Trave Roman
@@ -15,7 +15,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
+   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 #pragma once
@@ -25,50 +25,50 @@
 
 /* SDLGuiTK_Widget structure definition */
 struct SDLGuiTK_Widget {
-  SDLGuiTK_Object * object;              /* referent object and herits from */
+    SDLGuiTK_Object * object;              /* referent object and herits from */
 
-  SDLGuiTK_Misc       * misc;                      /* herited */
-  SDLGuiTK_Container  * container;                 /* herited */
-  SDLGuiTK_Entry      * entry;                     /* herited */
-  SDLGuiTK_Editable   * editable;                  /* herited */
-  SDLGuiTK_MenuShell  * menushell;                 /* herited */
-  SDLGuiTK_Scrollbar  * scrollbar;                 /* herited */
-
-
-  int  shown;                                      /* "public" data */
-  int  activable, activable_child;                 /* "public" data */
-  int  enter;                                      /* "public" data */
-  SDLGuiTK_Widget * parent;                        /* "public" data */
-  SDLGuiTK_Widget * top;                           /* "public" data */
-  SDLGuiTK_TooltipsData * tooltipsdata;            /* "public" data */
-  int  width_request;                              /* "public" data */
-  int  height_request;                             /* "public" data */
-/*   SDLGuiTK_Requisition requisition;                /\* "public" data *\/ */
+    SDLGuiTK_Misc       * misc;                      /* herited */
+    SDLGuiTK_Container  * container;                 /* herited */
+    SDLGuiTK_Entry      * entry;                     /* herited */
+    SDLGuiTK_Editable   * editable;                  /* herited */
+    SDLGuiTK_MenuShell  * menushell;                 /* herited */
+    SDLGuiTK_Scrollbar  * scrollbar;                 /* herited */
 
 
-  int    id;                                       /* "private" data */
-  SDLGuiTK_Widget * (*RecursiveEntering)( SDLGuiTK_Widget *, \
-					  int x, int y );  /* "private" data */
-  void * (*RecursiveDestroy)( SDLGuiTK_Widget * ); /* "private" data */
-  void * (*Free)( SDLGuiTK_Widget * );             /* "private" data */
-  void * (*DrawUpdate)( SDLGuiTK_Widget * );       /* "private" data */
-  void * (*DrawBlit  )( SDLGuiTK_Widget * );       /* "private" data */
-  int    (*UpdateActive  )( SDLGuiTK_Widget * );   /* "private" data */
+    int  shown;                                      /* "public" data */
+    int  activable, activable_child;                 /* "public" data */
+    int  enter;                                      /* "public" data */
+    SDLGuiTK_Widget * parent;                        /* "public" data */
+    SDLGuiTK_Widget * top;                           /* "public" data */
+    SDLGuiTK_TooltipsData * tooltipsdata;            /* "public" data */
+    int  width_request;                              /* "public" data */
+    int  height_request;                             /* "public" data */
+    /*   SDLGuiTK_Requisition requisition;                /\* "public" data *\/ */
 
-  /* "private" data */
-  SDL_Rect      req_area;        /* (w,h) set in DrawUpdate() of herited */
-  SDL_Rect      abs_area;        /* (w,h) set in self DrawUpdate() */
-  SDL_Rect      rel_area;        /* (w,h) set in self DrawUpdate() */
-  SDL_Rect      act_area;        /* "private" data */
-  MySDL_Surface * srf;             /* "private" data */
-  MySDL_Surface * act_srf;         /* "private" data */
-  float         act_alpha;       /* "private" data */
 
-/*   int           srf_create;                        /\* "private" data *\/ */
-/*   SDL_Rect      WM_area;                           /\* "private" data *\/ */
-/*   SDL_Surface * WM_srf;                            /\* "private" data *\/ */
-/*   int  hided_parent;                               /\* "public" data *\/ */
-/*   int    changed;                                  /\* "private" data *\/ */
+    int    id;                                       /* "private" data */
+    SDLGuiTK_Widget * (*RecursiveEntering)( SDLGuiTK_Widget *, \
+                                            int x, int y );  /* "private" data */
+    void * (*RecursiveDestroy)( SDLGuiTK_Widget * ); /* "private" data */
+    void * (*Free)( SDLGuiTK_Widget * );             /* "private" data */
+    void * (*DrawUpdate)( SDLGuiTK_Widget * );       /* "private" data */
+    void * (*DrawBlit  )( SDLGuiTK_Widget * );       /* "private" data */
+    int    (*UpdateActive  )( SDLGuiTK_Widget * );   /* "private" data */
+
+    /* "private" data */
+    SDL_Rect      req_area;        /* (w,h) set in DrawUpdate() of herited */
+    SDL_Rect      abs_area;        /* (w,h) set in self DrawUpdate() */
+    SDL_Rect      rel_area;        /* (w,h) set in self DrawUpdate() */
+    SDL_Rect      act_area;        /* "private" data */
+    MySDL_Surface * srf;             /* "private" data */
+    MySDL_Surface * act_srf;         /* "private" data */
+    float         act_alpha;       /* "private" data */
+
+    /*   int           srf_create;                        /\* "private" data *\/ */
+    /*   SDL_Rect      WM_area;                           /\* "private" data *\/ */
+    /*   SDL_Surface * WM_srf;                            /\* "private" data *\/ */
+    /*   int  hided_parent;                               /\* "public" data *\/ */
+    /*   int    changed;                                  /\* "private" data *\/ */
 };
 
 
@@ -97,7 +97,7 @@ void PROT__widget_set_req_area( SDLGuiTK_Widget *widget, int req_w, int req_h );
 /* Entering/Exiting recursive procedure */
 extern
 SDLGuiTK_Widget * PROT__widget_is_entering( SDLGuiTK_Widget * widget, \
-					    int x, int y );
+        int x, int y );
 
 /* Destroy REALLY structure */
 extern

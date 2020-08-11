@@ -22,6 +22,9 @@
 /* IN THE FUTURE, CAN BE SWITCHED TO  A MyPango LAYER in mypango.c */
 /* TO GIVE A SUPPORT TO "Markup Langage" */
 
+#pragma once
+
+#include <SDL2/SDL_guitk.h>
 
 extern void MyTTF_Init();
 extern void MyTTF_Uninit();

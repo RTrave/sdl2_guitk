@@ -1,4 +1,4 @@
-/* 
+/*
    SDL_guitk - GUI toolkit designed for SDL environnements (GTK-style).
 
    Copyright (C) 2003 Trave Roman
@@ -15,27 +15,30 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
+   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#pragma once
+
+#include <SDL2/SDL_guitk.h>
 
 
 /* SDLGuiTK_Container structure definition */
 struct SDLGuiTK_Container {
-  SDLGuiTK_Object * object;       /* referent object */
+    SDLGuiTK_Object * object;       /* referent object */
 
-  SDLGuiTK_Widget * widget;       /* herits from */
+    SDLGuiTK_Widget * widget;       /* herits from */
 
-  SDLGuiTK_Bin  * bin;            /* herited */
-  SDLGuiTK_Box  * box;            /* herited */
-  SDLGuiTK_Menu * menu;           /* herited */
+    SDLGuiTK_Bin  * bin;            /* herited */
+    SDLGuiTK_Box  * box;            /* herited */
+    SDLGuiTK_Menu * menu;           /* herited */
 
-  int border_width;               /* "public" data */
+    int border_width;               /* "public" data */
 
-  /* "private" data */
-  SDL_Rect      children_area;    /* w,h set in herited DrawUpdate (child suggestion)
+    /* "private" data */
+    SDL_Rect      children_area;    /* w,h set in herited DrawUpdate (child suggestion)
                                    * x,y set in self DrawUpdate */
-  SDL_Rect      bg_area;          /* "private" data */
+    SDL_Rect      bg_area;          /* "private" data */
 };
 
 

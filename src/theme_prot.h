@@ -1,4 +1,4 @@
-/* 
+/*
    SDL_guitk - GUI toolkit designed for SDL environnements (GTK-style).
 
    Copyright (C) 2003 Trave Roman
@@ -15,26 +15,29 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
+   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#pragma once
+
+#include <SDL2/SDL_guitk.h>
 
 typedef struct SDLGuiTK_Theme SDLGuiTK_Theme;
 
 /* SDLGuiTK_Theme structure definition */
 struct SDLGuiTK_Theme {
-/*   SDLGuiTK_Widget *widget; */
+    /*   SDLGuiTK_Widget *widget; */
 
-  /* themeable values and associate mutex */
-  SDL_Color bgcolor;        /* background color */
-  SDL_Color bdcolor;        /* border color */
-  SDL_Color ftcolor;        /* font color */
-  SDL_Color wgcolor;        /* widgets background color */
+    /* themeable values and associate mutex */
+    SDL_Color bgcolor;        /* background color */
+    SDL_Color bdcolor;        /* border color */
+    SDL_Color ftcolor;        /* font color */
+    SDL_Color wgcolor;        /* widgets background color */
 
-  char font_file[256];      /* font file */
-  int font_size;            /* font size */
+    char font_file[256];      /* font file */
+    int font_size;            /* font size */
 
-/*   SDL_Surface * ref_srf;    /\* "private data" *\/ */
+    /*   SDL_Surface * ref_srf;    /\* "private data" *\/ */
 };
 
 extern

@@ -19,30 +19,34 @@
 
 */
 
+#pragma once
+
+#include <SDL2/SDL_guitk.h>
+#include "mysdl.h"
 
 static int SCROLLBAR_SIZE=10;
 
 /* SDLGuiTK_Scrollbar structure definition */
 struct SDLGuiTK_Scrollbar {
-  SDLGuiTK_Object * object;       /* referent object */
+    SDLGuiTK_Object * object;       /* referent object */
 
-  SDLGuiTK_Widget * widget;       /* herits from */
+    SDLGuiTK_Widget * widget;       /* herits from */
 
-  /* "public" data */
-  int orientation;               /* "public" data */
-  SDLGuiTK_Adjustment *adjustment;
+    /* "public" data */
+    int orientation;               /* "public" data */
+    SDLGuiTK_Adjustment *adjustment;
 
-  /* "private" data */
-  int mousein;
-  int buttonOn;
-  int mbutton_x, mbutton_y;
-  MySDL_Surface  *srf;
-  SDL_Rect        area;
-  SDL_Rect        button_area;
-  SDL_Rect        button_act_area;
-  //SDL_Rect      children_area;    /* w,h set in herited DrawUpdate (child suggestion)
-                                   /* x,y set in self DrawUpdate */
-  //SDL_Rect      bg_area;          /* "private" data */
+    /* "private" data */
+    int mousein;
+    int buttonOn;
+    int mbutton_x, mbutton_y;
+    MySDL_Surface  *srf;
+    SDL_Rect        area;
+    SDL_Rect        button_area;
+    SDL_Rect        button_act_area;
+    //SDL_Rect      children_area;    /* w,h set in herited DrawUpdate (child suggestion)
+    /* x,y set in self DrawUpdate */
+    //SDL_Rect      bg_area;          /* "private" data */
 };
 
 
