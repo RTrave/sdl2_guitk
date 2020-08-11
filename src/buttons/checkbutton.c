@@ -47,6 +47,7 @@
 #include "button_prot.h"
 #include "togglebutton_prot.h"
 #include "checkbutton_prot.h"
+#include "radiobutton_prot.h"
 
 
 static SDL_bool SDLGuiTK_IS_CHECK_BUTTON( SDLGuiTK_Widget * widget )
@@ -85,7 +86,7 @@ static SDLGuiTK_CheckButton * CheckButton_create()
     new_checkbutton->togglebutton = PROT__toggle_button_new_from_checkbutton (new_checkbutton);
     new_checkbutton->object = new_checkbutton->togglebutton->object;
     sprintf( new_checkbutton->object->name, "checkbutton%d", ++current_id );
-    //new_checkbutton->checkbutton = NULL;
+    new_checkbutton->radiobutton = NULL;
 
     new_checkbutton->indicator_srf = MySDL_Surface_new ("CheckButtonIndic_srf");
 
@@ -101,14 +102,16 @@ static void CheckButton_destroy( SDLGuiTK_CheckButton * checkbutton )
 
     // Button destroy himself and call ToggleButton_destroy
     //PROT__button_destroy( togglebutton->button );
-    //if(checkbutton->checkbutton)
-    //    PROT__checkbutton_destroy (checkbutton->checkbutton);
+    if(checkbutton->radiobutton)
+        PROT__radiobutton_destroy (checkbutton->radiobutton);
     free( checkbutton );
 }
 
 
 static void CheckButton_Indicator(SDLGuiTK_CheckButton * checkbutton)
 {
+   SDLGuiTK_Theme * theme;
+/*
     SDL_Rect area;
     MySDL_CreateRGBSurface (checkbutton->indicator_srf, 28, 28);
     MySDL_FillRect (checkbutton->indicator_srf, NULL,
@@ -124,12 +127,27 @@ static void CheckButton_Indicator(SDLGuiTK_CheckButton * checkbutton)
     area.w = 14; area.h = 14;
     MySDL_FillRect (checkbutton->indicator_srf, &area,
                     SDL_MapRGBA(checkbutton->indicator_srf->srf->format, 0, 0, 0, 255));
+*/
+    theme = PROT__theme_get_and_lock();
+    if(checkbutton->togglebutton->toggled)
+        checkbutton->indicator_srf->srf =
+            MyTTF_Render_Blended (checkbutton->indicator_srf->srf, "◼", 28, 0,
+                                  theme->ftcolor);
+    else
+        checkbutton->indicator_srf->srf =
+            MyTTF_Render_Blended (checkbutton->indicator_srf->srf, "◻", 28, 0,
+                                  theme->ftcolor);
+    PROT__theme_unlock( theme );
 }
 
 void PROT__checkbutton_DrawUpdate(SDLGuiTK_CheckButton * checkbutton)
 {
     SDLGuiTK_Widget * widget = checkbutton->object->widget;
 
+    if(checkbutton->radiobutton) {
+        PROT__radiobutton_DrawUpdate (checkbutton->radiobutton);
+        return;
+    }
     widget->req_area.w+=28;
     CheckButton_Indicator( checkbutton );
     //widget->container->bin->container->children_area.w -= 28;
@@ -144,7 +162,10 @@ void PROT__checkbutton_DrawBlit(SDLGuiTK_CheckButton * checkbutton)
     SDLGuiTK_Theme * theme;
     MySDL_Surface * srf=MySDL_Surface_new ("CheckButton_DrawBlit_srf");
 
-
+    if(checkbutton->radiobutton) {
+        PROT__radiobutton_DrawBlit (checkbutton->radiobutton);
+        return;
+    }
     MySDL_CreateRGBSurface( srf, widget->abs_area.w, widget->abs_area.h );
     button->text_area.x = 0;
     button->text_area.y = 0;
@@ -181,7 +202,8 @@ void PROT__checkbutton_DrawBlit(SDLGuiTK_CheckButton * checkbutton)
 
 void PROT__checkbutton_toggled(SDLGuiTK_CheckButton * checkbutton)
 {
-
+    if(checkbutton->radiobutton)
+        PROT__radiobutton_toggled (checkbutton->radiobutton);
 }
 
 void PROT__checkbutton_destroy(SDLGuiTK_CheckButton * checkbutton)
@@ -226,4 +248,17 @@ SDLGuiTK_Widget * SDLGuiTK_check_button_new_with_label( char * text )
     return checkbutton->object->widget;
 
 }
+
+SDLGuiTK_CheckButton * PROT__check_button_new_from_radiobutton(
+                                    SDLGuiTK_RadioButton * radiobutton)
+{
+    SDLGuiTK_CheckButton * checkbutton;
+
+    checkbutton = CheckButton_create ();
+    checkbutton->radiobutton = radiobutton;
+    CheckButton_set_functions (checkbutton);
+
+    return checkbutton;
+}
+
 

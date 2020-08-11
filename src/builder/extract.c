@@ -265,6 +265,113 @@ SDLGuiTK_Widget * Extract_ToggleButton(xmlNode * node)
     return togglebutton;
 }
 
+SDLGuiTK_Widget * Extract_CheckButton(xmlNode * node)
+{
+    SDLGuiTK_Widget *checkbutton = NULL, *label = NULL;
+    xmlNode * child;
+    SDL_bool visible = SDL_FALSE;
+    SDL_bool active = SDL_FALSE;
+    SDLGUITK_LOG ("Extract CheckButton ..\n");
+    child = node->children;
+    while(child)
+    {
+        if(namecmp(child,"property")) {
+            if(propcmp(child, "name", "visible")) {
+                SDLGUITK_LOG ("Extract CheckButton property: visible\n");
+                if(contentcmp(child, "True"))
+                    visible = SDL_TRUE;
+            }
+            else if(propcmp(child, "name", "active")) {
+                SDLGUITK_LOG ("Extract CheckButton property: active\n");
+                if(contentcmp(child, "True"))
+                    active = SDL_TRUE;
+            }
+            else if(propcmp(child, "name", "label")) {
+                SDLGUITK_LOG ("Extract CheckButton property: label\n");
+                label = SDLGuiTK_label_new (contentget(child));
+                SDLGuiTK_widget_show (label);
+            }
+            else {
+                SDLGUITK_ERROR("Node CheckButton property unknown: ");
+                SDLGUITK_ERROR2(propget(child,"name"));
+            }
+        }
+        else if (isnode(child)) {
+            SDLGUITK_ERROR("Node CheckButton name unknown: ");
+            SDLGUITK_ERROR2(nameget(child));
+        }
+        child = child->next;
+    }
+    checkbutton = SDLGuiTK_check_button_new ();
+    if(label)
+        SDLGuiTK_container_add (SDLGuiTK_CONTAINER (checkbutton), label);
+    if(checkbutton && active)
+        SDLGuiTK_toggle_button_set_active(SDLGuiTK_TOGGLE_BUTTON( checkbutton ),
+                                          active);
+    if(checkbutton && visible)
+        SDLGuiTK_widget_show (checkbutton);
+    return checkbutton;
+}
+
+SDLGuiTK_Widget * Extract_RadioButton(xmlNode * node)
+{
+    SDLGuiTK_Widget *radiobutton = NULL, *label = NULL;
+    xmlNode * child;
+    SDL_bool visible = SDL_FALSE;
+    SDL_bool active = SDL_FALSE;
+    SDLGuiTK_Widget * radiogroup = NULL;
+    SDLGUITK_LOG ("Extract RadioButton ..\n");
+    child = node->children;
+    while(child)
+    {
+        if(namecmp(child,"property")) {
+            if(propcmp(child, "name", "visible")) {
+                SDLGUITK_LOG ("Extract RadioButton property: visible\n");
+                if(contentcmp(child, "True"))
+                    visible = SDL_TRUE;
+            }
+            else if(propcmp(child, "name", "active")) {
+                SDLGUITK_LOG ("Extract RadioButton property: active\n");
+                if(contentcmp(child, "True"))
+                    active = SDL_TRUE;
+            }
+            else if(propcmp(child, "name", "label")) {
+                SDLGUITK_LOG ("Extract RadioButton property: label\n");
+                label = SDLGuiTK_label_new (contentget(child));
+                SDLGuiTK_widget_show (label);
+            }
+            else if(propcmp(child, "name", "group")) {
+                SDLGUITK_LOG ("Extract RadioButton property: group\n");
+                //label = SDLGuiTK_label_new (contentget(child));
+                radiogroup = SDLGuiTK_builder_get_widget(NULL, contentget(child));
+
+                //SDLGuiTK_widget_show (label);
+            }
+            else {
+                SDLGUITK_ERROR("Node RadioButton property unknown: ");
+                SDLGUITK_ERROR2(propget(child,"name"));
+            }
+        }
+        else if (isnode(child)) {
+            SDLGUITK_ERROR("Node RadioButton name unknown: ");
+            SDLGUITK_ERROR2(nameget(child));
+        }
+        child = child->next;
+    }
+    radiobutton = SDLGuiTK_radio_button_new ();
+    if(label)
+        SDLGuiTK_container_add (SDLGuiTK_CONTAINER (radiobutton), label);
+    if(radiobutton && active)
+        SDLGuiTK_toggle_button_set_active(SDLGuiTK_TOGGLE_BUTTON( radiobutton ),
+                                          active);
+    if(radiobutton && radiogroup)
+        SDLGuiTK_radio_button_join_group(SDLGuiTK_RADIO_BUTTON (radiobutton),
+                                         SDLGuiTK_RADIO_BUTTON (radiogroup));
+    if(radiobutton && visible)
+        SDLGuiTK_widget_show (radiobutton);
+    return radiobutton;
+}
+
 SDLGuiTK_Widget * Extract_MenuButton(xmlNode * node)
 {
     SDLGuiTK_Widget *menubutton = NULL;

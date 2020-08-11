@@ -70,6 +70,34 @@ extern "C" {
                                           SDL_bool is_active );
 
 
+  /* SDLGuiTK_CheckButton structure definition */
+  typedef struct SDLGuiTK_CheckButton SDLGuiTK_CheckButton;
+
+  extern DECLSPEC
+  SDLGuiTK_CheckButton *SDLGuiTK_CHECK_BUTTON( SDLGuiTK_Widget *widget );
+
+  /*  */
+  extern DECLSPEC
+  SDLGuiTK_Widget * SDLGuiTK_check_button_new();
+  extern DECLSPEC
+  SDLGuiTK_Widget * SDLGuiTK_check_button_new_with_label( char * text );
+
+
+  /* SDLGuiTK_RadioButton structure definition */
+  typedef struct SDLGuiTK_RadioButton SDLGuiTK_RadioButton;
+
+  extern DECLSPEC
+  SDLGuiTK_RadioButton *SDLGuiTK_RADIO_BUTTON( SDLGuiTK_Widget *widget );
+
+  /*  */
+  extern DECLSPEC
+  SDLGuiTK_Widget * SDLGuiTK_radio_button_new();
+  extern DECLSPEC
+  SDLGuiTK_Widget * SDLGuiTK_radio_button_new_with_label( char * text );
+  extern DECLSPEC
+  void SDLGuiTK_radio_button_join_group(SDLGuiTK_RadioButton * radiobutton,
+                                        SDLGuiTK_RadioButton * group_source);
+
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
 };

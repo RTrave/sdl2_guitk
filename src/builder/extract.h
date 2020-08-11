@@ -27,6 +27,8 @@ SDLGuiTK_Widget * Extract_Scrollbar(xmlNode * node);
 SDLGuiTK_Widget * Extract_Entry(xmlNode * node);
 SDLGuiTK_Widget * Extract_Button(xmlNode * node);
 SDLGuiTK_Widget * Extract_ToggleButton(xmlNode * node);
+SDLGuiTK_Widget * Extract_CheckButton(xmlNode * node);
+SDLGuiTK_Widget * Extract_RadioButton(xmlNode * node);
 SDLGuiTK_Widget * Extract_MenuButton(xmlNode * node);
 SDLGuiTK_Widget * Extract_Label(xmlNode * node);
 SDLGuiTK_Widget * Extract_Image(xmlNode * node);

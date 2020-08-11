@@ -199,7 +199,9 @@ static void * ToggleButton_Toggled( SDLGuiTK_Widget * widget, \
 {
     SDLGuiTK_ToggleButton * togglebutton=widget->container->bin->button->togglebutton;
 
-     if( widget->top!=NULL ) {
+    if(togglebutton->checkbutton)
+        PROT__checkbutton_toggled (togglebutton->checkbutton);
+    if( widget->top!=NULL ) {
         PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
     }
 

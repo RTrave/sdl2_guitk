@@ -24,13 +24,13 @@
 #include "../mysdl.h"
 
 /* SDLGuiTK_ToggleButton structure definition */
-struct SDLGuiTK_CheckButton {
+struct SDLGuiTK_RadioButton {
   SDLGuiTK_Object * object;      /* referent object */
 
-  SDLGuiTK_ToggleButton * togglebutton;      /* herits from */
-  SDLGuiTK_RadioButton  * radiobutton;
+  SDLGuiTK_CheckButton * checkbutton;      /* herits from */
 
   /* "public" data */
+  SDLGuiTK_List * group;
   //int toggled;
 
   /* "private" data */
@@ -40,11 +40,9 @@ struct SDLGuiTK_CheckButton {
 
 };
 
-SDLGuiTK_CheckButton * PROT__check_button_new_from_radiobutton(
-                                    SDLGuiTK_RadioButton * radiobutton);
 
-void PROT__checkbutton_DrawUpdate(SDLGuiTK_CheckButton * checkbutton);
-void PROT__checkbutton_DrawBlit(SDLGuiTK_CheckButton * checkbutton);
-void PROT__checkbutton_toggled(SDLGuiTK_CheckButton * checkbutton);
-void PROT__checkbutton_destroy(SDLGuiTK_CheckButton * checkbutton);
+void PROT__radiobutton_DrawUpdate(SDLGuiTK_RadioButton * radiobutton);
+void PROT__radiobutton_DrawBlit(SDLGuiTK_RadioButton * radiobutton);
+void PROT__radiobutton_toggled(SDLGuiTK_RadioButton * radiobutton);
+void PROT__radiobutton_destroy(SDLGuiTK_RadioButton * radiobutton);
 
