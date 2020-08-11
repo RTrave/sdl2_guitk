@@ -46,6 +46,7 @@
 
 #include "button_prot.h"
 #include "togglebutton_prot.h"
+#include "checkbutton_prot.h"
 
 
 static SDL_bool SDLGuiTK_IS_TOGGLE_BUTTON( SDLGuiTK_Widget * widget )
@@ -78,10 +79,11 @@ static SDLGuiTK_ToggleButton * ToggleButton_create()
 {
     SDLGuiTK_ToggleButton * new_togglebutton;
 
-    new_togglebutton = malloc( sizeof( struct SDLGuiTK_Button ) );
+    new_togglebutton = malloc( sizeof( struct SDLGuiTK_ToggleButton ) );
     new_togglebutton->button = PROT__button_new_from_togglebutton(new_togglebutton);
     new_togglebutton->object = new_togglebutton->button->bin->object;
     sprintf( new_togglebutton->object->name, "togglebutton%d", ++current_id );
+    new_togglebutton->checkbutton = NULL;
 
     new_togglebutton->toggled_srf = MySDL_Surface_new ("ToggleButton_srf");
 
@@ -96,13 +98,18 @@ static void ToggleButton_destroy( SDLGuiTK_ToggleButton * togglebutton )
 
     // Button destroy himself and call ToggleButton_destroy
     //PROT__button_destroy( togglebutton->button );
+    if(togglebutton->checkbutton)
+        PROT__checkbutton_destroy (togglebutton->checkbutton);
     free( togglebutton );
 }
 
 
 void PROT__togglebutton_DrawUpdate(SDLGuiTK_ToggleButton * togglebutton)
 {
-
+    if(togglebutton->checkbutton) {
+        PROT__checkbutton_DrawUpdate (togglebutton->checkbutton);
+        return;
+    }
 }
 
 void PROT__togglebutton_DrawBlit(SDLGuiTK_ToggleButton * togglebutton)
@@ -113,6 +120,10 @@ void PROT__togglebutton_DrawBlit(SDLGuiTK_ToggleButton * togglebutton)
     SDLGuiTK_Theme * theme;
     MySDL_Surface * srf=MySDL_Surface_new ("ToggleButton_DrawBlit_srf");
 
+    if(togglebutton->checkbutton) {
+        PROT__checkbutton_DrawBlit (togglebutton->checkbutton);
+        return;
+    }
     MySDL_CreateRGBSurface( srf, widget->abs_area.w, widget->abs_area.h );
     button->text_area.x = 0;
     button->text_area.y = 0;
@@ -250,4 +261,17 @@ void SDLGuiTK_toggle_button_set_active( SDLGuiTK_ToggleButton * togglebutton,
     togglebutton->toggled = 1;
     PROT__signal_push( togglebutton->object, SDLGUITK_SIGNAL_TYPE_TOGGLED );
 }
+
+SDLGuiTK_ToggleButton * PROT__toggle_button_new_from_checkbutton(
+                                    SDLGuiTK_CheckButton * checkbutton)
+{
+    SDLGuiTK_ToggleButton * togglebutton;
+
+    togglebutton = ToggleButton_create ();
+    togglebutton->checkbutton = checkbutton;
+    ToggleButton_set_functions (togglebutton);
+
+    return togglebutton;
+}
+
 

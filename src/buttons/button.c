@@ -93,6 +93,7 @@ static SDLGuiTK_Button * Button_create()
     new_button->active_alpha_mod = -0.005;
     new_button->active_srf = MySDL_Surface_new ("Button_active_srf");
     new_button->active_cflag = 0;
+    new_button->togglebutton = NULL;
 
     return new_button;
 }

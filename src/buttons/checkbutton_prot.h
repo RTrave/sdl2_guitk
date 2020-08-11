@@ -24,25 +24,24 @@
 #include "../mysdl.h"
 
 /* SDLGuiTK_ToggleButton structure definition */
-struct SDLGuiTK_ToggleButton {
-  SDLGuiTK_Object * object;           /* referent object */
+struct SDLGuiTK_CheckButton {
+  SDLGuiTK_Object * object;      /* referent object */
 
-  SDLGuiTK_Button * button;           /* herits from */
-  SDLGuiTK_CheckButton * checkbutton; /* herits to */
+  SDLGuiTK_ToggleButton * togglebutton;      /* herits from */
 
   /* "public" data */
-  int toggled;
+  //int toggled;
 
   /* "private" data */
-  MySDL_Surface * toggled_srf;
+  MySDL_Surface * indicator_srf;
+  SDL_Rect        indicator_area;
+  SDL_Rect        child_area;
+
 };
 
 
-SDLGuiTK_ToggleButton * PROT__toggle_button_new_from_checkbutton(
-                                    SDLGuiTK_CheckButton * checkbutton);
-
-void PROT__togglebutton_DrawUpdate(SDLGuiTK_ToggleButton * togglebutton);
-void PROT__togglebutton_DrawBlit(SDLGuiTK_ToggleButton * togglebutton);
-void PROT__togglebutton_clicked(SDLGuiTK_ToggleButton * togglebutton);
-void PROT__togglebutton_destroy(SDLGuiTK_ToggleButton * togglebutton);
+void PROT__checkbutton_DrawUpdate(SDLGuiTK_CheckButton * checkbutton);
+void PROT__checkbutton_DrawBlit(SDLGuiTK_CheckButton * checkbutton);
+void PROT__checkbutton_toggled(SDLGuiTK_CheckButton * checkbutton);
+void PROT__checkbutton_destroy(SDLGuiTK_CheckButton * checkbutton);
 
