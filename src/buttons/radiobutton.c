@@ -132,6 +132,7 @@ void PROT__radiobutton_DrawUpdate(SDLGuiTK_RadioButton * radiobutton)
 
     widget->req_area.w+=28;
     RadioButton_Indicator( radiobutton );
+    PROT__widget_set_req_area(widget, 28, radiobutton->indicator_srf->srf->h);
     //widget->container->bin->container->children_area.w -= 28;
     //widget->req_area.h+=SCROLLBAR_SIZE;
 }

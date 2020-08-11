@@ -1,4 +1,4 @@
-/* 
+/*
    SDL_guitk - GUI toolkit designed for SDL environnements (GTK-style).
 
    Copyright (C) 2003 Trave Roman
@@ -15,7 +15,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
+   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 #include <stdio.h>
@@ -24,7 +24,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
- 
+
 #ifdef STDC_HEADERS
 #include <stdlib.h>
 #endif
@@ -83,22 +83,22 @@ static SDLGuiTK_Theme * Theme_create()
 /*   new_theme->ref_srf=MySDL_CreateRGBSurface( NULL, 1, 1 ); */
 
 #ifdef WIN32
-  strcpy( new_theme->font_file, "C:\\font.ttf" );
+  strcpy( new_theme->font_file, "font.ttf" );
 #else
   strcpy( new_theme->font_file, "/home/font.ttf" );
 #endif
-  new_theme->font_size = 12;
+  new_theme->font_size = 14;
 
   if( MyTTF_Load(new_theme->font_file)!=0 ) {
 
     SDLGUITK_ERROR( "Theme_create(): TODO\n" );
 
 #ifdef WIN32
-    strcpy( new_theme->font_file, "C:\\windows\\fonts\\verdana.ttf" );
+    strcpy( new_theme->font_file, "C:\\windows\\fonts\\DejaVuSans.ttf" );
 #else
     strcpy( new_theme->font_file, "/usr/share/fonts/truetype/freefont/FreeSans.ttf" );
 #endif
-    new_theme->font_size = 12;
+    new_theme->font_size = 14;
 
     if( MyTTF_Load(new_theme->font_file)!=0 ) {
       exit(1);
