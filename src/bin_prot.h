@@ -1,4 +1,4 @@
-/* 
+/*
    SDL_guitk - GUI toolkit designed for SDL environnements (GTK-style).
 
    Copyright (C) 2003 Trave Roman
@@ -15,30 +15,35 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
+   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#pragma once
+
+#include <SDL2/SDL_guitk.h>
 
 
 /* SDLGuiTK_Bin structure definition */
 struct SDLGuiTK_Bin {
-  SDLGuiTK_Object         * object;         /* referent instance */
+    SDLGuiTK_Object         * object;         /* referent instance */
 
-  SDLGuiTK_Container      * container;      /* instance from */
+    SDLGuiTK_Container      * container;      /* instance from */
 
-  SDLGuiTK_Window         * window;         /* herited */
-  SDLGuiTK_Panel          * panel;          /* herited */
-  SDLGuiTK_Alignment      * alignment;      /* herited */
-  SDLGuiTK_Button         * button;         /* herited */
-  SDLGuiTK_MenuItem       * menuitem;       /* herited */
-  SDLGuiTK_Viewport       * viewport;       /* herited */
-  SDLGuiTK_ScrolledWindow * scrolledwindow; /* herited */
+    SDLGuiTK_Window         * window;         /* herited */
+    SDLGuiTK_Panel          * panel;          /* herited */
+    SDLGuiTK_Alignment      * alignment;      /* herited */
+    SDLGuiTK_Button         * button;         /* herited */
+    SDLGuiTK_MenuItem       * menuitem;       /* herited */
+    SDLGuiTK_Viewport       * viewport;       /* herited */
+    SDLGuiTK_ScrolledWindow * scrolledwindow; /* herited */
 
-  /* "public" data */
-  SDLGuiTK_Widget * child;
+    /* "public" data */
+    SDLGuiTK_Widget * child;
+    int               margin_left;
+    int               margin_right;
 
-  /* "private" data */
-  //MySDL_Surface * srf;
+    /* "private" data */
+    //MySDL_Surface * srf;
 };
 
 /* Create and destroy structure */

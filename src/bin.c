@@ -82,6 +82,8 @@ static SDLGuiTK_Bin * Bin_create()
     new_bin->scrolledwindow = NULL;
 
     new_bin->child = NULL;
+    new_bin->margin_left = 0;
+    new_bin->margin_right = 0;
 
     //new_bin->srf = MySDL_Surface_new ("Bin_srf");
 
@@ -182,8 +184,8 @@ void PROT__bin_DrawUpdate( SDLGuiTK_Bin * bin )
     SDLGuiTK_Widget *widget=bin->object->widget;
 
     if(bin->child==NULL || bin->child->shown!=1) {
-        bin->container->children_area.w = 4;
-        bin->container->children_area.h = 4;
+        bin->container->children_area.w = 1;
+        bin->container->children_area.h = 1;
         PROT__container_DrawUpdate( bin->container );
         return;
     }
@@ -221,6 +223,7 @@ void PROT__bin_DrawUpdate( SDLGuiTK_Bin * bin )
 
     PROT__container_DrawUpdate( bin->container );
 
+    widget->req_area.w += ( bin->margin_left + bin->margin_right );
     /* Bin forces child to fit its size */
     //if(bin->child!=NULL) {
 #if DEBUG_LEVEL >= 3
@@ -254,18 +257,21 @@ void PROT__bin_DrawBlit(   SDLGuiTK_Bin * bin )
         //bin->child->req_area.w = bin->container->children_area.w;
         //bin->child->req_area.h = bin->container->children_area.h;
     //}
+
+    // Ajust widget with margin size
+    //widget->req_area.w += ( bin->margin_left + bin->margin_right );
     PROT__container_DrawBlit( bin->container );
 
     /* CHILD POSITION SUGGESTION  */
-    bin->child->abs_area.x = \
-                             bin->container->children_area.x + widget->abs_area.x;
-    bin->child->abs_area.y = \
-                             bin->container->children_area.y + widget->abs_area.y;
+    bin->child->abs_area.x =
+        bin->container->children_area.x + widget->abs_area.x + bin->margin_left;
+    bin->child->abs_area.y =
+        bin->container->children_area.y + widget->abs_area.y;
 
-    bin->child->rel_area.x = \
-                             bin->container->children_area.x;
-    bin->child->rel_area.y = \
-                             bin->container->children_area.y;
+    bin->child->rel_area.x =
+        bin->container->children_area.x + bin->margin_left;
+    bin->child->rel_area.y =
+        bin->container->children_area.y;
 
     /* CHILD SIZE SUGGESTION  */
     if( bin->child->shown==1 /* && bin->child->hided_parent==0 */ ) {
@@ -274,9 +280,10 @@ void PROT__bin_DrawBlit(   SDLGuiTK_Bin * bin )
         //bin->child->abs_area.h = bin->container->children_area.h;
         //bin->child->req_area.w = bin->container->children_area.w;
         //bin->child->req_area.h = bin->container->children_area.h;
-    PROT__widget_set_req_area(bin->child,
-                              bin->container->children_area.w,
-                              bin->container->children_area.h);
+    PROT__widget_set_req_area(
+        bin->child,
+        bin->container->children_area.w - ( bin->margin_left + bin->margin_right ),
+        bin->container->children_area.h);
 #if DEBUG_LEVEL >= 3
     /* printf("*** %s PROT__bin_DrawBlit\n", widget->object->name); */
     /* printf("*** bin req_area w:%d h:%d\n", widget->req_area.w, widget->req_area.h); */
@@ -286,6 +293,9 @@ void PROT__bin_DrawBlit(   SDLGuiTK_Bin * bin )
         /*     SDL_BlitSurface( bin->child->srf, NULL, \ */
         /* 		     widget->srf, &bin->child->rel_area ); */
         /*     SDL_UpdateRects( widget->srf, 1, &bin->child->rel_area ); */
+
+        // then add margin_right if needed
+        bin->container->children_area.w += bin->margin_right;
     } else {
         bin->child->abs_area.w = 0;
         bin->child->abs_area.h = 0;
