@@ -34,9 +34,6 @@ extern "C" {
   /* SDLGuiTK_Editable structure definition */
   typedef struct SDLGuiTK_Editable SDLGuiTK_Editable;
 
-  extern DECLSPEC 
-  SDLGuiTK_Editable *SDLGuiTK_EDITABLE( SDLGuiTK_Widget *widget );
-
   extern DECLSPEC
   void SDLGuiTK_editable_insert_text( SDLGuiTK_Editable *editable, \
 				      const char *new_text, \

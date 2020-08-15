@@ -1,4 +1,4 @@
-/* 
+/*
    SDL_guitk - GUI toolkit designed for SDL environnements (GTK-style).
 
    Copyright (C) 2003 Trave Roman
@@ -15,32 +15,37 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
+   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
+
+#pragma once
+
+#include <SDL2/SDL_guitk.h>
+#include "../mysdl.h"
 
 /* SDLGuiTK_Editable structure definition */
 struct SDLGuiTK_Editable {
-  SDLGuiTK_Object    * object;      /* referent widget */
+    SDLGuiTK_Object    * object;      /* referent widget */
 
-  char * text;
-  int cursor_position;
+    char * text;
+    int cursor_position;
 };
 
-extern 
+extern
 SDLGuiTK_Editable * PROT__editable_new( SDLGuiTK_Object * object );
 
-extern 
+extern
 void PROT__editable_destroy( SDLGuiTK_Editable * editable );
 
-extern 
+extern
 void PROT__editable_settext(  SDLGuiTK_Editable * editable, \
-			                        const char *text );
+                              const char *text );
 
 extern
 void PROT__editable_makeblended(  MySDL_Surface * render_text, \
-					                        SDLGuiTK_Editable * editable, \
-					                        int size, SDL_Color color );
+                                  SDLGuiTK_Editable * editable, \
+                                  int size, SDL_Color color );
 
 extern
 void PROT__editable_keysym( SDLGuiTK_Editable * editable, \
-			   SDL_KeyboardEvent * kevent );
+                            SDL_KeyboardEvent * kevent );

@@ -30,7 +30,6 @@ struct SDLGuiTK_Widget {
     SDLGuiTK_Misc       * misc;                      /* herited */
     SDLGuiTK_Container  * container;                 /* herited */
     SDLGuiTK_Entry      * entry;                     /* herited */
-    SDLGuiTK_Editable   * editable;                  /* herited */
     SDLGuiTK_MenuShell  * menushell;                 /* herited */
     SDLGuiTK_Scrollbar  * scrollbar;                 /* herited */
 
