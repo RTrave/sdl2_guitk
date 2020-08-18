@@ -38,6 +38,8 @@ struct SDLGuiTK_Widget {
     SDL_bool              visible;
     SDL_bool              can_focus;
     SDL_bool              has_focus;
+    //SDL_bool              can_default;
+    SDL_bool              has_default;
     int activable_child;
 
     /* "private" data */

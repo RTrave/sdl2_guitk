@@ -36,13 +36,13 @@
 #include <SDL2/SDL_guitk.h>
 
 #include "../debug.h"
-//#include "../mysdl.h"
 #include "../myttf.h"
 #include "../mycursor.h"
 #include "../signal.h"
 #include "../object_prot.h"
 #include "../widget_prot.h"
 #include "../theme_prot.h"
+#include "../render/mywm.h"
 
 #include "editable_prot.h"
 #include "entry_prot.h"
@@ -128,7 +128,7 @@ static void * Entry_DrawUpdate( SDLGuiTK_Widget * widget )
 
     Entry_make_surface( entry );
 
-    PROT__widget_set_req_area(widget, 100, 18);
+    PROT__widget_set_req_area(widget, 100, 22);
     //entry->widget->req_area.w = entry->srf->srf->w;
     //entry->widget->req_area.h = entry->srf->srf->h;
 
@@ -232,6 +232,7 @@ static void * Entry_Hide( SDLGuiTK_Widget * widget, \
         PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
     }
 */
+    MyWM_unset_keyboard_focus (widget);
     return (void *) NULL;
 }
 
@@ -290,7 +291,7 @@ static void * Entry_MouseEnter( SDLGuiTK_Widget * widget, \
 {
     MyCursor_Set( SDLGUITK_CURSOR_TEXT );
     //Enable text input
-    SDL_StartTextInput();
+    MyWM_start_textinput();
 
     return (void *) NULL;
 }
@@ -299,7 +300,7 @@ static void * Entry_MouseLeave( SDLGuiTK_Widget * widget, \
                                 void * data, void * event )
 {
     //Disable text input
-    SDL_StopTextInput();
+    MyWM_stop_textinput ();
     MyCursor_Set( SDLGUITK_CURSOR_DEFAULT );
 
     return (void *) NULL;
@@ -351,21 +352,8 @@ void Push_keysym( SDLGuiTK_Entry * entry, SDL_KeyboardEvent * kevent )
         break;
     case SDLK_KP_ENTER:
         break;
-        /*   default: */
-        /* #ifndef HAVE_UNICODE_H */
-        /*     //tch = MyUnicode_getUTF8( &kevent->keysym.unicode ); */
-        /*     tch = *SDL_GetScancodeName(kevent->keysym.scancode); */
-        /* #else */
-        /*     unich[0] = keysym->unicode; unich[1] = 0; */
-        /*     tch = MyUnicode_U2L( (char *)unich ); */
-        /* #endif */
-        /*     if( tch!=0 ) { */
-        /*       SDLGuiTK_editable_insert_text( editable, \ */
-        /* 				     &tch, \ */
-        /* 				     -1,  */
-        /* 				     &editable->cursor_position ); */
-        /*     } */
-        /*     break; */
+    default:
+        break;
     }
 }
 
@@ -405,6 +393,14 @@ static void * Entry_Keyboard( SDLGuiTK_Widget * widget, \
     return (void *) NULL;
 }
 
+static void * Entry_MousePressed( SDLGuiTK_Widget * widget, \
+                             void * data, void * event )
+{
+    MyWM_set_keyboard_focus (widget);
+
+    return (void *) NULL;
+}
+
 static void Entry_set_functions( SDLGuiTK_Entry * entry )
 {
     SDLGuiTK_SignalHandler * handler;
@@ -433,6 +429,8 @@ static void Entry_set_functions( SDLGuiTK_Entry * entry )
             Entry_TextInput;
     handler->fdefault[SDLGUITK_SIGNAL_TYPE_KEYBOARD]->function = \
             Entry_Keyboard;
+    handler->fdefault[SDLGUITK_SIGNAL_TYPE_PRESSED]->function = \
+            Entry_MousePressed;
 }
 
 

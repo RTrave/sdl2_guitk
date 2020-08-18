@@ -35,6 +35,7 @@ struct SDLGuiTK_Entry {
     int                 is_editable;
     int                 max_length;
 
+
     /* "private" data */
     int             text_flag;
     SDL_Rect        view_area;

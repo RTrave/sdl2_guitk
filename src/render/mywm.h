@@ -29,6 +29,12 @@
 void MyWM_Init();
 void MyWM_Uninit();
 
+// Keyboard focus handling
+void MyWM_set_keyboard_focus(SDLGuiTK_Widget * widget);
+void MyWM_unset_keyboard_focus(SDLGuiTK_Widget * widget);
+void MyWM_start_textinput();
+void MyWM_stop_textinput();
+
 // Context callbacks for events
 int MyWM_push_MOUSEMOTION( SDL_Event *event );
 int MyWM_push_MOUSEBUTTONDOWN( SDL_Event *event );

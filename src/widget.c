@@ -145,7 +145,9 @@ static SDLGuiTK_Widget * Widget_create()
     new_widget->visible = SDL_FALSE;
     new_widget->can_focus = SDL_TRUE;
     new_widget->has_focus = SDL_FALSE;
+    new_widget->has_default = SDL_FALSE;
     new_widget->activable_child = 0;
+
     new_widget->parent = NULL;
     new_widget->top = NULL;
     new_widget->tooltipsdata = NULL;

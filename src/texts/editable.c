@@ -57,7 +57,7 @@ SDLGuiTK_Editable * PROT__editable_new( SDLGuiTK_Object * object )
 
     new_editable = malloc( sizeof( struct SDLGuiTK_Editable ) );
     new_editable->object = object;
-    sprintf( new_editable->object->name, "editable%d", ++current_id );
+    //sprintf( new_editable->object->name, "editable%d", ++current_id );
     new_editable->text = calloc( MyTTF_MAX_CHARS, sizeof( char ) );
     strcpy( new_editable->text, "" );
     new_editable->cursor_position = 0;

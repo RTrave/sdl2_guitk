@@ -47,8 +47,39 @@
 
 
 static SDLGuiTK_Widget    * focused_widget=NULL;
+static SDLGuiTK_Widget    * keyboard_focus=NULL;
+static SDL_bool             is_textinput=SDL_FALSE;
 static SDLGuiTK_Surface2D * animate_2D=NULL;
 
+
+void MyWM_set_keyboard_focus(SDLGuiTK_Widget * widget)
+{
+    if(keyboard_focus==widget) return;
+    if(keyboard_focus) {
+        MyWM_unset_keyboard_focus(keyboard_focus);
+    }
+    keyboard_focus = widget;
+    keyboard_focus->has_default = SDL_TRUE;
+}
+
+void MyWM_unset_keyboard_focus(SDLGuiTK_Widget * widget)
+{
+    if(keyboard_focus!=widget) return;
+    keyboard_focus->has_default = SDL_FALSE;
+    keyboard_focus = NULL;
+}
+
+void MyWM_start_textinput()
+{
+    if(!is_textinput)
+        SDL_StartTextInput();
+}
+
+void MyWM_stop_textinput()
+{
+    if(is_textinput && !keyboard_focus)
+        SDL_StartTextInput();
+}
 
 static void CheckFocus( int x, int y )
 {
@@ -325,7 +356,14 @@ int MyWM_push_MOUSEBUTTONUP( SDL_Event *event )
 
 int MyWM_push_TEXTINPUT( SDL_Event *event )
 {
-    if( focused_widget ) {
+    if( keyboard_focus ) {
+        PROT__signal_textinput( keyboard_focus->object, \
+                                SDLGUITK_SIGNAL_TYPE_TEXTINPUT, \
+                                &event->text );
+        /*     printf( "Test Key %d\n", event->key.keysym.sym ); */
+        return 1;
+    }
+    else if( focused_widget ) {
         PROT__signal_textinput( focused_widget->object, \
                                 SDLGUITK_SIGNAL_TYPE_TEXTINPUT, \
                                 &event->text );
@@ -337,7 +375,13 @@ int MyWM_push_TEXTINPUT( SDL_Event *event )
 
 int MyWM_push_KEYDOWN( SDL_Event *event )
 {
-    if( focused_widget ) {
+    if( keyboard_focus ) {
+        PROT__signal_pushkey( keyboard_focus->object, \
+                              SDLGUITK_SIGNAL_TYPE_KEYBOARD, \
+                              &event->key );
+        return 1;
+    }
+    else if( focused_widget ) {
         PROT__signal_pushkey( focused_widget->object, \
                               SDLGUITK_SIGNAL_TYPE_KEYBOARD, \
                               &event->key );
