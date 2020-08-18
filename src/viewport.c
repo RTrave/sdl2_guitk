@@ -157,7 +157,7 @@ static void * Viewport_DrawBlit( SDLGuiTK_Widget * widget )
 
     //MySDL_CreateRGBSurface (viewport->srf,
     //                        viewport->area.w, viewport->area.h);
-    //MySDL_BlitSurface( viewport->bin->child->srf, &viewport->area, \
+    //MySDL_BlitSurface( viewport->bin->child->srf, &viewport->area,
     //                    viewport->srf, &viewport->bin->child->rel_area );
 
     widget->act_area.x = widget->abs_area.x;
@@ -191,11 +191,11 @@ static SDLGuiTK_Widget * Viewport_RecursiveEntering( SDLGuiTK_Widget * widget, \
     SDLGuiTK_Widget * active;
 
     child = SDLGuiTK_bin_get_child( widget->container->bin );
-    if( child==NULL ) {
+    if( !child ) {
         SDLGUITK_ERROR( "Viewport_RecursiveEntering(): child==NULL\n" );
         return NULL;
     }
-    if( child->shown==0 ) {
+    if( !child->visible ) {
         return NULL;
     }
     if((x>=widget->act_area.x && x<(widget->act_area.x+widget->act_area.w)) &&
@@ -243,7 +243,7 @@ static void * Viewport_Realize( SDLGuiTK_Widget * widget, \
 static void * Viewport_Destroy( SDLGuiTK_Widget * widget, \
                               void * data, void * event )
 {
-    widget->shown = 0;
+    //widget->shown = 0;
 
     return (void *) NULL;
 }
@@ -251,10 +251,10 @@ static void * Viewport_Destroy( SDLGuiTK_Widget * widget, \
 static void * Viewport_Show( SDLGuiTK_Widget * widget, \
                            void * data, void * event )
 {
-    SDLGuiTK_Viewport * viewport=widget->container->bin->viewport;
+    //SDLGuiTK_Viewport * viewport=widget->container->bin->viewport;
 
-    if( widget->shown==1 ) return (void *) NULL;
-    widget->shown = 1;
+    //if( widget->shown==1 ) return (void *) NULL;
+    //widget->shown = 1;
     //viewport->wm_widget->is_wmchild = 1;
     //viewport->wm_widget->parent = viewport->object->widget->top;
     //PROT__context_ref_wmwidget( viewport->wm_widget );
@@ -265,10 +265,10 @@ static void * Viewport_Show( SDLGuiTK_Widget * widget, \
 static void * Viewport_Hide( SDLGuiTK_Widget * widget, \
                            void * data, void * event )
 {
-    SDLGuiTK_Viewport * viewport=widget->container->bin->viewport;
+    //SDLGuiTK_Viewport * viewport=widget->container->bin->viewport;
 
-    if( widget->shown==0 ) return (void *) NULL;
-    widget->shown = 0;
+    //if( widget->shown==0 ) return (void *) NULL;
+    //widget->shown = 0;
     //PROT__context_unref_wmwidget( viewport->wm_widget );
 
     return (void *) NULL;

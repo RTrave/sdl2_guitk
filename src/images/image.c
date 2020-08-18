@@ -189,22 +189,24 @@ static void * Image_Realize( SDLGuiTK_Widget * widget, \
 static void * Image_Show( SDLGuiTK_Widget * widget, \
                           void * data, void * event )
 {
+/*
     widget->shown = 1;
     if( widget->top!=NULL ) {
         PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
     }
-
+*/
     return (void *) NULL;
 }
 
 static void * Image_Hide( SDLGuiTK_Widget * widget, \
                           void * data, void * event )
 {
+/*
     widget->shown = 0;
     if( widget->top!=NULL ) {
         PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
     }
-
+*/
     return (void *) NULL;
 }
 

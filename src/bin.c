@@ -112,6 +112,13 @@ void PROT__bin_destroy( SDLGuiTK_Bin * bin )
     Bin_destroy( bin );
 }
 
+void PROT__bin_set_top( SDLGuiTK_Bin *bin, SDLGuiTK_Widget *top)
+{
+    //if(bin->viewport) return;
+    if(bin->child)
+        PROT__widget_set_top(bin->child, top);
+}
+
 
 SDLGuiTK_Widget * SDLGuiTK_bin_get_child( SDLGuiTK_Bin * bin )
 {
@@ -121,35 +128,28 @@ SDLGuiTK_Widget * SDLGuiTK_bin_get_child( SDLGuiTK_Bin * bin )
 
 void PROT__bin_add( SDLGuiTK_Bin * bin, SDLGuiTK_Widget * widget )
 {
-#if DEBUG_LEVEL >= 2
-    char tmpstr[512];
-#endif
-
-    if( bin->child!=NULL ) {
+    if( bin->child )
         SDLGUITK_ERROR( "__bin_add(): yet have a child! LOOSING IT!\n" );
-    }
-    if( bin->scrolledwindow!=NULL )
-        bin->child = PROT__scrolledwindow_add(bin->scrolledwindow,
-                                              widget);
-    else if( bin->menuitem!=NULL )
-        bin->child = PROT__menuitem_add(bin->menuitem,
-                                        widget);
+
+    widget->parent = bin->object->widget;
+    PROT__widget_set_top (widget, bin->object->widget->top);
+    if( bin->scrolledwindow )
+        bin->child = PROT__scrolledwindow_add(bin->scrolledwindow, widget);
+    else if( bin->menuitem )
+        bin->child = PROT__menuitem_add(bin->menuitem, widget);
     else
         bin->child = widget;
-    widget->parent = bin->object->widget;
-    if( bin->object->widget->top!=NULL ) {
-        widget->top = bin->object->widget->top;
-    } else {
-        widget->top = bin->object->widget;
-    }
 
 #if DEBUG_LEVEL >= 2
+    char tmpstr[512];
     sprintf( tmpstr, "__bin_add(): %s added to %s\n", \
              widget->object->name, widget->parent->object->name );
     SDLGUITK_LOG( tmpstr );
 #endif
 
-    PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
+    if(bin->object->widget->top)
+        PROT__signal_push( bin->object->widget->top->object,
+                           SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
 }
 
 void PROT__bin_remove( SDLGuiTK_Bin * bin, SDLGuiTK_Widget * widget )
@@ -167,13 +167,11 @@ void PROT__bin_remove( SDLGuiTK_Bin * bin, SDLGuiTK_Widget * widget )
 
     bin->child = NULL;
     widget->parent = NULL;
+    PROT__widget_set_top (widget, NULL);
     /*   widget->top = NULL; */
 
-    if( bin->object->widget->top!=NULL ) {
+    if( bin->object->widget->top ) {
         PROT__signal_push( bin->object->widget->top->object, \
-                           SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-    } else if( bin->object!=NULL ) {
-        PROT__signal_push( bin->object, \
                            SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
     }
 }
@@ -183,7 +181,7 @@ void PROT__bin_DrawUpdate( SDLGuiTK_Bin * bin )
 {
     SDLGuiTK_Widget *widget=bin->object->widget;
 
-    if(bin->child==NULL || bin->child->shown!=1) {
+    if(!bin->child || !bin->child->visible) {
         bin->container->children_area.w = 1;
         bin->container->children_area.h = 1;
         PROT__container_DrawUpdate( bin->container );
@@ -192,12 +190,12 @@ void PROT__bin_DrawUpdate( SDLGuiTK_Bin * bin )
     //if(bin->child!=NULL) {
 
         /* UPDATE CHILD ASCENDENTS */
-        bin->child->parent = widget;
-        if( widget->top!=NULL ) {
-            bin->child->top = widget->top;
-        } else {
-            bin->child->top = widget;
-        }
+        //bin->child->parent = widget;
+        //if( widget->top!=NULL ) {
+        //    bin->child->top = widget->top;
+        //} else {
+        //    bin->child->top = widget;
+        //}
 
         /* IF CHILD SHOWN */
         //if( bin->child->shown==1 ) {
@@ -243,7 +241,7 @@ void PROT__bin_DrawBlit(   SDLGuiTK_Bin * bin )
 {
     SDLGuiTK_Widget *widget=bin->object->widget;
 
-    if( bin->child==NULL || bin->child->shown!=1 ) {
+    if( !bin->child || !bin->child->visible ) {
         SDLGUITK_LOG( "PROT__bin_DrawBlit(): 'child==NULL'\n" );
         PROT__container_DrawBlit( bin->container );
         return;
@@ -274,7 +272,7 @@ void PROT__bin_DrawBlit(   SDLGuiTK_Bin * bin )
         bin->container->children_area.y;
 
     /* CHILD SIZE SUGGESTION  */
-    if( bin->child->shown==1 /* && bin->child->hided_parent==0 */ ) {
+    //if( bin->child->shown==1 /* && bin->child->hided_parent==0 */ ) {
         // TODO: retired suggestion, handled by Bin heriteds
         //bin->child->abs_area.w = bin->container->children_area.w;
         //bin->child->abs_area.h = bin->container->children_area.h;
@@ -296,10 +294,10 @@ void PROT__bin_DrawBlit(   SDLGuiTK_Bin * bin )
 
         // then add margin_right if needed
         bin->container->children_area.w += bin->margin_right;
-    } else {
-        bin->child->abs_area.w = 0;
-        bin->child->abs_area.h = 0;
-    }
+    //} else {
+    //    bin->child->abs_area.w = 0;
+    //    bin->child->abs_area.h = 0;
+    //}
 
     /*   SDL_mutexV( bin->child->object->mutex ); */
 

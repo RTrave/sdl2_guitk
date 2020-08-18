@@ -47,6 +47,8 @@ extern
 SDLGuiTK_Container *PROT__container_new();
 extern
 void PROT__container_destroy( SDLGuiTK_Container *container );
+void PROT__container_set_top( SDLGuiTK_Container *container,SDLGuiTK_Widget *top);
+
 
 /* Draw the Container on his top surface */
 extern

@@ -46,49 +46,48 @@
 #include "../tooltips_prot.h"
 
 
-static SDLGuiTK_Widget    * active_widget=NULL;
-static SDLGuiTK_Surface2D * active_2D=NULL;
+static SDLGuiTK_Widget    * focused_widget=NULL;
+static SDLGuiTK_Surface2D * animate_2D=NULL;
 
 
-static void Activables_check( int x, int y )
+static void CheckFocus( int x, int y )
 {
     SDLGuiTK_Widget * current, * parent;
 
-    if( active_widget!=NULL ) {
-        if( (current=PROT__widget_is_entering(active_widget,x,y))==NULL ) {
-            while( active_widget->parent!=active_widget && current==NULL ) {
-                parent = active_widget->parent;
-                active_widget = parent;
-                current=PROT__widget_is_entering(active_widget,x,y);
+    if( focused_widget ) {
+        current=PROT__widget_is_entering(focused_widget,x,y);
+        if( !current ) {
+            while( focused_widget->parent!=focused_widget && current==NULL ) {
+                parent = focused_widget->parent;
+                focused_widget = parent;
+                current=PROT__widget_is_entering(focused_widget,x,y);
             }
-            active_widget = current;
+            focused_widget = current;
             return;
         } else {
-            active_widget = current;
+            focused_widget = current;
             return;
         }
     }
 
-    if( current_context->active_wmwidget!=NULL ) {
+    if( current_context->focused ) {
         current =
-            PROT__widget_is_entering(current_context->active_wmwidget->widget, x, y);
-        if( current==NULL ) {
-
-        } else {
-            active_widget = current;
+            PROT__widget_is_entering(current_context->focused->widget, x, y);
+        if( current ) {
+            focused_widget = current;
         }
     }
 
 }
 
-static void Desactive_WMWidget( SDLGuiTK_WMWidget * wm_widget )
+static void UnFocus( SDLGuiTK_WMWidget * wm_widget )
 {
     SDLGuiTK_Widget * current, * parent=NULL;
 
-    current = active_widget;
+    current = focused_widget;
     while( current!=NULL ) {
         parent = current->parent;
-        current->enter = 0;
+        current->has_focus = SDL_FALSE;
         PROT__signal_push( current->object, \
                            SDLGUITK_SIGNAL_TYPE_LEAVE );
         if( current==parent ) return;
@@ -122,30 +121,30 @@ static int Is_MOUSEMOTION_enter( int x, int y,				\
     if( Is_MOUSEMOTION_in( wm_widget, x, y )==1 )
     {
         if( wm_widget->enter==0 ) {
-            if(current_context->active_wmwidget!=wm_widget ) {
-                if( current_context->active_wmwidget!=NULL ) {
-                    Desactive_WMWidget( current_context->active_wmwidget );
-                    active_widget = NULL;
-                    current_context->active_wmwidget->enter = 0;
+            if(current_context->focused!=wm_widget ) {
+                if( current_context->focused ) {
+                    UnFocus( current_context->focused );
+                    focused_widget = NULL;
+                    current_context->focused->enter = 0;
                 }
             }
-            current_context->active_wmwidget = wm_widget;
+            current_context->focused = wm_widget;
             wm_widget->enter = 1;
-            Activables_check(  x, y );
+            CheckFocus( x, y );
         } else {
-            Activables_check( x, y );
+            CheckFocus( x, y );
         }
         return 1;
     } else {
         wm_widget->enter = 0;
-        Activables_check( x, y );
+        CheckFocus( x, y );
     }
     return 0;
 }
 
 static int Is_MOUSEMOTION_moving( SDL_Event * event )
 {
-    SDLGuiTK_WMWidget * active=current_context->active_wmwidget;
+    SDLGuiTK_WMWidget * active=current_context->focused;
 
     if( active->moving==1 ) {
         active->area.x += event->motion.xrel;
@@ -183,25 +182,21 @@ static int Is_MOUSEBUTTONDOWN_move_stop( SDLGuiTK_WMWidget * window )
 
 static void LeaveAll() {
 
-    if( active_widget!=NULL ) {
-        PROT__signal_push( active_widget->object,		\
+    if( focused_widget ) {
+        focused_widget->has_focus = SDL_FALSE;
+        PROT__signal_push( focused_widget->object,
                            SDLGUITK_SIGNAL_TYPE_LEAVE );
-        active_widget->enter = 0;
-        while(active_widget->top!=active_widget  ) {
-            if( active_widget->parent==NULL ) {
-                active_widget = active_widget->top;
-            } else {
-                active_widget = active_widget->parent;
-            }
-            PROT__signal_push( active_widget->object,			\
+        while(focused_widget->parent!=focused_widget  ) {
+            focused_widget = focused_widget->parent;
+            focused_widget->has_focus = SDL_FALSE;
+            PROT__signal_push( focused_widget->object,
                                SDLGUITK_SIGNAL_TYPE_LEAVE );
-            active_widget->enter = 0;
         }
-        active_widget = NULL;
+        focused_widget = NULL;
     }
-    if( current_context->active_wmwidget!=NULL ) {
-        current_context->active_wmwidget->enter = 0;
-        current_context->active_wmwidget = NULL;
+    if( current_context->focused ) {
+        current_context->focused->enter = 0;
+        current_context->focused = NULL;
     }
 }
 
@@ -211,16 +206,17 @@ int MyWM_push_MOUSEMOTION_in( int x, int y )
 
     SDLGuiTK_list_lock( current_context->activables );
 
-    if( current_context->active_wmwidget!=NULL ) {
-        current = (SDLGuiTK_WMWidget *) \
+    if( current_context->focused ) {
+        current = (SDLGuiTK_WMWidget *)
                   SDLGuiTK_list_refrv_init( current_context->activables );
-        while( current!=NULL && current!=current_context->active_wmwidget ) {
+        while( current!=NULL && current!=current_context->focused ) {
             if(current->render==current_context->active_render ||
                (current->is_wmchild &&
                 current->wmparent->render==current_context->active_render))
             {
                 if( Is_MOUSEMOTION_enter(x,y,current)==1 ) {
-                    Activables_check( x, y );
+                    current_context->focused = current;
+                    CheckFocus (x, y);
                     PROT_List_refrv_reinit( current_context->activables );
                     SDLGuiTK_list_unlock( current_context->activables );
                     return 1;
@@ -230,10 +226,10 @@ int MyWM_push_MOUSEMOTION_in( int x, int y )
                       SDLGuiTK_list_refrv_next( current_context->activables );
         }
 
-        if( Is_MOUSEMOTION_enter(x,y,current_context->active_wmwidget)==0 ) {
-            current_context->active_wmwidget->enter = 0;
-            current_context->active_wmwidget = NULL;
-            Activables_check( x, y );
+        if( Is_MOUSEMOTION_enter(x,y,current_context->focused)==0 ) {
+            current_context->focused->enter = 0;
+            current_context->focused = NULL;
+            CheckFocus( x, y );
         } else {
         }
     }
@@ -245,8 +241,8 @@ int MyWM_push_MOUSEMOTION_in( int x, int y )
 
     while( current!=NULL ) {
         if( Is_MOUSEMOTION_enter(x,y,current)==1 ) {
-            current_context->active_wmwidget = current;
-            Activables_check( x, y );
+            current_context->focused = current;
+            CheckFocus( x, y );
             PROT_List_refrv_reinit( current_context->activables );
             SDLGuiTK_list_unlock( current_context->activables );
             return 1;
@@ -274,7 +270,7 @@ void PROT_MyWM_checkactive( SDLGuiTK_Widget * widget )
 int MyWM_push_MOUSEMOTION( SDL_Event *event )
 {
     SDLGuiTK_list_lock( current_context->activables );
-    if( current_context->active_wmwidget!=NULL ) {
+    if( current_context->focused ) {
 
         if( Is_MOUSEMOTION_moving(event)==1 ) {
             SDLGuiTK_list_unlock( current_context->activables );
@@ -288,23 +284,23 @@ int MyWM_push_MOUSEMOTION( SDL_Event *event )
 
 int MyWM_push_MOUSEBUTTONDOWN( SDL_Event *event )
 {
-    if( active_widget!=NULL ) {
-        PROT__signal_push( active_widget->object, \
+    if( focused_widget ) {
+        PROT__signal_push( focused_widget->object,
                            SDLGUITK_SIGNAL_TYPE_PRESSED );
         return 1;
     }
 
     SDLGuiTK_list_lock( current_context->activables );
     SDLGuiTK_list_remove( current_context->activables, \
-                          (SDLGuiTK_Object *) current_context->active_wmwidget );
+                          (SDLGuiTK_Object *) current_context->focused );
     SDLGuiTK_list_append( current_context->activables, \
-                          (SDLGuiTK_Object *) current_context->active_wmwidget );
+                          (SDLGuiTK_Object *) current_context->focused );
     SDLGuiTK_list_unlock( current_context->activables );
 
 
-    if( Is_MOUSEBUTTONDOWN_move_start(event,current_context->active_wmwidget)==1 )
+    if( Is_MOUSEBUTTONDOWN_move_start(event,current_context->focused)==1 )
     {
-        PROT__signal_push( current_context->active_wmwidget->object, \
+        PROT__signal_push( current_context->focused->object,
                            SDLGUITK_SIGNAL_TYPE_PRESSED );
         return 1;
     }
@@ -314,23 +310,23 @@ int MyWM_push_MOUSEBUTTONDOWN( SDL_Event *event )
 
 int MyWM_push_MOUSEBUTTONUP( SDL_Event *event )
 {
-    if( active_widget!=NULL ) {
-        PROT__signal_push( active_widget->object, \
+    if( focused_widget ) {
+        PROT__signal_push( focused_widget->object, \
                            SDLGUITK_SIGNAL_TYPE_RELEASED );
         return 1;
     }
-    if( current_context->active_wmwidget!=NULL ) {
-        PROT__signal_push( current_context->active_wmwidget->widget->object, \
+    if( current_context->focused ) {
+        PROT__signal_push( current_context->focused->widget->object, \
                            SDLGUITK_SIGNAL_TYPE_RELEASED );
-        return Is_MOUSEBUTTONDOWN_move_stop( current_context->active_wmwidget );
+        return Is_MOUSEBUTTONDOWN_move_stop( current_context->focused );
     }
     return 0;
 }
 
 int MyWM_push_TEXTINPUT( SDL_Event *event )
 {
-    if( active_widget!=NULL ) {
-        PROT__signal_textinput( active_widget->object, \
+    if( focused_widget ) {
+        PROT__signal_textinput( focused_widget->object, \
                                 SDLGUITK_SIGNAL_TYPE_TEXTINPUT, \
                                 &event->text );
         /*     printf( "Test Key %d\n", event->key.keysym.sym ); */
@@ -341,8 +337,8 @@ int MyWM_push_TEXTINPUT( SDL_Event *event )
 
 int MyWM_push_KEYDOWN( SDL_Event *event )
 {
-    if( active_widget!=NULL ) {
-        PROT__signal_pushkey( active_widget->object, \
+    if( focused_widget ) {
+        PROT__signal_pushkey( focused_widget->object, \
                               SDLGUITK_SIGNAL_TYPE_KEYBOARD, \
                               &event->key );
         return 1;
@@ -354,13 +350,19 @@ int MyWM_push_WINDOWEVENT( SDL_Event *event )
 {
     switch (event->window.event) {
     case SDL_WINDOWEVENT_SHOWN:
+#if DEBUG_LEVEL >= 3
         SDL_Log("Window %d shown", event->window.windowID);
+#endif
         break;
     case SDL_WINDOWEVENT_HIDDEN:
+#if DEBUG_LEVEL >= 3
         SDL_Log("Window %d hidden", event->window.windowID);
+#endif
         break;
     case SDL_WINDOWEVENT_EXPOSED:
+#if DEBUG_LEVEL >= 3
         SDL_Log("Window %d exposed", event->window.windowID);
+#endif
         break;
     case SDL_WINDOWEVENT_MOVED:
         //SDL_Log("Window %d moved to %d,%d",
@@ -368,51 +370,75 @@ int MyWM_push_WINDOWEVENT( SDL_Event *event )
         //        event->window.data2);
         break;
     case SDL_WINDOWEVENT_RESIZED:
+#if DEBUG_LEVEL >= 3
         SDL_Log("Window %d resized to %dx%d",
                 event->window.windowID, event->window.data1,
                 event->window.data2);
+#endif
         break;
     case SDL_WINDOWEVENT_SIZE_CHANGED:
+#if DEBUG_LEVEL >= 3
         SDL_Log("Window %d size changed to %dx%d",
                 event->window.windowID, event->window.data1,
                 event->window.data2);
+#endif
         break;
     case SDL_WINDOWEVENT_MINIMIZED:
+#if DEBUG_LEVEL >= 3
         SDL_Log("Window %d minimized", event->window.windowID);
+#endif
         break;
     case SDL_WINDOWEVENT_MAXIMIZED:
+#if DEBUG_LEVEL >= 3
         SDL_Log("Window %d maximized", event->window.windowID);
+#endif
         break;
     case SDL_WINDOWEVENT_RESTORED:
+#if DEBUG_LEVEL >= 3
         SDL_Log("Window %d restored", event->window.windowID);
+#endif
         break;
     case SDL_WINDOWEVENT_ENTER:
+#if DEBUG_LEVEL >= 3
         SDL_Log("Mouse entered window %d",
                 event->window.windowID);
+#endif
         break;
     case SDL_WINDOWEVENT_LEAVE:
+#if DEBUG_LEVEL >= 3
         SDL_Log("Mouse left window %d", event->window.windowID);
+#endif
         break;
     case SDL_WINDOWEVENT_FOCUS_GAINED:
+#if DEBUG_LEVEL >= 3
         SDL_Log("Window %d gained keyboard focus",
                 event->window.windowID);
+#endif
         break;
     case SDL_WINDOWEVENT_FOCUS_LOST:
+#if DEBUG_LEVEL >= 3
         SDL_Log("Window %d lost keyboard focus",
                 event->window.windowID);
+#endif
         break;
     case SDL_WINDOWEVENT_CLOSE:
-        SDL_Log("Window %d closed", event->window.windowID);
+#if DEBUG_LEVEL >= 3
+       SDL_Log("Window %d closed", event->window.windowID);
+#endif
         break;
 #if SDL_VERSION_ATLEAST(2, 0, 5)
     case SDL_WINDOWEVENT_TAKE_FOCUS:
+#if DEBUG_LEVEL >= 3
         SDL_Log("Window %d is offered a focus (%d activables)",
                 event->window.windowID,
                 SDLGuiTK_list_length (current_context->activables));
+#endif
         break;
     case SDL_WINDOWEVENT_HIT_TEST:
-        SDL_Log("Window %d has a special hit test", event->window.windowID);
-        break;
+ #if DEBUG_LEVEL >= 3
+       SDL_Log("Window %d has a special hit test", event->window.windowID);
+#endif
+       break;
 #endif
     }
     /* if( active_widget!=NULL ) { */
@@ -438,32 +464,32 @@ void * MyWM_blitsurface( SDLGuiTK_WMWidget * wm_widget )
     Surface2D_blitsurface( surface2D, \
                            wm_widget->area.x, wm_widget->area.y );
 
-    if( active_widget!=NULL && active_widget->act_srf!=NULL ) {
-        if( active_widget->top==wm_widget->widget ) {
+    if( focused_widget && focused_widget->act_srf ) {
+        if( focused_widget->top==wm_widget->widget ) {
             int act_flag=0;
             /*     if( ! active_2D ) { active_2D = MySDL_surface2D_new(); }; */
             /* Call update function here */
-            act_flag = (int) (*active_widget->UpdateActive) ( active_widget );
+            act_flag = (int) (*focused_widget->UpdateActive) ( focused_widget );
             if ( act_flag!=0 ) { /*  */
-                Surface2D_update( active_2D, \
-                                  active_widget->act_srf->srf );
+                Surface2D_update( animate_2D,
+                                  focused_widget->act_srf->srf );
                 /*       active_2D->texture_flag = 0; */
             }
-            active_2D->alpha = (GLfloat) active_widget->act_alpha;
-            if( active_widget->act_srf->srf==active_2D->srf) {
-                Surface2D_blitsurface( active_2D,		    \
-                                       active_widget->act_area.x,	\
-                                       active_widget->act_area.y );
+            animate_2D->alpha = (GLfloat) focused_widget->act_alpha;
+            if( focused_widget->act_srf->srf==animate_2D->srf) {
+                Surface2D_blitsurface( animate_2D,		    \
+                                       focused_widget->act_area.x,	\
+                                       focused_widget->act_area.y );
             }
-            if( active_widget->tooltipsdata!=NULL ) {
-                act_flag = PROT__TooltipsData_update( active_widget->tooltipsdata );
+            if( focused_widget->tooltipsdata!=NULL ) {
+                act_flag = PROT__TooltipsData_update( focused_widget->tooltipsdata );
                 if ( act_flag==1 ) { /*  */
-                    Surface2D_update( active_widget->tooltipsdata->tooltips->surface2D,		\
-                                      active_widget->tooltipsdata->tooltips->srf );
+                    Surface2D_update( focused_widget->tooltipsdata->tooltips->surface2D,		\
+                                      focused_widget->tooltipsdata->tooltips->srf );
                     /*       active_2D->texture_flag = 0; */
                 }
                 if ( act_flag!=-1 ) { /*  */
-                    Surface2D_blitsurface( active_widget->tooltipsdata->tooltips->surface2D, \
+                    Surface2D_blitsurface( focused_widget->tooltipsdata->tooltips->surface2D, \
                                            mouse_x+16,				\
                                            mouse_y+16 );
                 }
@@ -477,11 +503,11 @@ void * MyWM_blitsurface( SDLGuiTK_WMWidget * wm_widget )
 
 void MyWM_Init()
 {
-    active_2D = Surface2D_new();
+    animate_2D = Surface2D_new();
 }
 
 void MyWM_Uninit()
 {
-    Surface2D_destroy( active_2D );
+    Surface2D_destroy( animate_2D );
 }
 

@@ -103,7 +103,7 @@ void       BoxChild_DrawUpdate( BoxChild * child )
     SDLGuiTK_Widget * widget=child->child;
 
     /* IF CHILD AND PARENT ARE NOT SHOWN */
-    if( widget->shown==0 ) return;   /* && widget->hided_parent==0 */
+    if( !widget->visible ) return;   /* && widget->hided_parent==0 */
 
     /* UPDATE CHILD WIDGET */
     (*widget->DrawUpdate)( widget );
@@ -132,7 +132,7 @@ void       BoxChild_DrawBlit( BoxChild * child )
     SDLGuiTK_Widget * wbox=child->child->parent;
     SDLGuiTK_Widget * widget=child->child;
 
-    if( widget->shown==0 ) return;   /* && widget->hided_parent==0 */
+    if( !widget->visible ) return;   /* && widget->hided_parent==0 */
 
     /* CHILD SIZE SUGGESTION */
     widget->abs_area.x = wbox->abs_area.x + box->current_x;
@@ -178,9 +178,6 @@ void       BoxChild_DrawBlit( BoxChild * child )
 
     MySDL_BlitSurface(  widget->srf, NULL, \
                         wbox->srf, &widget->rel_area );
-    //2SDL_UpdateRects( wbox->srf, 1, &widget->rel_area );
-    //SDL_UpdateWindowSurface( widget->srf );
-
 }
 
 

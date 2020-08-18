@@ -33,7 +33,7 @@ struct SDLGuiTK_Scrollbar {
     SDLGuiTK_Widget * widget;       /* herits from */
 
     /* "public" data */
-    int orientation;               /* "public" data */
+    int orientation;
     SDLGuiTK_Adjustment *adjustment;
 
     /* "private" data */
@@ -44,9 +44,6 @@ struct SDLGuiTK_Scrollbar {
     SDL_Rect        area;
     SDL_Rect        button_area;
     SDL_Rect        button_act_area;
-    //SDL_Rect      children_area;    /* w,h set in herited DrawUpdate (child suggestion)
-    /* x,y set in self DrawUpdate */
-    //SDL_Rect      bg_area;          /* "private" data */
 };
 
 

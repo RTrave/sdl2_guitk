@@ -29,13 +29,14 @@ typedef struct SDLGuiTK_Surface2D SDLGuiTK_Surface2D;
 struct SDLGuiTK_Surface2D {
     SDLGuiTK_Object    * object;      /* referent widget */
 
-    SDL_Surface * srf;                /* "private" data */
-    int           w, h;               /* "private" data */
+    /* "private" data */
+    SDL_Surface * srf;
+    int           w, h;
     //SDL_Texture * mtexture;
-    GLfloat   alpha;                  /* "private" data */
-    GLuint    texture[1];             /* "private" data */
-    GLfloat   texMinX, texMinY;       /* "private" data */
-    GLfloat   texMaxX, texMaxY;       /* "private" data */
+    GLfloat   alpha;
+    GLuint    texture[1];
+    GLfloat   texMinX, texMinY;
+    GLfloat   texMaxX, texMaxY;
 };
 
 

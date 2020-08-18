@@ -18,24 +18,29 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
 */
 
+#pragma once
+
+#include <SDL2/SDL_guitk.h>
+#include "../wmwidget.h"
+
 
 /* SDLGuiTK_MenuShell structure definition */
 struct SDLGuiTK_MenuShell {
-  SDLGuiTK_Object    * object;     /* referent object */
+    SDLGuiTK_Object    * object;     /* referent object */
 
-  SDLGuiTK_Widget    * widget;  /* herits from */
+    SDLGuiTK_Widget    * widget;  /* herits from */
 
-  SDLGuiTK_Menu      * menu;       /* referent menu */
+    SDLGuiTK_Menu      * menu;       /* referent menu */
 
-  /* "public" data */
-  SDLGuiTK_List      * children;   /* "public" data */
+    /* "public" data */
+    SDLGuiTK_List      * children;
 
-  /* "private" data */
-  SDLGuiTK_WMWidget  * wm_widget;  /* herits from */
-  int                  wm_flag;
-  int                  title_flag;
-  MySDL_Surface      * title_srf;
-  SDL_Rect             title_area;
+    /* "private" data */
+    SDLGuiTK_WMWidget  * wm_widget;  /* herits from */
+    int                  wm_flag;
+    int                  title_flag;
+    MySDL_Surface      * title_srf;
+    SDL_Rect             title_area;
 };
 
 extern void

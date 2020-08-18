@@ -241,6 +241,7 @@ SDLGuiTK_Widget * Extract_ToggleButton(xmlNode * node)
             else if(propcmp(child, "name", "label")) {
                 SDLGUITK_LOG ("Extract ToggleButton property: label\n");
                 label = SDLGuiTK_label_new (contentget(child));
+                SDLGuiTK_misc_set_padding( SDLGuiTK_MISC (label), 5, 3);
                 SDLGuiTK_widget_show (label);
             }
             else {

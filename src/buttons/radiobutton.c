@@ -202,8 +202,8 @@ void PROT__radiobutton_destroy(SDLGuiTK_RadioButton * radiobutton)
 
 static void RadioButton_set_functions( SDLGuiTK_RadioButton * button )
 {
-    SDLGuiTK_SignalHandler * handler;
-    handler = (SDLGuiTK_SignalHandler *) button->object->signalhandler;
+    //SDLGuiTK_SignalHandler * handler;
+    //handler = (SDLGuiTK_SignalHandler *) button->object->signalhandler;
 
     //handler->fdefault[SDLGUITK_SIGNAL_TYPE_TOGGLED]->function =
     //        ToggleButton_Toggled;

@@ -131,21 +131,20 @@ static void Make_activesrf( SDLGuiTK_Widget * widget ) {
                            theme->bdcolor.b, \
                            255 );
     MySDL_FillRect( menuitem->active_srf, &tmp_area, bgcolor );
-    //SDL_UpdateRect( widget->act_srf, 0, 0, 0, 0 );
-    //SDL_SetAlpha( widget->act_srf, SDL_SRCALPHA|SDL_RLEACCEL, 255 ); /*  */
     PROT__theme_unlock( theme );
 }
 
 static void * MenuItem_DrawUpdate( SDLGuiTK_Widget * widget )
 {
-    /*   SDLGuiTK_MenuItem * menuitem=widget->container->bin->menuitem; */
-    /*   SDLGuiTK_Widget * child=menuitem->child; */
+    SDLGuiTK_MenuItem * menuitem=widget->container->bin->menuitem;
+    SDLGuiTK_Widget * child=menuitem->child;
+
+    child->parent = menuitem->menu->menushell->object->widget;
+    PROT__widget_set_top (child, menuitem->menu->menushell->object->widget);
 
     PROT__bin_DrawUpdate( widget->container->bin );
     widget->container->children_area.x = 0; //TODO: why 0 ? handled by Bin
     widget->container->children_area.y = 0;
-    /*   widget->rel_area.w += (2*SDLGUITK_BUTTONBORDER); */
-    /*   widget->rel_area.h += (2*SDLGUITK_BUTTONBORDER); */
 
     return (void *) NULL;
 }
@@ -162,17 +161,10 @@ static void * MenuItem_DrawBlit( SDLGuiTK_Widget * widget )
 
     PROT__bin_DrawBlit( widget->container->bin );
 
-    /*   printf( "ITEM2 ( child->srf.w=%d , child->srf.h=%d )\n", child->srf->w, child->srf->h ); */
-    /*   printf( "ITEM2 ( widget->srf.w=%d , widget->srf.h=%d )\n", widget->srf->w, widget->srf->h ); */
-
     MySDL_BlitSurface(  child->srf, NULL, \
                         widget->srf, &child->rel_area );
-    //SDL_UpdateRect( widget->srf, 0, 0, 0, 0 );
-
-    widget->act_area.x = widget->abs_area.x /* + button->bin->area.x */;
-    widget->act_area.y = widget->abs_area.y /* + button->bin->area.y */;
-    /*   widget->act_area.w = widget->abs_area.w; */
-    //widget->act_area.w = menuitem->menu->container->widget->rel_area.w - 6;
+    widget->act_area.x = widget->abs_area.x;
+    widget->act_area.y = widget->abs_area.y;
     widget->act_area.w = widget->abs_area.w;
     widget->act_area.h = widget->abs_area.h;
 
@@ -186,10 +178,13 @@ void MenuItem_DrawUpdate_Menu( SDLGuiTK_MenuItem * menuitem )
     SDLGuiTK_Widget * child=menuitem->child;
     /*   SDLGuiTK_Menu * menu=menuitem->child->parent->container->menu; */
 
+    child->parent = menuitem->menu->object->widget;
+    PROT__widget_set_top (child, menuitem->menu->object->widget->top);
+
     (*child->DrawUpdate)( child );
     menuitem->parent_area.w = child->req_area.w;
     menuitem->parent_area.h = child->req_area.h;
-    /*   printf( "ITEM ( parent_area.w=%d , parent_area.h=%d )\n", menuitem->parent_area.w, menuitem->parent_area.h ); */
+
     return;
 }
 
@@ -198,29 +193,15 @@ void MenuItem_DrawBlit_Menu( SDLGuiTK_MenuItem * menuitem )
     SDLGuiTK_Widget * child=menuitem->child;
     /*   SDLGuiTK_Menu * menu=menuitem->child->parent->container->menu; */
 
-    /* CHILD SIZE SUGGESTION */
-    /*   widget->abs_area.x = menuitem->child->parent->abs_area.x; */
-    /*   widget->abs_area.y = menuitem->child->parent->abs_area.y; */
-    /*   widget->rel_area.x = 0; */
-    /*   widget->rel_area.y = 0; */
     child->req_area.w = menuitem->parent_area.w;
     child->req_area.h = menuitem->parent_area.h;
 
     (*child->DrawBlit)( child );
 
-    //child->act_area.w = menuitem->menu->container->widget->rel_area.w - 6;
-    /*   widget->act_area.h = widget->abs_area.h; */
-
-    /*   printf( "ITEM ( parent_area.x=%d , parent_area.y=%d )\n", menuitem->parent_area.x, menuitem->parent_area.y ); */
-    /*   printf( "ITEM ( parent_area.w=%d , parent_area.h=%d )\n", menuitem->parent_area.w, menuitem->parent_area.h ); */
-    /*   printf( "ITEM ( widget->srf.w=%d , widget->srf.h=%d )\n", widget->srf->w, widget->srf->h ); */
-    /*   printf( "ITEM ( parent->srf.w=%d , parent->srf.h=%d )\n", menuitem->child->parent->srf->w, menuitem->child->parent->srf->h ); */
     MySDL_BlitSurface(  child->srf, NULL, \
                         menuitem->child->parent->srf, &menuitem->parent_area );
-    //2SDL_UpdateRect( menuitem->child->parent->srf, 0, 0, 0, 0 );
-    //SDL_UpdateWindowSurface( widget->srf );
-    /*   SDL_UpdateRects( menuitem->child->parent->srf, 1, &menuitem->parent_area ); */
-
+    child->parent = menuitem->menu->menushell->object->widget;
+    PROT__widget_set_top (child, menuitem->menu->menushell->object->widget);
     return;
 }
 
@@ -310,10 +291,8 @@ static void * MenuItem_MousePressed( SDLGuiTK_Widget * widget, \
     SDLGuiTK_MenuItem * menuitem=widget->container->bin->menuitem;
     SDLGuiTK_Menu * menu=menuitem->menu;
 
-    /*   menu->selected = menuitem; */
     menu->selected = menuitem;
     PROT__signal_push( menu->menushell->widget->object, SDLGUITK_SIGNAL_TYPE_SELECTIONDONE );
-    /*   PROT__signal_push( menu->menushell->widget->object, SDLGUITK_SIGNAL_TYPE_LEAVE ); */
 
     return (void *) NULL;
 }

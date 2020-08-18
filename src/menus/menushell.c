@@ -46,7 +46,6 @@
 #include "../container_prot.h"
 #include "../bin_prot.h"
 #include "../signal.h"
-//#include "../mywm.h"
 #include "../render/surface2d.h"
 #include "../wmwidget.h"
 #include "../render/mywm.h"
@@ -74,6 +73,9 @@ static struct SDLGuiTK_MenuShell * MenuShell_Create() {
     new_menushell->children = SDLGuiTK_list_new();
     new_menushell->title_srf = MySDL_Surface_new ("Menushell_title_srf");
 
+    new_menushell->widget->parent = new_menushell->widget;
+    new_menushell->widget->top = new_menushell->widget;
+
     return new_menushell;
 }
 
@@ -96,11 +98,7 @@ static void * MenuShell_DrawUpdate( SDLGuiTK_Widget * widget )
 {
     struct SDLGuiTK_MenuShell * menushell=widget->menushell;
     SDLGuiTK_Widget   * current;
-    //SDLGuiTK_MenuItem * current_item;
 
-    /* UPDATE ASCENDENTS */
-    widget->parent = widget;
-    widget->top = widget;
     /* First placement for widget */
     widget->req_area.w = 0;
     widget->req_area.h = 0;
@@ -108,9 +106,6 @@ static void * MenuShell_DrawUpdate( SDLGuiTK_Widget * widget )
     SDLGuiTK_list_lock( menushell->children );
     current = (SDLGuiTK_Widget *) SDLGuiTK_list_ref_init( menushell->children );
     while( current!=NULL ) {
-        //current_item = SDLGuiTK_MENUITEM( current );
-        current->top = widget->top;
-        current->parent = widget;
         (*current->DrawUpdate)( current );
         if( widget->req_area.w<current->req_area.w )
             widget->req_area.w = current->req_area.w;
@@ -158,7 +153,6 @@ static void * MenuShell_DrawBlit( SDLGuiTK_Widget * widget )
                            theme->bgcolor.b, \
                            255 );
     MySDL_FillRect( widget->srf, &tmp_area, bgcolor );
-    //SDL_UpdateRect( widget->srf, 0, 0, 0, 0 );
     PROT__theme_unlock( theme );
 
     current = (SDLGuiTK_Widget *) SDLGuiTK_list_ref_init( menushell->children );
@@ -169,26 +163,15 @@ static void * MenuShell_DrawBlit( SDLGuiTK_Widget * widget )
         current->abs_area.y = widget->abs_area.y + current_y;
         current->rel_area.x = current_x;
         current->rel_area.y = current_y;
-        //current->abs_area.w = current->rel_area.w;
-        //current->abs_area.h = current->rel_area.h;
         (*current->DrawBlit)( current );
         current_y += current->rel_area.h;
         // Workaround bad active values
-        /* current->act_area.x = current->abs_area.x; */
-        /* current->act_area.y = current->abs_area.y; */
         current->act_area.w = widget->abs_area.w;
-        /* current->act_area.h = current->abs_area.h; */
         MySDL_BlitSurface(  current->srf, NULL,			\
                             widget->srf, &current->rel_area );
-        //2SDL_UpdateRect( widget->srf, 0, 0, 0, 0 );
-        //SDL_UpdateWindowSurface( current->srf );
-        /*     SDL_UpdateRects( widget->srf, 1, &widget->rel_area ); */
         current_y+=2;
         current = (SDLGuiTK_Widget *) SDLGuiTK_list_ref_next( menushell->children );
     }
-
-    //widget->rel_area.w = widget->abs_area.w;
-    //widget->rel_area.h = widget->abs_area.h;
 
     widget->act_area.x = widget->abs_area.x;
     widget->act_area.y = widget->abs_area.y;
@@ -201,10 +184,6 @@ static void * MenuShell_DrawBlit( SDLGuiTK_Widget * widget )
     menushell->wm_widget->parent = menushell->menu->object->widget->top;
     WMWidget_DrawBlit( menushell->wm_widget, widget->srf );
 
-    //MySDL_BlitSurface(  widget->srf, NULL,
-    //                    menushell->wm_widget->srf, &menushell->wm_widget->child_area );
-    //SDL_UpdateRect( menushell->wm_widget->srf, 0, 0, 0, 0 );
-
     return (void *) NULL;
 }
 
@@ -213,17 +192,11 @@ static SDLGuiTK_Widget * MenuShell_RecursiveEntering( SDLGuiTK_Widget *widget, \
 {
     struct SDLGuiTK_MenuShell * menushell=widget->menushell;
     SDLGuiTK_Widget   * current, *active;
-    //SDLGuiTK_MenuItem * current_item;
-    /*   int current_x=1, current_y=1; */
 
     SDLGuiTK_list_lock( menushell->children );
 
     current = (SDLGuiTK_Widget *) SDLGuiTK_list_ref_init( menushell->children );
     while( current!=NULL ) {
-        //current_item = SDLGuiTK_MENUITEM( current );
-        /*     current->act_area.x = widget->abs_area.x + current_x; */
-        /*     current->act_area.y = widget->abs_area.y + current_y; */
-        /*     current_y+=current->abs_area.h; */
         active = PROT__widget_is_entering( current, x, y );
         if( active!=NULL ) {
             PROT_List_ref_reinit( menushell->children );
@@ -257,7 +230,6 @@ static void * MenuShell_Show( SDLGuiTK_Widget * widget, \
 
     MenuShell_DrawUpdate( widget );
     MenuShell_DrawBlit( widget );
-    widget->shown = 1;
     PROT__context_ref_wmwidget( menushell->wm_widget );
 
     return (void *) NULL;
@@ -268,7 +240,6 @@ static void * MenuShell_Hide( SDLGuiTK_Widget * widget, \
 {
     struct SDLGuiTK_MenuShell * menushell=widget->menushell;
 
-    widget->shown = 0;
     PROT__context_unref_wmwidget( menushell->wm_widget );
     WMWidget_Delete( menushell->wm_widget );
     menushell->wm_widget = NULL;
@@ -287,32 +258,32 @@ static void * MenuShell_MouseLeave( SDLGuiTK_Widget * widget, \
                                     void * data, void * event )
 {
     struct SDLGuiTK_MenuShell * menushell=widget->menushell;
-    if( widget->shown==0) {
+    if(!widget->visible) {
         SDLGUITK_ERROR("Workaround: mywm re-call LEAVE event!\n");
         return (void *) NULL;
     }
     MyCursor_Unset();
-    PROT__signal_push( menushell->object, SDLGUITK_SIGNAL_TYPE_DEACTIVATE );
+    SDLGuiTK_widget_hide (widget);
 
     return (void *) NULL;
 }
 
-static void * MenuShell_Realize( SDLGuiTK_Widget * widget, \
+static void * MenuShell_Map( SDLGuiTK_Widget * widget, \
                                  void * data, void * event )
 {
-    struct SDLGuiTK_MenuShell * menushell=widget->menushell;
-    /*   MenuShell_Show( widget, NULL ); */
+    //SDLGuiTK_MenuShell * menushell=widget->menushell;
     MenuShell_DrawUpdate( widget );
     MenuShell_DrawBlit( widget );
-    //MenuShell_UpdatePosition( menushell );
+    //PROT_MyWM_checkactive( widget );
     return (void *) NULL;
 }
 
 static void * MenuShell_Activate( SDLGuiTK_Widget * widget, \
                                   void * data, void * event )
 {
-    PROT__signal_push( widget->object, SDLGUITK_SIGNAL_TYPE_REALIZE );
-    PROT__signal_push( widget->object, SDLGUITK_SIGNAL_TYPE_SHOW );
+    //MenuShell_DrawUpdate( widget );
+    //MenuShell_DrawBlit( widget );
+    SDLGuiTK_widget_show (widget);
 
     return (void *) NULL;
 }
@@ -320,8 +291,7 @@ static void * MenuShell_Activate( SDLGuiTK_Widget * widget, \
 static void * MenuShell_DeActivate( SDLGuiTK_Widget * widget, \
                                     void * data, void * event )
 {
-    PROT__signal_push( widget->object, SDLGUITK_SIGNAL_TYPE_HIDE );
-    /*   PROT__signal_push( widget->object, SDLGUITK_SIGNAL_TYPE_DESTROY ); */
+    SDLGuiTK_widget_hide (widget);
 
     return (void *) NULL;
 }
@@ -336,10 +306,8 @@ static void * MenuShell_MousePressed( SDLGuiTK_Widget * widget, \
 static void * MenuShell_SelectionDone( SDLGuiTK_Widget * widget, \
                                        void * data, void * event )
 {
-    /*   SDLGuiTK_MenuShell * menushell=widget->menushell; */
     SDLGuiTK_Menu * menu=widget->menushell->menu;
-    PROT__signal_push( widget->object, SDLGUITK_SIGNAL_TYPE_LEAVE );
-    /*   PROT__signal_push( menu->container->widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT ); */
+    SDLGuiTK_widget_hide (widget);
     PROT__signal_push( menu->container->widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
 
     return (void *) NULL;
@@ -358,8 +326,8 @@ static void MenuShell_Init_functions( struct SDLGuiTK_MenuShell * menushell )
     menushell->object->widget->DrawUpdate = MenuShell_DrawUpdate;
     menushell->object->widget->DrawBlit = MenuShell_DrawBlit;
 
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_REALIZE]->function = \
-            MenuShell_Realize;
+    handler->fdefault[SDLGUITK_SIGNAL_TYPE_MAP]->function = \
+            MenuShell_Map;
     handler->fdefault[SDLGUITK_SIGNAL_TYPE_SHOW]->function = \
             MenuShell_Show;
     handler->fdefault[SDLGUITK_SIGNAL_TYPE_HIDE]->function = \
@@ -399,7 +367,8 @@ void SDLGuiTK_menu_shell_append( SDLGuiTK_Menu *menu, \
                                  SDLGuiTK_Widget *child ) {
     SDLGuiTK_MenuItem * menuitem=child->container->bin->menuitem;
 
-    child->parent = menu->object->widget;
+    child->parent = menu->menushell->object->widget;
+    PROT__widget_set_top (child, menu->menushell->object->widget);
     menu->selected = menuitem;
     menuitem->menu = menu;
     SDLGuiTK_list_lock( menu->menushell->children );

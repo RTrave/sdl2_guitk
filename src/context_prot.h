@@ -55,7 +55,7 @@ struct SDLGuiTK_Context {
   SDLGuiTK_List   * unref;       /* WMWidget's Surface2D for destruction */
 
   /* Current active window. */
-  SDLGuiTK_WMWidget * active_wmwidget;
+  SDLGuiTK_WMWidget * focused;
 };
 
 

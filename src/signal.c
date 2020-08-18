@@ -109,6 +109,10 @@ static char * Signal_translate( SDLGuiTK_Signal * signal )
     return SDLGUITK_SIGNAL_TEXT_FRAMEEVENT;
   case SDLGUITK_SIGNAL_TYPE_KEYBOARD:
     return SDLGUITK_SIGNAL_TEXT_KEYBOARD;
+  case SDLGUITK_SIGNAL_TYPE_MAP:
+    return SDLGUITK_SIGNAL_TEXT_MAP;
+  case SDLGUITK_SIGNAL_TYPE_UNMAP:
+    return SDLGUITK_SIGNAL_TEXT_UNMAP;
   case SDLGUITK_SIGNAL_TYPE_ENTER:
     return SDLGUITK_SIGNAL_TEXT_ENTER;
   case SDLGUITK_SIGNAL_TYPE_LEAVE:
@@ -494,6 +498,12 @@ static int Signal_get_type( char *ctype )
   }
   if( strcmp(ctype,SDLGUITK_SIGNAL_TEXT_FRAMEEVENT)==0 ) {
     return SDLGUITK_SIGNAL_TYPE_FRAMEEVENT;
+  }
+  if( strcmp(ctype,SDLGUITK_SIGNAL_TEXT_MAP)==0 ) {
+    return SDLGUITK_SIGNAL_TYPE_MAP;
+  }
+  if( strcmp(ctype,SDLGUITK_SIGNAL_TEXT_UNMAP)==0 ) {
+    return SDLGUITK_SIGNAL_TYPE_UNMAP;
   }
   if( strcmp(ctype,SDLGUITK_SIGNAL_TEXT_PRESSED)==0 ) {
     return SDLGUITK_SIGNAL_TYPE_PRESSED;

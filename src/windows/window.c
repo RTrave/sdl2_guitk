@@ -179,8 +179,8 @@ static void * Window_DrawUpdate( SDLGuiTK_Widget * widget )
     PROT__widget_reset_req_area( widget );
 
     /* UPDATE SELF ASCENDENTS */
-    widget->parent = widget;
-    widget->top = widget;
+    //widget->parent = widget;
+    //widget->top = widget;
 
     PROT__bin_DrawUpdate( window->bin );
     if( widget->req_area.w<50 ) {
@@ -237,7 +237,7 @@ static void * Window_DrawBlit( SDLGuiTK_Widget * widget )
     PROT__theme_unlock( theme );
 
     if( window->bin->child!=NULL ) {
-        if( window->bin->child->shown==1 ) {
+        if( window->bin->child->visible ) {
             MySDL_FillRect( widget->srf, &widget->rel_area, bgcolor );
             MySDL_BlitSurface( window->bin->child->srf, NULL, \
                                widget->srf, &window->bin->child->rel_area );
@@ -264,11 +264,11 @@ static SDLGuiTK_Widget * Window_RecursiveEntering( SDLGuiTK_Widget * widget, \
     SDLGuiTK_Widget * active;
 
     child = SDLGuiTK_bin_get_child( widget->container->bin );
-    if( child==NULL ) {
+    if( !child ) {
         SDLGUITK_ERROR( "Window_RecursiveEntering(): child==NULL\n" );
         return NULL;
     }
-    if( child->shown==0 ) {
+    if( !child->visible ) {
         return NULL;
     }
     active = PROT__widget_is_entering( child, x, y );
@@ -282,9 +282,7 @@ static void * Window_RecursiveDestroy( SDLGuiTK_Widget * widget )
 
     PROT__context_unref_wmwidget( widget->container->bin->window->wm_widget );
     child = SDLGuiTK_bin_get_child( widget->container->bin );
-    /*   PROT__bin_remove( widget->container->bin, child ); */
-
-    if( child!=NULL ) {
+    if( child ) {
         SDLGuiTK_widget_destroy( child );
     }
 
@@ -304,7 +302,6 @@ static void * Window_Free( SDLGuiTK_Widget * widget )
 static void * Window_Realize( SDLGuiTK_Widget * widget, \
                               void * data, void * event )
 {
-
     Window_UpdatePosition( widget->container->bin->window );
     Window_DrawUpdate( widget );
     Window_DrawBlit( widget );
@@ -320,7 +317,7 @@ static void * Window_Destroy( SDLGuiTK_Widget * widget, \
     /*   SDL_mutexV( widget->object->mutex ); */
     /*   PROT__context_unref_wmwidget( window->wm_widget ); */
     /*   SDL_mutexP( widget->object->mutex ); */
-    widget->shown = 0;
+    //widget->visible = SDL_FALSE;
 
     return (void *) NULL;
 }
@@ -330,8 +327,8 @@ static void * Window_Show( SDLGuiTK_Widget * widget, \
 {
     SDLGuiTK_Window * window=widget->container->bin->window;
 
-    if( widget->shown==1 ) return (void *) NULL;
-    widget->shown = 1;
+    //if( widget->visible ) return (void *) NULL;
+    //widget->visible = SDL_TRUE;
     Window_UpdatePosition( window );
     PROT__context_ref_wmwidget( window->wm_widget );
 
@@ -343,9 +340,9 @@ static void * Window_Hide( SDLGuiTK_Widget * widget, \
 {
     SDLGuiTK_Window * window=widget->container->bin->window;
 
-    if( widget->shown==0 ) return (void *) NULL;
+    //if( !widget->visible ) return (void *) NULL;
     PROT__context_unref_wmwidget( window->wm_widget );
-    widget->shown = 0;
+    //widget->visible = SDL_FALSE;
 
     return (void *) NULL;
 }
@@ -450,18 +447,19 @@ SDLGuiTK_Widget * SDLGuiTK_window_new()
     SDLGuiTK_Window * window;
 
     window = Window_create();
+    SDLGuiTK_Widget * widget=window->object->widget;
 
-    window->object->widget->RecursiveEntering = Window_RecursiveEntering;
-    window->object->widget->RecursiveDestroy = Window_RecursiveDestroy;
-    window->object->widget->Free = Window_Free;
+    widget->RecursiveEntering = Window_RecursiveEntering;
+    widget->RecursiveDestroy = Window_RecursiveDestroy;
+    widget->Free = Window_Free;
 
-    window->object->widget->DrawUpdate = Window_DrawUpdate;
-    window->object->widget->DrawBlit = Window_DrawBlit;
+    widget->DrawUpdate = Window_DrawUpdate;
+    widget->DrawBlit = Window_DrawBlit;
 
     Window_setsignals( window );
 
-    window->object->widget->parent = NULL;
-    window->object->widget->top = NULL;
+    widget->parent = widget;
+    widget->top = widget;
 
     PROT__signal_push( window->object, SDLGUITK_SIGNAL_TYPE_REALIZE );
 

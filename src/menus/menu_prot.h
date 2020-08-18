@@ -18,21 +18,25 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
 */
 
+#pragma once
+
+#include <SDL2/SDL_guitk.h>
+
 
 /* SDLGuiTK_Menu structure definition */
 struct SDLGuiTK_Menu {
-  SDLGuiTK_Object * object;       /* referent object */
+    SDLGuiTK_Object * object;       /* referent object */
 
-  SDLGuiTK_Container * container; /* herits from */
+    SDLGuiTK_Container * container; /* herits from */
 
-  char                title[64];    /* "public" data */
-  SDLGuiTK_MenuItem * selected;     /* "public" data */
-  int  position;                    /* "public" data */
+    char                title[64];    /* "public" data */
+    SDLGuiTK_MenuItem * selected;     /* "public" data */
+    int  position;                    /* "public" data */
 
-  SDL_Surface * srf;            /* "private" data */
-  SDL_Rect      area;           /* "private" data */
-  SDL_Rect      child_area;     /* "private" data */
+    SDL_Surface * srf;            /* "private" data */
+    SDL_Rect      area;           /* "private" data */
+    SDL_Rect      child_area;     /* "private" data */
 
-  struct SDLGuiTK_MenuShell * menushell;    /* "private" data */
+    struct SDLGuiTK_MenuShell * menushell;    /* "private" data */
 };
 

@@ -56,7 +56,7 @@ static SDLGuiTK_Context * Context_create()
     new_context->activables = SDLGuiTK_list_new();
     new_context->ref = SDLGuiTK_list_new();
     new_context->unref = SDLGuiTK_list_new();
-    new_context->active_wmwidget = NULL;
+    new_context->focused = NULL;
     new_context->active_render = NULL;
 
     return new_context;
@@ -140,10 +140,9 @@ void PROT__context_unref_wmwidget( SDLGuiTK_WMWidget * wm_widget )
 
     SDLGuiTK_list_lock( current_context->activables );
 
-    rem_widget = \
-                 (SDLGuiTK_WMWidget *) SDLGuiTK_list_remove(current_context->activables,\
+    rem_widget = (SDLGuiTK_WMWidget *) SDLGuiTK_list_remove(current_context->activables,\
                          (SDLGuiTK_Object *) wm_widget );
-    if( rem_widget!=NULL ) {
+    if( rem_widget ) {
         SDLGuiTK_list_lock( current_context->unref );
         SDLGuiTK_list_append( current_context->unref, \
                               (SDLGuiTK_Object *) wm_widget->surface2D );
@@ -158,6 +157,8 @@ void PROT__context_unref_wmwidget( SDLGuiTK_WMWidget * wm_widget )
 
         }
         if( rem_widget==wm_widget ) {
+            PROT__signal_push( rem_widget->widget->object,
+                               SDLGUITK_SIGNAL_TYPE_UNMAP );
 #if DEBUG_LEVEL >= 2
             char tmpstr[512];
             sprintf( tmpstr, \
@@ -244,7 +245,8 @@ void SDLGuiTK_update()
         SDLGuiTK_list_append( current_context->activables, \
                               (SDLGuiTK_Object *) current );
         SDLGuiTK_list_unlock( current_context->activables );
-        PROT__signal_push( current->widget->object, SDLGUITK_SIGNAL_TYPE_REALIZE );
+        PROT__signal_push( current->widget->object,
+                           SDLGUITK_SIGNAL_TYPE_MAP );
         PROT_MyWM_leaveall();
         PROT_MyWM_checkactive( current->widget );
         SDLGuiTK_list_lock( current_context->activables );
@@ -352,7 +354,7 @@ int  SDLGuiTK_pushevent( SDL_Event *event )
     if( event->type==SDL_WINDOWEVENT ) {
         if(current_context->type==SDLGUITK_CONTEXT_MODE_MULTIPLE) {
             if(event->window.event==SDL_WINDOWEVENT_LEAVE) {
-                if(current_context->active_wmwidget!=NULL) {
+                if(current_context->focused) {
                     current_context->active_render = NULL;
                     PROT_MyWM_leaveall();
                     SDL_mutexV( current_context->mutex );
@@ -360,7 +362,7 @@ int  SDLGuiTK_pushevent( SDL_Event *event )
                 }
             }
             if(event->window.event==SDL_WINDOWEVENT_ENTER) {
-                if(current_context->active_wmwidget==NULL) {
+                if(!current_context->focused) {
                     SDLGuiTK_WMWidget * wmwidget =
                         Context_getwmwidget_withwindowid(event->window.windowID);
                     if(wmwidget) {
@@ -372,7 +374,7 @@ int  SDLGuiTK_pushevent( SDL_Event *event )
                 }
             }
             if(event->window.event==SDL_WINDOWEVENT_CLOSE) {
-                if(current_context->active_wmwidget==NULL) {
+                if(!current_context->focused) {
                     SDLGuiTK_WMWidget * wmwidget =
                         Context_getwmwidget_withwindowid(event->window.windowID);
                     if(wmwidget) {
@@ -392,7 +394,7 @@ int  SDLGuiTK_pushevent( SDL_Event *event )
 
     SDLGuiTK_list_lock( current_context->activables );
 
-    if( current_context->active_wmwidget!=NULL ) {
+    if( current_context->focused ) {
         SDLGuiTK_list_unlock( current_context->activables );
         switch( event->type ) {
         case SDL_MOUSEBUTTONDOWN:

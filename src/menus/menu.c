@@ -88,7 +88,6 @@ static SDLGuiTK_Menu * Menu_create()
     sprintf( new_menu->object->name, "menu%d", ++current_id );
 
     strcpy( new_menu->title, "" );
-    /*   new_menu->children = SDLGuiTK_list_new(); */
     new_menu->selected = NULL;
 
     PROT__menushell_create( new_menu );
@@ -98,7 +97,6 @@ static SDLGuiTK_Menu * Menu_create()
 
 static void Menu_destroy( SDLGuiTK_Menu * menu )
 {
-    /*   SDLGuiTK_list_destroy( menu->children ); */
     PROT__menushell_destroy( menu );
 
     PROT__container_destroy( menu->container );
@@ -113,14 +111,9 @@ static void * Menu_DrawUpdate( SDLGuiTK_Widget * widget )
     SDLGuiTK_Widget * current=NULL;
 
     if( current_child==NULL ) {
-        /*     printf( "ERROR\n" ); */
         return (void *) NULL;
     }
     current = current_child->child;
-
-    /* UPDATE CHILD ASCENDENTS */
-    current->top = widget->top;
-    current->parent = widget;
 
     MenuItem_DrawUpdate_Menu( current_child );
 
@@ -129,11 +122,6 @@ static void * Menu_DrawUpdate( SDLGuiTK_Widget * widget )
     widget->container->children_area.h = current->req_area.h+10;
 
     PROT__container_DrawUpdate( widget->container );
-
-    /*   menu->container->children_area.w = 0; */
-    /*   menu->container->children_area.h = 0; */
-
-    /*   PROT__container_DrawUpdate( menu->container ); */
 
     return (void *) NULL;
 }
@@ -146,19 +134,12 @@ static void * Menu_DrawBlit( SDLGuiTK_Widget * widget )
     SDL_Rect          tmp_area;
     Uint32 bgcolor;
     SDLGuiTK_Theme * theme;
-/*
-    widget->container->children_area.w = \
-                                         widget->abs_area.w - 2*widget->container->border_width;
-    widget->container->children_area.h = \
-                                         widget->abs_area.h - 2*widget->container->border_width;
-*/
+
     PROT__container_DrawBlit( widget->container );
 
     if( current_child==NULL ) {
-        /*     printf( "ERROR\n" ); */
         return (void *) NULL;
     }
-    //current = current_child->child;
 
     // draw menu background
     theme = PROT__theme_get_and_lock();
@@ -172,7 +153,6 @@ static void * Menu_DrawBlit( SDLGuiTK_Widget * widget )
                            theme->bdcolor.b, \
                            255 );
     MySDL_FillRect( widget->srf, &tmp_area, bgcolor );
-    //SDL_UpdateRect( widget->srf, 0, 0, 0, 0 );
     tmp_area.x = 2;
     tmp_area.y = 2;
     tmp_area.w = widget->abs_area.w - 14;
@@ -183,18 +163,12 @@ static void * Menu_DrawBlit( SDLGuiTK_Widget * widget )
                            theme->bgcolor.b, \
                            255 );
     MySDL_FillRect( widget->srf, &tmp_area, bgcolor );
-    //SDL_UpdateRect( widget->srf, 0, 0, 0, 0 );
     PROT__theme_unlock( theme );
 
     current_child->parent_area.x = widget->container->border_width + 3;
     current_child->parent_area.y = widget->container->border_width + 6;
-    /*   current_child->parent_area.w = widget->container->children_area.w; */
-    /*   current_child->parent_area.h = widget->container->children_area.h; */
 
     MenuItem_DrawBlit_Menu( current_child );
-
-    /* widget->rel_area.w = widget->abs_area.w; */
-    /* widget->rel_area.h = widget->abs_area.h; */
 
     widget->act_area.x = widget->abs_area.x;
     widget->act_area.y = widget->abs_area.y;
@@ -221,20 +195,14 @@ static SDLGuiTK_Widget * Menu_RecursiveEntering( SDLGuiTK_Widget * widget, \
 static void * Menu_RecursiveDestroy( SDLGuiTK_Widget * widget )
 {
     SDLGuiTK_Menu * menu=widget->container->menu;
-    //SDLGuiTK_Widget * current;
     SDLGuiTK_MenuItem * child;
 
     SDLGuiTK_list_lock( menu->menushell->children );
 
-    child = \
-            (SDLGuiTK_MenuItem *) SDLGuiTK_list_pop_head( menu->menushell->children );
-    while( child!=NULL ) {
-        //current = child->child;
-        /*     SDLGuiTK_widget_destroy( child->child ); */
-        /*     child->child = NULL; */
+    child = (SDLGuiTK_MenuItem *) SDLGuiTK_list_pop_head( menu->menushell->children );
+    while( child ) {
         SDLGuiTK_widget_destroy( child->object->widget );
-        child = \
-                (SDLGuiTK_MenuItem *) SDLGuiTK_list_pop_head( menu->menushell->children );
+        child = (SDLGuiTK_MenuItem *) SDLGuiTK_list_pop_head( menu->menushell->children );
     }
 
     SDLGuiTK_list_unlock( menu->menushell->children );
@@ -258,10 +226,6 @@ static void * Menu_Realize( SDLGuiTK_Widget * widget, \
 static void * Menu_Show( SDLGuiTK_Widget * widget, \
                          void * data, void * event )
 {
-    widget->shown = 1;
-    if( widget->top!=NULL ) {
-        PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-    }
 
     return (void *) NULL;
 }
@@ -269,10 +233,6 @@ static void * Menu_Show( SDLGuiTK_Widget * widget, \
 static void * Menu_Hide( SDLGuiTK_Widget * widget, \
                          void * data, void * event )
 {
-    widget->shown = 0;
-    if( widget->top!=NULL ) {
-        PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-    }
 
     return (void *) NULL;
 }
@@ -282,8 +242,6 @@ static void * Menu_MousePressed( SDLGuiTK_Widget * widget, \
                                  void * data, void * event )
 {
     SDLGuiTK_Menu * menu=widget->container->menu;
-
-    /*   printf("Menu_MousePressed Pressed!!!\n"); */
     PROT__menushell_start( menu );
 
     return (void *) NULL;

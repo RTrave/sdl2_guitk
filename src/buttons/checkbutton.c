@@ -150,6 +150,7 @@ void PROT__checkbutton_DrawUpdate(SDLGuiTK_CheckButton * checkbutton)
     }
     widget->req_area.w+=28;
     CheckButton_Indicator( checkbutton );
+    PROT__widget_set_req_area(widget, 28, checkbutton->indicator_srf->srf->h);
     //widget->container->bin->container->children_area.w -= 28;
     //widget->req_area.h+=SCROLLBAR_SIZE;
 }
@@ -213,8 +214,8 @@ void PROT__checkbutton_destroy(SDLGuiTK_CheckButton * checkbutton)
 
 static void CheckButton_set_functions( SDLGuiTK_CheckButton * button )
 {
-    SDLGuiTK_SignalHandler * handler;
-    handler = (SDLGuiTK_SignalHandler *) button->object->signalhandler;
+    //SDLGuiTK_SignalHandler * handler;
+    //handler = (SDLGuiTK_SignalHandler *) button->object->signalhandler;
 
     //handler->fdefault[SDLGUITK_SIGNAL_TYPE_TOGGLED]->function =
     //        ToggleButton_Toggled;

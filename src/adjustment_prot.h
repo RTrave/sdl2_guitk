@@ -19,6 +19,10 @@
 
 */
 
+#pragma once
+
+#include <SDL2/SDL_guitk.h>
+
 
 /* SDLGuiTK_ScrolledWindow structure definition */
 struct SDLGuiTK_Adjustment {

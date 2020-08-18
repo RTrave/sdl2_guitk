@@ -99,7 +99,7 @@ static void * Box_DrawUpdate( SDLGuiTK_Widget * widget )
 {
     SDLGuiTK_Box * box=widget->container->box;
     BoxChild * current_child;
-    SDLGuiTK_Widget * current=NULL;
+    SDLGuiTK_Widget * current;
 
     /* INIT BOX VALUES */
     box->shown_nb = 0;
@@ -111,24 +111,24 @@ static void * Box_DrawUpdate( SDLGuiTK_Widget * widget )
     box->container->children_area.h = 0;
 
     /* START CHILDREN UPDATE */
-    SDLGuiTK_list_lock( box->children );
+    //SDLGuiTK_list_lock( box->children );
 
     /* IF TOP WIDGET NO EXISTS ... */
-    if( widget->top==NULL ) {
-        SDLGUITK_ERROR( "Box_UpdateDim(): can't be a top widget\n" );
-        return 0;
-    }
+    //if( widget->top==NULL ) {
+    //    SDLGUITK_ERROR( "Box_UpdateDim(): can't be a top widget\n" );
+    //    return 0;
+    //}
 
     current_child = (BoxChild *) SDLGuiTK_list_ref_init( box->children );
-    while( current_child!=NULL ) {
+    while( current_child ) {
         current = current_child->child;
 
         /* UPDATE CHILD ASCENDENTS */
-        current->top = widget->top;
-        current->parent = widget;
+        //current->top = widget->top;
+        //current->parent = widget;
 
         /* IF CHILD SHOWN */
-        if( widget->shown==1 && current_child->child->shown==1 ) {
+        if( widget->visible && current_child->child->visible ) {
 
             BoxChild_DrawUpdate( current_child );
 
@@ -200,13 +200,13 @@ static void * Box_DrawBlit( SDLGuiTK_Widget * widget )
     box->current_y=box->container->border_width;
 
     if( box->shown_nb<1 ) {
-        current_child = (BoxChild *) SDLGuiTK_list_ref_init( box->children );
-        while( current_child!=NULL ) {
-            current_child = (BoxChild *) SDLGuiTK_list_ref_next( box->children );
-        } //TODO loop useless
+        //current_child = (BoxChild *) SDLGuiTK_list_ref_init( box->children );
+        //while( current_child ) {
+        //    current_child = (BoxChild *) SDLGuiTK_list_ref_next( box->children );
+        //} //TODO loop useless
 
         PROT__container_DrawBlit( box->container );
-        SDLGuiTK_list_unlock( box->children );
+        //SDLGuiTK_list_unlock( box->children );
         SDLGUITK_ERROR( "Box_DrawBlit(): box->shown_nb<1\n" );
         return 0;
     }
@@ -242,18 +242,18 @@ static void * Box_DrawBlit( SDLGuiTK_Widget * widget )
 
     PROT__container_DrawBlit( box->container );
 
-    if( widget->top==NULL ) {
-        SDLGuiTK_list_unlock( box->children );
-        SDLGUITK_ERROR( "Box_UpdateDim(): can't be a top widget\n" );
-        return 0;
-    }
+    //if( !widget->top ) {
+        //SDLGuiTK_list_unlock( box->children );
+    //    SDLGUITK_ERROR( "Box_UpdateDim(): can't be a top widget\n" );
+    //    return 0;
+    //}
 
     box->shown_nb = 0;
 
     current_child = (BoxChild *) SDLGuiTK_list_ref_init( box->children );
-    while( current_child!=NULL ) {
+    while( current_child ) {
 
-        if( widget->shown==1 && current_child->child->shown==1  ) {
+        if( widget->visible && current_child->child->visible  ) {
 
             current_child->area.x = box->current_x;
             current_child->area.y = box->current_y;
@@ -299,7 +299,7 @@ static void * Box_DrawBlit( SDLGuiTK_Widget * widget )
         current_child = (BoxChild *) SDLGuiTK_list_ref_next( box->children );
     }
 
-    SDLGuiTK_list_unlock( box->children );
+    //SDLGuiTK_list_unlock( box->children );
 
     widget->rel_area.w = widget->abs_area.w;
     widget->rel_area.h = widget->abs_area.h;
@@ -321,11 +321,11 @@ static SDLGuiTK_Widget * Box_RecursiveEntering( SDLGuiTK_Widget * widget, \
     SDLGuiTK_Widget * child;
     SDLGuiTK_Widget * active;
 
-    SDLGuiTK_list_lock( box->children );
+    //SDLGuiTK_list_lock( box->children );
     current_child = (BoxChild *) SDLGuiTK_list_ref_init( box->children );
     while( current_child!=NULL ) {
         child = current_child->child;
-        if( child->shown==1 ) {
+        if( child->visible ) {
             active = PROT__widget_is_entering( child, x, y );
             if( active!=NULL ) {
                 PROT_List_ref_reinit( box->children );
@@ -337,7 +337,7 @@ static SDLGuiTK_Widget * Box_RecursiveEntering( SDLGuiTK_Widget * widget, \
     }
 
 
-    SDLGuiTK_list_unlock( box->children );
+    //SDLGuiTK_list_unlock( box->children );
 
     return NULL;
 
@@ -348,7 +348,7 @@ static void * Box_RecursiveDestroy( SDLGuiTK_Widget * widget )
     SDLGuiTK_Widget * current;
     BoxChild * child;
 
-    SDLGuiTK_list_lock( widget->container->box->children );
+    //SDLGuiTK_list_lock( widget->container->box->children );
 
     child = \
             (BoxChild *) SDLGuiTK_list_ref_init( widget->container->box->children );
@@ -359,7 +359,7 @@ static void * Box_RecursiveDestroy( SDLGuiTK_Widget * widget )
                 (BoxChild *) SDLGuiTK_list_ref_next( widget->container->box->children );
     }
 
-    SDLGuiTK_list_unlock( widget->container->box->children );
+    //SDLGuiTK_list_unlock( widget->container->box->children );
 
     return (void *) NULL;
 }
@@ -380,22 +380,24 @@ static void * Box_Realize( SDLGuiTK_Widget * widget, \
 static void * Box_Show( SDLGuiTK_Widget * widget, \
                         void * data, void * event )
 {
+/*
     widget->shown = 1;
     if( widget->top!=NULL ) {
         PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
     }
-
+*/
     return (void *) NULL;
 }
 
 static void * Box_Hide( SDLGuiTK_Widget * widget, \
                         void * data, void * event )
 {
+/*
     widget->shown = 0;
     if( widget->top!=NULL ) {
         PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
     }
-
+*/
     return (void *) NULL;
 }
 
@@ -463,11 +465,11 @@ void SDLGuiTK_box_pack_start( SDLGuiTK_Box * box, \
     child->padding = padding;
 
     widget->parent = box->object->widget;
-    widget->top = box->object->widget->top;
+    PROT__widget_set_top (widget, box->object->widget->top);
 
-    SDLGuiTK_list_lock( box->children );
+    //SDLGuiTK_list_lock( box->children );
     SDLGuiTK_list_append( box->children, (SDLGuiTK_Object *) child );
-    SDLGuiTK_list_unlock( box->children );
+    //SDLGuiTK_list_unlock( box->children );
 }
 
 
@@ -519,10 +521,20 @@ void PROT__box_remove( SDLGuiTK_Box * this_box, \
 
     if( (child=BoxChild_remove(this_box,widget))!=NULL ) {
         widget->parent = NULL;
-        widget->top = NULL;
+        PROT__widget_set_top (widget, NULL);
         BoxChild_destroy( child );
     } else {
         SDLGUITK_ERROR( "PROT__box_remove(): widget not found in box\n" );
+    }
+}
+
+void PROT__box_set_top( SDLGuiTK_Box *box, SDLGuiTK_Widget *top)
+{
+    BoxChild * child;
+    child = (BoxChild*) SDLGuiTK_list_ref_init (box->children);
+    while(child) {
+        PROT__widget_set_top (child->child, top);
+        child = (BoxChild*) SDLGuiTK_list_ref_next (box->children);
     }
 }
 

@@ -196,8 +196,7 @@ static void * ScrolledWindow_DrawBlit( SDLGuiTK_Widget * widget )
 
     if( scrolledwindow->bin->child!=NULL ) {
 
-        /*     SDL_mutexP( button->bin->child->object->mutex ); */
-        if( scrolledwindow->bin->child->shown==1 ) {
+        if( scrolledwindow->bin->child->visible ) {
             ScrolledWindow_SetAreas(scrolledwindow);
             PROT_viewport_setsize (SDLGuiTK_VIEWPORT(scrolledwindow->bin->child),
                                    scrolledwindow->area.w, scrolledwindow->area.h);
@@ -209,18 +208,11 @@ static void * ScrolledWindow_DrawBlit( SDLGuiTK_Widget * widget )
                                 widget->srf, &scrolledwindow->hsb_area );
             MySDL_BlitSurface(  scrolledwindow->vscrollbar->srf, NULL, \
                                 widget->srf, &scrolledwindow->vscrollbar->rel_area );
-
-            //2SDL_UpdateRects( widget->srf, 1, &button->bin->child->rel_area );
-            //SDL_UpdateWindowSurface( button->bin->child->srf );
-            //MySDL_BlitSurface(  srf, NULL,
-            //                    widget->srf, &scrolledwindow->bin->child->rel_area );
-
         }
     widget->act_area.x = widget->abs_area.x;
     widget->act_area.y = widget->abs_area.y;
     widget->act_area.w = widget->abs_area.w;
     widget->act_area.h = widget->abs_area.h;
-        /*     SDL_mutexV( button->bin->child->object->mutex ); */
     }
 
     return (void *) NULL;
@@ -240,11 +232,11 @@ static void * ScrolledWindow_Realize( SDLGuiTK_Widget * widget, \
 static void * ScrolledWindow_Show( SDLGuiTK_Widget * widget, \
                            void * data, void * event )
 {
-    widget->shown = 1;
+    //widget->shown = 1;
     /*   widget->changed = 1; */
-    if( widget->top!=NULL ) {
-        PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-    }
+    //if( widget->top!=NULL ) {
+    //    PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
+    //}
 
     return (void *) NULL;
 }
@@ -252,11 +244,11 @@ static void * ScrolledWindow_Show( SDLGuiTK_Widget * widget, \
 static void * ScrolledWindow_Hide( SDLGuiTK_Widget * widget, \
                            void * data, void * event )
 {
-    widget->shown = 0;
+    //widget->shown = 0;
     /*   widget->changed = 1; */
-    if( widget->top!=NULL ) {
-        PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-    }
+    //if( widget->top!=NULL ) {
+    //    PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
+    //}
 
     return (void *) NULL;
 }

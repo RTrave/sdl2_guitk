@@ -96,54 +96,46 @@ static void Container_destroy( SDLGuiTK_Container * container )
 void SDLGuiTK_container_add( SDLGuiTK_Container * container,\
                              SDLGuiTK_Widget * widget )
 {
-    /*   SDL_mutexP( container->object->mutex ); */
-
-    if( container->bin!=NULL ) {
+    if( container->bin ) {
         PROT__bin_add( container->bin, widget );
-        /*     SDL_mutexV( container->object->mutex ); */
         return;
     }
-
-    if( container->box!=NULL ) {
-        /*     SDL_mutexV( container->object->mutex ); */
+    if( container->box ) {
         SDLGUITK_ERROR( "SDLGuiTK_container_add(): use _box_pack_start for boxes!\n" );
         return;
     }
-
-    /*   SDL_mutexV( container->object->mutex ); */
+    if( container->menu ) {
+        SDLGUITK_ERROR( "SDLGuiTK_container_add(): use _menu_shell_append for menus!\n" );
+        return;
+    }
 }
 
 
 void SDLGuiTK_container_remove( SDLGuiTK_Container * container, \
                                 SDLGuiTK_Widget * widget )
 {
+    if( container->bin ) {
+        PROT__bin_remove( container->bin, widget );
+        return;
+    }
+
+    if( container->box ) {
+        PROT__box_remove( container->box, widget );
+        return;
+    }
+
+    if( container->menu ) {
+        //PROT__menu_remove( container->menu, widget );
+        //return; //TODO
+    }
+
 #if DEBUG_LEVEL >= 1
     char tmpstr[512];
-#endif
-
-    /*   SDL_mutexP( container->object->mutex ); */
-
-    if( container->bin!=NULL ) {
-        PROT__bin_remove( container->bin, widget );
-        /*     SDL_mutexV( container->object->mutex ); */
-        return;
-    }
-
-    if( container->box!=NULL ) {
-        PROT__box_remove( container->box, widget );
-        /*     SDL_mutexV( container->object->mutex ); */
-        return;
-    }
-
-#if DEBUG_LEVEL >= 1
     sprintf( tmpstr, "container_remove(): %s not found in %s\n", \
              widget->object->name, \
              container->object->name );
     SDLGUITK_ERROR( tmpstr );
 #endif
-
-    /*   SDL_mutexV( container->object->mutex ); */
-
 }
 
 
@@ -162,23 +154,29 @@ void PROT__container_destroy( SDLGuiTK_Container * container )
     Container_destroy( container );
 }
 
+void PROT__container_set_top( SDLGuiTK_Container *container, SDLGuiTK_Widget *top)
+{
+    SDLGuiTK_Widget * child;
+    if(container->bin)
+        PROT__bin_set_top (container->bin, top);
+    else if(container->box)
+        PROT__box_set_top (container->box, top);
+    // Menu ?
+}
+
 
 SDLGuiTK_List *SDLGuiTK_container_get_children( SDLGuiTK_Container *container )
 {
     SDLGuiTK_List * children=NULL;
 
-    /*   SDL_mutexP( container->object->mutex ); */
-
-    if( container->bin!=NULL ) {
-        if( container->bin->child!=NULL ) {
+    if( container->bin ) {
+        if( container->bin->child ) {
             children = SDLGuiTK_list_new();
             SDLGuiTK_list_append( children, container->bin->child->object );
         }
     } else if( container->box!=NULL ) {
         children = SDLGuiTK_list_copy( container->box->children );
     }
-
-    /*   SDL_mutexV( container->object->mutex ); */
 
     return children;
 }
@@ -188,17 +186,7 @@ void PROT__container_DrawUpdate( SDLGuiTK_Container * container )
 {
     container->children_area.x = container->border_width;
     container->children_area.y = container->border_width;
-#if DEBUG_LEVEL >= 3
-    /* printf("===1 PROT__container_DrawUpdate() %s\n    req_area: w=%d h=%d\n", */
-    /*        container->widget->object->name, */
-    /*        container->widget->req_area.w, container->widget->req_area.h); */
-#endif
-/*
-    container->widget->req_area.w =
-        container->children_area.w + 2*(container->border_width);
-    container->widget->req_area.h =
-        container->children_area.h + 2*(container->border_width);
-*/
+
     PROT__widget_set_req_area(container->widget,
                               container->children_area.w + 2*(container->border_width),
                               container->children_area.h + 2*(container->border_width));
@@ -238,7 +226,6 @@ static void Container_DrawSurface( SDLGuiTK_Container * container )
     PROT__theme_unlock( theme );
 
     MySDL_FillRect( container->widget->srf, &container->bg_area, bgcolor );
-    //SDL_UpdateRect( container->widget->srf, 0, 0, 0, 0 );
 }
 
 void PROT__container_DrawBlit(   SDLGuiTK_Container * container )
@@ -257,16 +244,10 @@ void PROT__container_DrawBlit(   SDLGuiTK_Container * container )
 void SDLGuiTK_container_set_border_width( SDLGuiTK_Container * container,\
         int border_width )
 {
-    /*   SDL_mutexP( container->object->mutex ); */
     container->border_width = border_width;
-    /*   SDL_mutexV( container->object->mutex ); */
 
-    if( container->widget->top!=NULL ) {
+    if( container->widget->top )
         PROT__signal_push( container->widget->top->object, \
                            SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-    } else {
-        PROT__signal_push( container->object, \
-                           SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-    }
 }
 

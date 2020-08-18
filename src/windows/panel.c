@@ -169,8 +169,8 @@ static void Panel_destroy( SDLGuiTK_Panel * panel )
 
 static void Panel_UpdatePosition( SDLGuiTK_Panel * panel )
 {
-  SDLGuiTK_Widget * widget=panel->object->widget;
-  SDL_Surface * surface;
+  //SDLGuiTK_Widget * widget=panel->object->widget;
+  //SDL_Surface * surface;
 /*
   if(window->wm_widget!=NULL)
     surface = Render_GetVideoSurface();
@@ -180,9 +180,8 @@ static void Panel_UpdatePosition( SDLGuiTK_Panel * panel )
   case SDLGUITK_PANEL_TOP:
     break;
   case SDLGUITK_PANEL_BOTTOM:
-    widget->abs_area.x = 0;
-    widget->abs_area.y = \
-      surface->h - widget->abs_area.h;
+    //widget->abs_area.x = 0;
+    //widget->abs_area.y = surface->h - widget->abs_area.h;
     break;
   case SDLGUITK_PANEL_LEFT:
     
@@ -262,8 +261,8 @@ static void * Panel_DrawUpdate( SDLGuiTK_Widget * widget )
 /*   Panel_MakeTitleSurface( panel ); */
 
   /* First placement for widget */
-  widget->parent = widget;
-  widget->top = widget;
+  //widget->parent = widget;
+  //widget->top = widget;
 
   PROT__bin_DrawUpdate( panel->bin );
 
@@ -312,7 +311,7 @@ static void * Panel_DrawBlit( SDLGuiTK_Widget * widget )
 
   if( panel->bin->child!=NULL ) {
 /*     SDL_mutexP( panel->bin->child->object->mutex ); */
-    if( panel->bin->child->shown==1 ) {
+    if( panel->bin->child->visible ) {
       MySDL_BlitSurface(    panel->bin->child->srf, NULL, \
 		                    widget->srf, &panel->bin->child->rel_area );
       //2SDL_UpdateRects( widget->srf, 1, &panel->bin->child->rel_area );
@@ -355,7 +354,7 @@ static SDLGuiTK_Widget * Panel_RecursiveEntering( SDLGuiTK_Widget * widget, \
     SDLGUITK_ERROR( "Panel_RecursiveEntering(): child==NULL\n" );
     return NULL;
   }
-  if( child->shown==0 ) {
+  if( !child->visible ) {
     return NULL;
   }
   active = PROT__widget_is_entering( child, x, y );
@@ -407,7 +406,7 @@ static void * Panel_Destroy( SDLGuiTK_Widget * widget, \
 /*   SDL_mutexV( widget->object->mutex ); */
 /*   PROT__context_unref_wmwidget( panel->wm_widget ); */
 /*   SDL_mutexP( widget->object->mutex ); */
-  widget->shown = 0;
+  widget->visible = SDL_FALSE;
 
   return (void *) NULL;
 }
@@ -417,8 +416,8 @@ static void * Panel_Show( SDLGuiTK_Widget * widget, \
 {
   SDLGuiTK_Panel * panel=widget->container->bin->panel;
 
-  if( widget->shown==1 ) return (void *) NULL;
-  widget->shown = 1;
+  if( widget->visible ) return (void *) NULL;
+  widget->visible = SDL_TRUE;
   Panel_UpdatePosition( panel );
 /*   SDL_mutexV( widget->object->mutex ); */
   PROT__context_ref_wmwidget( panel->wm_widget );
@@ -432,11 +431,11 @@ static void * Panel_Hide( SDLGuiTK_Widget * widget, \
 {
   SDLGuiTK_Panel * panel=widget->container->bin->panel;
 
-  if( widget->shown==0 ) return (void *) NULL;
+  if( !widget->visible ) return (void *) NULL;
 /*   SDL_mutexV( widget->object->mutex ); */
   PROT__context_unref_wmwidget( panel->wm_widget );
 /*   SDL_mutexP( widget->object->mutex ); */
-  widget->shown = 0;
+  widget->visible = SDL_FALSE;
 
   return (void *) NULL;
 }

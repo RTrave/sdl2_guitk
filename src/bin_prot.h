@@ -51,6 +51,7 @@ extern
 SDLGuiTK_Bin *PROT__bin_new();
 extern
 void PROT__bin_destroy( SDLGuiTK_Bin *bin );
+void PROT__bin_set_top( SDLGuiTK_Bin *bin, SDLGuiTK_Widget *top);
 
 /* Add or remove a component to Bin */
 extern

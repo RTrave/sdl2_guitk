@@ -1,4 +1,4 @@
-/* 
+/*
    SDL_guitk - GUI toolkit designed for SDL environnements (GTK-style).
 
    Copyright (C) 2003 Trave Roman
@@ -15,31 +15,30 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
+   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
+
+#pragma once
+
+#include <SDL2/SDL_guitk.h>
 
 
 /* SDLGuiTK_Alignment structure definition */
 struct SDLGuiTK_Alignment {
-  SDLGuiTK_Object * object;      /* referent object */
+    SDLGuiTK_Object * object;      /* referent object */
 
-  SDLGuiTK_Bin * bin;            /* herits from */
+    SDLGuiTK_Bin * bin;            /* herits from */
 
-  float xalign;                  /* "public" data */
-  float yalign;                  /* "public" data */
-  float xscale;                  /* "public" data */
-  float yscale;                  /* "public" data */
-  float top_padding;             /* "public" data */
-  float bottom_padding;          /* "public" data */
-  float left_padding;            /* "public" data */
-  float right_padding;           /* "public" data */
+    /* "public" data */
+    float xalign;
+    float yalign;
+    float xscale;
+    float yscale;
+    float top_padding;
+    float bottom_padding;
+    float left_padding;
+    float right_padding;
 
 };
 
-
-/* extern */
-/* void PROT__alignment_destroy( SDLGuiTK_Alignment *alignment ); */
-
-/* extern */
-/* void PROT__alignment_Draw( SDLGuiTK_Alignment *alignment ); */
 

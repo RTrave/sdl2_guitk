@@ -25,28 +25,6 @@
 #include "surface2d.h"
 #include "../wmwidget.h"
 
-/* SDLGuiTK_WMWidget structure definition */
-struct SDLGuiTK_WMWidget2 {
-    SDLGuiTK_Object    * object;      /* referent widget */
-
-    SDLGuiTK_Widget * widget;         /* herits from */
-
-    /* "public" data */
-    int               border_width;
-    int               title_shown;
-    char              title[256];
-
-    /* "private" data */
-    int                 enter;
-    int                 moving;
-    MySDL_Surface     * srf;
-    SDL_Rect            area;
-    SDL_Rect            child_area;     /* (w,h) setted in DrawUpdate() window,menushell,..
-                                     * (x,y) setted in self DrawUpdate*/
-    SDLGuiTK_Surface2D * surface2D;
-    int                  surface2D_flag;
-};
-
 
 void MyWM_Init();
 void MyWM_Uninit();

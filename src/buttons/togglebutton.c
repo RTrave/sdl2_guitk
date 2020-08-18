@@ -110,6 +110,7 @@ void PROT__togglebutton_DrawUpdate(SDLGuiTK_ToggleButton * togglebutton)
         PROT__checkbutton_DrawUpdate (togglebutton->checkbutton);
         return;
     }
+
 }
 
 void PROT__togglebutton_DrawBlit(SDLGuiTK_ToggleButton * togglebutton)
@@ -163,7 +164,7 @@ void PROT__togglebutton_DrawBlit(SDLGuiTK_ToggleButton * togglebutton)
     PROT__theme_unlock( theme );
 
     if( button->bin->child!=NULL ) {
-        if( button->bin->child->shown==1 ) {
+        if( button->bin->child->visible ) {
             MySDL_BlitSurface(  button->bin->child->srf, NULL, \
                                 widget->srf, &button->bin->child->rel_area );
             MySDL_BlitSurface(  srf, NULL, \
@@ -237,7 +238,7 @@ SDLGuiTK_Widget * SDLGuiTK_toggle_button_new_with_label( char * text )
     ToggleButton_set_functions( togglebutton );
 
     label = SDLGuiTK_label_new( text );
-    SDLGuiTK_misc_set_padding( label->misc, 3, 5);
+    SDLGuiTK_misc_set_padding( label->misc, 5, 3);
     SDLGuiTK_container_add( SDLGuiTK_CONTAINER(togglebutton->object->widget), label );
     SDLGuiTK_widget_show( label );
     PROT__signal_push( togglebutton->object, SDLGUITK_SIGNAL_TYPE_REALIZE );

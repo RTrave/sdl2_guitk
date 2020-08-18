@@ -27,78 +27,69 @@
 struct SDLGuiTK_Widget {
     SDLGuiTK_Object * object;              /* referent object and herits from */
 
-    SDLGuiTK_Misc       * misc;                      /* herited */
-    SDLGuiTK_Container  * container;                 /* herited */
-    SDLGuiTK_Entry      * entry;                     /* herited */
-    SDLGuiTK_MenuShell  * menushell;                 /* herited */
-    SDLGuiTK_Scrollbar  * scrollbar;                 /* herited */
+    /* herited */
+    SDLGuiTK_Misc       * misc;
+    SDLGuiTK_Container  * container;
+    SDLGuiTK_Entry      * entry;
+    SDLGuiTK_MenuShell  * menushell;
+    SDLGuiTK_Scrollbar  * scrollbar;
 
+    /* "public" data */
+    SDL_bool              visible;
+    SDL_bool              can_focus;
+    SDL_bool              has_focus;
+    int activable_child;
 
-    int  shown;                                      /* "public" data */
-    int  activable, activable_child;                 /* "public" data */
-    int  enter;                                      /* "public" data */
-    SDLGuiTK_Widget * parent;                        /* "public" data */
-    SDLGuiTK_Widget * top;                           /* "public" data */
-    SDLGuiTK_TooltipsData * tooltipsdata;            /* "public" data */
-    int  width_request;                              /* "public" data */
-    int  height_request;                             /* "public" data */
-    /*   SDLGuiTK_Requisition requisition;                /\* "public" data *\/ */
+    /* "private" data */
+    int    id;
+    SDLGuiTK_Widget * parent;
+    SDLGuiTK_Widget * top;
+    SDLGuiTK_TooltipsData * tooltipsdata;
+    int  width_request;
+    int  height_request;
 
-
-    int    id;                                       /* "private" data */
-    SDLGuiTK_Widget * (*RecursiveEntering)( SDLGuiTK_Widget *, \
-                                            int x, int y );  /* "private" data */
-    void * (*RecursiveDestroy)( SDLGuiTK_Widget * ); /* "private" data */
-    void * (*Free)( SDLGuiTK_Widget * );             /* "private" data */
-    void * (*DrawUpdate)( SDLGuiTK_Widget * );       /* "private" data */
-    void * (*DrawBlit  )( SDLGuiTK_Widget * );       /* "private" data */
-    int    (*UpdateActive  )( SDLGuiTK_Widget * );   /* "private" data */
+    /* "public" methods */
+    SDLGuiTK_Widget * (*RecursiveEntering)( SDLGuiTK_Widget *, int x, int y );
+    void * (*RecursiveDestroy)( SDLGuiTK_Widget * );
+    void * (*Free)( SDLGuiTK_Widget * );
+    void * (*DrawUpdate)( SDLGuiTK_Widget * );
+    void * (*DrawBlit  )( SDLGuiTK_Widget * );
+    int    (*UpdateActive  )( SDLGuiTK_Widget * );
 
     /* "private" data */
     SDL_Rect      req_area;        /* (w,h) set in DrawUpdate() of herited */
     SDL_Rect      abs_area;        /* (w,h) set in self DrawUpdate() */
     SDL_Rect      rel_area;        /* (w,h) set in self DrawUpdate() */
-    SDL_Rect      act_area;        /* "private" data */
-    MySDL_Surface * srf;             /* "private" data */
-    MySDL_Surface * act_srf;         /* "private" data */
-    float         act_alpha;       /* "private" data */
-
-    /*   int           srf_create;                        /\* "private" data *\/ */
-    /*   SDL_Rect      WM_area;                           /\* "private" data *\/ */
-    /*   SDL_Surface * WM_srf;                            /\* "private" data *\/ */
-    /*   int  hided_parent;                               /\* "public" data *\/ */
-    /*   int    changed;                                  /\* "private" data *\/ */
+    SDL_Rect      act_area;
+    MySDL_Surface * srf;
+    MySDL_Surface * act_srf;
+    float         act_alpha;
 };
 
 
-extern void PROT__widget_init();
-extern void PROT__widget_uninit();
+void PROT__widget_init();
+void PROT__widget_uninit();
 
 
 /* Create and destroy structure */
-extern
 SDLGuiTK_Widget *PROT__widget_new();
-extern
-void             PROT__widget_destroy( SDLGuiTK_Widget *widget );
+void PROT__widget_destroy( SDLGuiTK_Widget *widget );
+void PROT__widget_set_top( SDLGuiTK_Widget *widget, SDLGuiTK_Widget *top);
 
 /* Draw the Widget on his top surface */
-extern
 void PROT__widget_DrawUpdate( SDLGuiTK_Widget *widget );
-extern
 void PROT__widget_DrawBlit(   SDLGuiTK_Widget *widget );
 
 /* Reset and Update req_area dimensions, only if larger values */
-extern
 void PROT__widget_reset_req_area( SDLGuiTK_Widget *widget );
-extern
-void PROT__widget_set_req_area( SDLGuiTK_Widget *widget, int req_w, int req_h );
+void PROT__widget_set_req_area( SDLGuiTK_Widget *widget,
+                                int req_w, int req_h );
 
-/* Entering/Exiting recursive procedure */
-extern
-SDLGuiTK_Widget * PROT__widget_is_entering( SDLGuiTK_Widget * widget, \
-        int x, int y );
+/* Entering/Leaving recursive procedure
+ * returns the new focused widget, or NULL if none*/
+SDLGuiTK_Widget * PROT__widget_is_entering( SDLGuiTK_Widget * widget,
+                                            int x, int y );
 
 /* Destroy REALLY structure */
-extern
 void PROT__widget_destroypending();
 

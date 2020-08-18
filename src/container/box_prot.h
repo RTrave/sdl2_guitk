@@ -18,6 +18,9 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
 */
 
+#pragma once
+
+#include <SDL2/SDL_guitk.h>
 
 
 /* SDLGuiTK_Box structure definition */
@@ -31,7 +34,7 @@ struct SDLGuiTK_Box {
   SDL_bool        homogeneous;      /* "public" data */
   SDLGuiTK_List * children;         /* "public" data */
 
-  SDL_Surface * srf;                /* "private" data */
+  //SDL_Surface * srf;                /* "private" data */
   int homogeneous_size;             /* "private" data */
   int current_x, current_y;         /* "private" data */
   int base_size;
@@ -41,7 +44,7 @@ struct SDLGuiTK_Box {
 };
 
 
-extern
 void PROT__box_remove( SDLGuiTK_Box *this_box, SDLGuiTK_Widget *widget );
+void PROT__box_set_top( SDLGuiTK_Box *box, SDLGuiTK_Widget *top);
 
 

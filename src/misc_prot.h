@@ -30,13 +30,13 @@ struct SDLGuiTK_Misc {
     SDLGuiTK_Widget * widget;      /* herits from */
 
     SDLGuiTK_Label  * label;       /* herited */
-    //SDLGuiTK_Entry  * entry;       /* herited */
     SDLGuiTK_Image  * image;       /* herited */
 
-    float xalign;                  /* "public" data */
-    float yalign;                  /* "public" data */
-    int   xpad;                    /* "public" data */
-    int   ypad;                    /* "public" data */
+    /* "public" data */
+    float xalign;
+    float yalign;
+    int   xpad;
+    int   ypad;
 
     /* "private" data */
     SDL_Rect      area;            /* (w,h) updated in Drawblit() of herited */
@@ -44,15 +44,11 @@ struct SDLGuiTK_Misc {
 
 
 /* Create and destroy structure */
-extern
 SDLGuiTK_Misc * PROT__misc_new();
-extern
 void PROT__misc_destroy( SDLGuiTK_Misc * misc );
 
 /* Draw the Misc on his top surface */
-extern
 int  PROT__misc_DrawUpdate( SDLGuiTK_Misc * misc );
-extern
 void PROT__misc_DrawBlit(   SDLGuiTK_Misc * misc );
 
 

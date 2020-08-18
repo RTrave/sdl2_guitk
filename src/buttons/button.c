@@ -240,7 +240,7 @@ static void * Button_DrawBlit( SDLGuiTK_Widget * widget )
     PROT__theme_unlock( theme );
 
     if( button->bin->child!=NULL ) {
-        if( button->bin->child->shown==1 ) {
+        if( button->bin->child->visible ) {
             MySDL_BlitSurface(  button->bin->child->srf, NULL, \
                                 widget->srf, &button->bin->child->rel_area );
             MySDL_BlitSurface(  srf, NULL, \
@@ -271,22 +271,24 @@ static void * Button_Realize( SDLGuiTK_Widget * widget, \
 static void * Button_Show( SDLGuiTK_Widget * widget, \
                            void * data, void * event )
 {
+/*
     widget->shown = 1;
     if( widget->top!=NULL ) {
         PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
     }
-
+*/
     return (void *) NULL;
 }
 
 static void * Button_Hide( SDLGuiTK_Widget * widget, \
                            void * data, void * event )
 {
+/*
     widget->shown = 0;
     if( widget->top!=NULL ) {
         PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
     }
-
+*/
     return (void *) NULL;
 }
 
