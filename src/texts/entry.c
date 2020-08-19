@@ -43,6 +43,7 @@
 #include "../widget_prot.h"
 #include "../theme_prot.h"
 #include "../render/mywm.h"
+#include "../context_prot.h"
 
 #include "editable_prot.h"
 #include "entry_prot.h"
@@ -289,6 +290,9 @@ static int Entry_UpdateActive( SDLGuiTK_Widget * widget )
 static void * Entry_MouseEnter( SDLGuiTK_Widget * widget, \
                                 void * data, void * event )
 {
+    if(widget->has_tooltip)
+        PROT__context_ref_tooltip (widget);
+
     MyCursor_Set( SDLGUITK_CURSOR_TEXT );
     //Enable text input
     MyWM_start_textinput();
@@ -299,6 +303,8 @@ static void * Entry_MouseEnter( SDLGuiTK_Widget * widget, \
 static void * Entry_MouseLeave( SDLGuiTK_Widget * widget, \
                                 void * data, void * event )
 {
+    if(widget->has_tooltip)
+        PROT__context_unref_tooltip ();
     //Disable text input
     MyWM_stop_textinput ();
     MyCursor_Set( SDLGUITK_CURSOR_DEFAULT );

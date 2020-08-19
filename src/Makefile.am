@@ -12,7 +12,6 @@ libguitk_la_SOURCES = xmalloc.c getopt.c getopt.h \
 	debug.c debug.h \
 	mysdl.c mysdl.h \
 	myttf.c myttf.h \
-	tooltips.c tooltips_prot.h \
 	mycursor.c mycursor.h \
 	list.c list.h \
 	theme.c theme.h \

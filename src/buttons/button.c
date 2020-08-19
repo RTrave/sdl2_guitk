@@ -39,6 +39,7 @@
 #include "../theme_prot.h"
 #include "../signal.h"
 #include "../myttf.h"
+#include "../context_prot.h"
 #include "../object_prot.h"
 #include "../widget_prot.h"
 #include "../container_prot.h"
@@ -343,6 +344,9 @@ static void * Button_MouseEnter( SDLGuiTK_Widget * widget, \
 {
     SDLGuiTK_Button * button=widget->container->bin->button;
 
+    if(widget->has_tooltip)
+        PROT__context_ref_tooltip (widget);
+
     widget->act_alpha = 0.15;
     button->active_alpha_mod = -0.005;
     ButtonCache( widget );
@@ -356,6 +360,8 @@ static void * Button_MouseLeave( SDLGuiTK_Widget * widget, \
 {
     SDLGuiTK_Button * button=widget->container->bin->button;
 
+    if(widget->has_tooltip)
+        PROT__context_unref_tooltip ();
     widget->act_srf = NULL;
     widget->act_alpha = 0.15;
     button->active_alpha_mod = -0.005;

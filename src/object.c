@@ -59,7 +59,7 @@ static SDLGuiTK_Object * Object_create()
 
   new_object->widget = NULL;
   new_object->adjustment = NULL;
-  new_object->tooltips = NULL;
+  //new_object->tooltips = NULL;
 
   strcpy( new_object->name, "noname" );
 

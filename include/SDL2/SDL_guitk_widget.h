@@ -59,8 +59,22 @@ extern "C" {
   void SDLGuiTK_widget_destroy( SDLGuiTK_Widget *widget );
 
   extern DECLSPEC
-  void SDLGuiTK_widget_set_size_request( SDLGuiTK_Widget *widget, \
-					 int width, int height );
+  void SDLGuiTK_widget_set_size_request( SDLGuiTK_Widget *widget,
+					                               int width, int height );
+
+  extern DECLSPEC
+  void SDLGuiTK_widget_set_has_tooltip( SDLGuiTK_Widget *widget,
+                                        SDL_bool has_tooltip );
+
+  extern DECLSPEC
+  SDL_bool  SDLGuiTK_widget_get_has_tooltip( SDLGuiTK_Widget *widget );
+
+  extern DECLSPEC
+  void SDLGuiTK_widget_set_tooltip_text( SDLGuiTK_Widget *widget,
+                                         const char * text );
+
+  extern DECLSPEC
+  char *  SDLGuiTK_widget_get_tooltip_text( SDLGuiTK_Widget *widget );
 
 /*   extern DECLSPEC */
 /*   void SDLGuiTK_widget_size_request( SDLGuiTK_Widget *widget, \ */

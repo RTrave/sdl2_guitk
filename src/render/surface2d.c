@@ -183,7 +183,7 @@ SDLGuiTK_Surface2D * Surface2D_new()
     //new_surface2D->mtexture = 0;
     new_surface2D->w = 0;
     new_surface2D->h = 0;
-    new_surface2D->srf = NULL;
+    //new_surface2D->srf = NULL;
 
     return new_surface2D;
 }
@@ -191,7 +191,7 @@ SDLGuiTK_Surface2D * Surface2D_new()
 void Surface2D_destroy( SDLGuiTK_Surface2D * surface2D )
 {
     const GLuint *texture=&surface2D->texture[0];
-    surface2D->srf = NULL;
+    //surface2D->srf = NULL;
     glFinish();
     if( surface2D->texture[0] ) {
         glDeleteTextures( 1, texture );
@@ -216,7 +216,7 @@ void Surface2D_update( SDLGuiTK_Surface2D * surface2D, \
     if ( srf == NULL ) {
         return;
     }
-    surface2D->srf = srf;
+    //surface2D->srf = srf;
 
     surface2D->w = srf->w;
     surface2D->h = srf->h;

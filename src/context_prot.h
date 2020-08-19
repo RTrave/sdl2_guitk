@@ -74,6 +74,9 @@ void PROT__context_uninit();
 void PROT__context_ref_wmwidget( SDLGuiTK_WMWidget * wm_widget );
 void PROT__context_unref_wmwidget( SDLGuiTK_WMWidget * wm_widget );
 
+void PROT__context_ref_tooltip( SDLGuiTK_Widget * widget );
+void PROT__context_unref_tooltip();
+
 void PROT__context_renderclean();
 void PROT__context_renderswap();
 

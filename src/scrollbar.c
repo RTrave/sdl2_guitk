@@ -40,6 +40,7 @@
 #include "object_prot.h"
 #include "widget_prot.h"
 #include "theme_prot.h"
+#include "context_prot.h"
 
 #include "adjustment_prot.h"
 #include "scrollbar_prot.h"
@@ -224,6 +225,9 @@ static void * Scrollbar_Hide( SDLGuiTK_Widget * widget, \
 static void * Scrollbar_MouseEnter(SDLGuiTK_Widget * widget, \
                                    void * data, void * event )
 {
+    if(widget->has_tooltip)
+        PROT__context_ref_tooltip (widget);
+
     widget->scrollbar->mousein = 1;
 
     return NULL;
@@ -232,6 +236,9 @@ static void * Scrollbar_MouseEnter(SDLGuiTK_Widget * widget, \
 static void * Scrollbar_MouseLeave(SDLGuiTK_Widget * widget,
                                    void * data, void * event )
 {
+    if(widget->has_tooltip)
+        PROT__context_unref_tooltip ();
+
     widget->scrollbar->mousein = 0;
     widget->scrollbar->buttonOn = 0;
 

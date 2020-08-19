@@ -37,7 +37,7 @@
 /* Abstract widgets */
 #include "SDL_guitk_widget.h"
 #include "SDL_guitk_signal.h"
-#include "SDL_guitk_tooltips.h"
+#include "SDL_guitk_tooltip.h"
 #include "SDL_guitk_adjustment.h"
 
 /* Interface widgets */

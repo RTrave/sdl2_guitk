@@ -27,15 +27,18 @@ typedef struct SDLGuiTK_Render SDLGuiTK_Render;
 
 struct SDLGuiTK_Render {
 
-    int width, height;          /* public data */
-    int bpp;                    /* public data */
-    int fullscreen;             /* public data */
+    /* public data */
+    int width, height;
+    int bpp;
+    int fullscreen;
 
-    Uint32 flags;               /* private data */
-    SDL_Window    * window;     /* private data */
-    SDL_Renderer  *renderer;    /* private data */
+    /* private data */
+    Uint32 flags;
+    SDL_Window    * window;
+    SDL_Renderer  *renderer;
     SDL_GLContext *context;     /* Our opengl context handle */
     int id;
+    SDLGuiTK_Tooltip * tooltip;
 };
 
 

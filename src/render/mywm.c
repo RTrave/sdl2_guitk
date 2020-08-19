@@ -40,10 +40,7 @@
 #include "../wmwidget.h"
 #include "../signal.h"
 #include "../list.h"
-
-//TODO: why ?
 #include "../context_prot.h"
-#include "../tooltips_prot.h"
 
 
 static SDLGuiTK_Widget    * focused_widget=NULL;
@@ -520,24 +517,11 @@ void * MyWM_blitsurface( SDLGuiTK_WMWidget * wm_widget )
                 /*       active_2D->texture_flag = 0; */
             }
             animate_2D->alpha = (GLfloat) focused_widget->act_alpha;
-            if( focused_widget->act_srf->srf==animate_2D->srf) {
+            //if( focused_widget->act_srf->srf==animate_2D->srf) {
                 Surface2D_blitsurface( animate_2D,		    \
                                        focused_widget->act_area.x,	\
                                        focused_widget->act_area.y );
-            }
-            if( focused_widget->tooltipsdata!=NULL ) {
-                act_flag = PROT__TooltipsData_update( focused_widget->tooltipsdata );
-                if ( act_flag==1 ) { /*  */
-                    Surface2D_update( focused_widget->tooltipsdata->tooltips->surface2D,		\
-                                      focused_widget->tooltipsdata->tooltips->srf );
-                    /*       active_2D->texture_flag = 0; */
-                }
-                if ( act_flag!=-1 ) { /*  */
-                    Surface2D_blitsurface( focused_widget->tooltipsdata->tooltips->surface2D, \
-                                           mouse_x+16,				\
-                                           mouse_y+16 );
-                }
-            }
+            //}
         }
     }
 

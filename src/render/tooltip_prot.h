@@ -1,7 +1,7 @@
 /*
    SDL_guitk - GUI toolkit designed for SDL environnements (GTK-style).
 
-   Copyright (C) 2003 Trave Roman
+   Copyright (C) 2007 Trave Roman
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,35 +21,27 @@
 #pragma once
 
 #include <SDL2/SDL_guitk.h>
+#include "surface2d.h"
+#include "../mysdl.h"
 
-/**
- * SDLGuiTK_Object structure definition
- *
- * General common object.
- */
+/* SDLGuiTK_Tooltip structure definition */
+struct SDLGuiTK_Tooltip {
+    SDLGuiTK_Object * object;     /* referent object */
 
+    SDLGuiTK_Bin * bin;            /* herits from */
 
-/* SDLGuiTK_Object structure definition */
-struct SDLGuiTK_Object {
-
-    SDLGuiTK_Widget     * widget;
-    SDLGuiTK_Adjustment * adjustment;
-    //SDLGuiTK_Tooltips   * tooltips;
-
-    int id;        /* Unique ID */
-    char name[64]; /* Name of that object */
-
-    /* Events handling defered to SDLGuiTK_SignalHandler object */
-    SDLGuiTK_Object     * signalhandler;
-
+  /* "private" data */
+    MySDL_Surface       * srf;
+    SDL_Rect              area;
+    SDLGuiTK_Widget     * label;
+    SDLGuiTK_Surface2D * surface2D;
 };
 
+SDLGuiTK_Tooltip * PROT__Tooltip_create();
+void PROT__Tooltip_destroy(SDLGuiTK_Tooltip * tooltip);
 
-extern void PROT__object_init();
-extern void PROT__object_uninit();
+void PROT__Tooltip_update( SDLGuiTK_Tooltip * tooltip, char *text );
 
-extern
-SDLGuiTK_Object * PROT__object_new();
-extern
-void              PROT__object_destroy( SDLGuiTK_Object * object );
+void PROT__Tooltip_blit( SDLGuiTK_Tooltip * tooltip );
+
 

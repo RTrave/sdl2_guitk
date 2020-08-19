@@ -36,6 +36,7 @@ struct SDLGuiTK_Bin {
     SDLGuiTK_MenuItem       * menuitem;       /* herited */
     SDLGuiTK_Viewport       * viewport;       /* herited */
     SDLGuiTK_ScrolledWindow * scrolledwindow; /* herited */
+    SDLGuiTK_Tooltip        * tooltip;        /* herited */
 
     /* "public" data */
     SDLGuiTK_Widget * child;

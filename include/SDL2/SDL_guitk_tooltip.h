@@ -1,4 +1,4 @@
-/* 
+/*
    SDL_guitk - GUI toolkit designed for SDL environnements (GTK-style).
 
    Copyright (C) 2007 Trave Roman
@@ -15,12 +15,12 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
+   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 */
 
-#ifndef _SDLguitk_tooltips_h
-#define _SDLguitk_tooltips_h
+#ifndef _SDLguitk_tooltip_h
+#define _SDLguitk_tooltip_h
 
 //#include <SDL/SDL.h>
 #include "SDL_guitk.h"
@@ -31,29 +31,10 @@ extern "C" {
 #endif
 
   /* SDLGuiTK_Tooltips structure definition */
-  typedef struct SDLGuiTK_Tooltips SDLGuiTK_Tooltips;
-  typedef struct SDLGuiTK_TooltipsData SDLGuiTK_TooltipsData;
-
-  extern DECLSPEC
-  SDLGuiTK_Tooltips *SDLGuiTK_TOOLTIPS( SDLGuiTK_Tooltips *tooltips );
-
+  typedef struct SDLGuiTK_Tooltip SDLGuiTK_Tooltip;
 
 
   /* ops. on SDLGuiTK_Tooltips objects */
-  extern DECLSPEC
-  SDLGuiTK_Tooltips *SDLGuiTK_tooltips_new();
-
-  extern DECLSPEC
-  void SDLGuiTK_tooltips_enable ( SDLGuiTK_Tooltips *tooltips );
-  extern DECLSPEC
-  void SDLGuiTK_tooltips_disable ( SDLGuiTK_Tooltips *tooltips );
-
-  extern DECLSPEC
-  void SDLGuiTK_tooltips_set_tip   (SDLGuiTK_Tooltips *tooltips,
-				    SDLGuiTK_Widget *widget,
-				    const char *tip_text,
-				    const char *tip_private);
-
 
 
 /* Ends C function definitions when using C++ */
@@ -61,6 +42,6 @@ extern "C" {
 };
 #endif
 
-#endif /* _SDLguitk_tooltips_h */
+#endif /* _SDLguitk_tooltip_h */
 
 

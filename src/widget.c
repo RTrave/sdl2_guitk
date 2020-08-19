@@ -46,7 +46,7 @@
 
 #include "misc_prot.h"
 #include "container_prot.h"
-#include "tooltips_prot.h"
+//#include "tooltips_prot.h"
 
 #include "windows/window_prot.h"
 
@@ -146,11 +146,13 @@ static SDLGuiTK_Widget * Widget_create()
     new_widget->can_focus = SDL_TRUE;
     new_widget->has_focus = SDL_FALSE;
     new_widget->has_default = SDL_FALSE;
+    new_widget->has_tooltip = SDL_FALSE;
+    new_widget->tooltip_text = NULL;
     new_widget->activable_child = 0;
 
     new_widget->parent = NULL;
     new_widget->top = NULL;
-    new_widget->tooltipsdata = NULL;
+    //new_widget->tooltipsdata = NULL;
 
     /*   new_widget->changed = 0; */
 
@@ -178,8 +180,8 @@ static SDLGuiTK_Widget * Widget_create()
     new_widget->rel_area.y = 0;
     new_widget->rel_area.w = 0;
     new_widget->rel_area.h = 0;
-    new_widget->abs_area.x = 20;
-    new_widget->abs_area.y = 20;
+    new_widget->abs_area.x = 0;
+    new_widget->abs_area.y = 0;
     new_widget->abs_area.w = 0;
     new_widget->abs_area.h = 0;
     new_widget->act_area.x = 0;
@@ -193,8 +195,8 @@ static SDLGuiTK_Widget * Widget_create()
 static void Widget_destroy( SDLGuiTK_Widget * widget )
 {
     /*   printf( "DESTR: %s\n", widget->object->name ); */
-    if( widget->tooltipsdata!=NULL )
-        PROT__TooltipsData_Destroy( widget->tooltipsdata );
+//    if( widget->tooltipsdata!=NULL )
+//        PROT__TooltipsData_Destroy( widget->tooltipsdata );
     MySDL_Surface_free( widget->srf );
     /*   MySDL_FreeSurface( widget->act_srf ); */
     PROT__object_destroy( widget->object );
@@ -220,6 +222,33 @@ void PROT__widget_uninit()
 }
 
 
+static void * Widget_MouseEnter( SDLGuiTK_Widget * widget )
+{
+    if(widget->has_tooltip)
+        PROT__context_ref_tooltip (widget);
+    return (void *) NULL;
+}
+
+static void * Widget_MouseLeave( SDLGuiTK_Widget * widget )
+{
+    if(widget->has_tooltip)
+        PROT__context_unref_tooltip ();
+    return (void *) NULL;
+}
+
+static void Widget_set_functions( SDLGuiTK_Widget * widget )
+{
+    SDLGuiTK_SignalHandler * handler;
+
+    handler = (SDLGuiTK_SignalHandler *) widget->object->signalhandler;
+
+    handler->fdefault[SDLGUITK_SIGNAL_TYPE_ENTER]->function =
+    Widget_MouseEnter;
+    handler->fdefault[SDLGUITK_SIGNAL_TYPE_LEAVE]->function =
+    Widget_MouseLeave;
+}
+
+
 SDLGuiTK_Widget * PROT__widget_new()
 {
     SDLGuiTK_Widget * widget;
@@ -230,9 +259,10 @@ SDLGuiTK_Widget * PROT__widget_new()
     widget->RecursiveDestroy = Unset_RecursiveDestroy;
     widget->UpdateActive = Unset_UpdateActive;
     widget->Free = Unset_Free;
-
     widget->DrawUpdate = Unset_DrawUpdate;
     widget->DrawBlit = Unset_DrawBlit;
+
+    Widget_set_functions( widget );
 
     return widget;
 }
@@ -461,7 +491,8 @@ SDLGuiTK_Widget * PROT__widget_is_entering( SDLGuiTK_Widget * widget,
         if( widget->has_focus ) {
             /* 	SDL_mutexP( widget->object->mutex ); */
             widget->has_focus = SDL_FALSE;
-            if( widget->tooltipsdata!=NULL ) widget->tooltipsdata->updated = 0;
+            // TOOLTIP HERE
+            //if( widget->tooltipsdata!=NULL ) widget->tooltipsdata->updated = 0;
             PROT__signal_push( widget->object, SDLGUITK_SIGNAL_TYPE_LEAVE );
             /* 	SDL_mutexV( widget->object->mutex ); */
         }
@@ -469,6 +500,41 @@ SDLGuiTK_Widget * PROT__widget_is_entering( SDLGuiTK_Widget * widget,
     }
 
     return NULL;
+}
+
+
+void SDLGuiTK_widget_set_has_tooltip( SDLGuiTK_Widget *widget,
+                                      SDL_bool has_tooltip )
+{
+    if(!has_tooltip && widget->has_tooltip) {
+        free(widget->tooltip_text);
+        widget->tooltip_text = NULL;
+    }
+    widget->has_tooltip = has_tooltip;
+}
+
+SDL_bool  SDLGuiTK_widget_get_has_tooltip( SDLGuiTK_Widget *widget )
+{
+    return widget->has_tooltip;
+}
+
+
+void SDLGuiTK_widget_set_tooltip_text( SDLGuiTK_Widget *widget,
+                                       const char * text )
+{
+    if(widget->has_tooltip)
+        free(widget->tooltip_text);
+    widget->tooltip_text = calloc (strlen (text)+1, sizeof (char));
+    strcpy(widget->tooltip_text, text);
+    widget->has_tooltip = SDL_TRUE;
+}
+
+char *  SDLGuiTK_widget_get_tooltip_text( SDLGuiTK_Widget *widget )
+{
+    if(!widget->has_tooltip) return "";
+    char *text = calloc(strlen (widget->tooltip_text), sizeof(char));
+    strcpy(text, widget->tooltip_text);
+    return text;
 }
 
 

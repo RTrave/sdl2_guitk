@@ -80,6 +80,7 @@ static SDLGuiTK_Bin * Bin_create()
     new_bin->button = NULL;
     new_bin->menuitem = NULL;
     new_bin->scrolledwindow = NULL;
+    new_bin->tooltip = NULL;
 
     new_bin->child = NULL;
     new_bin->margin_left = 0;

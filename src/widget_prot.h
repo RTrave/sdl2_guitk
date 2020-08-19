@@ -40,13 +40,15 @@ struct SDLGuiTK_Widget {
     SDL_bool              has_focus;
     //SDL_bool              can_default;
     SDL_bool              has_default;
+    SDL_bool              has_tooltip;
+    char                * tooltip_text;
     int activable_child;
 
     /* "private" data */
     int    id;
     SDLGuiTK_Widget * parent;
     SDLGuiTK_Widget * top;
-    SDLGuiTK_TooltipsData * tooltipsdata;
+    //SDLGuiTK_TooltipsData * tooltipsdata;
     int  width_request;
     int  height_request;
 

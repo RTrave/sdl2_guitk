@@ -47,7 +47,8 @@
 #include "builder.h"
 #include "extract.h"
 
-
+static SDL_bool has_tooltip=SDL_FALSE;
+static char tooltip_text[1024];
 
 SDLGuiTK_Object * Extract_Adjustment(xmlNode * node)
 {
@@ -120,6 +121,11 @@ SDLGuiTK_Widget * Extract_Scrollbar(xmlNode * node)
                 SDLGUITK_LOG ("Extract Scrollbar property: adjustment\n");
                 adjustment = SDLGuiTK_builder_get_object (NULL, contentget(child))->adjustment;
             }
+            else if(propcmp(child, "name", "tooltip_text")) {
+                SDLGUITK_LOG ("Extract Scrollbar property: tooltip_text\n");
+                has_tooltip = SDL_TRUE;
+                strcpy(tooltip_text,contentget(child));
+            }
             else {
                 SDLGUITK_ERROR("Node Scrollbar property unknown: ");
                 SDLGUITK_ERROR2(propget(child,"name"));
@@ -135,6 +141,10 @@ SDLGuiTK_Widget * Extract_Scrollbar(xmlNode * node)
         scrollbar = SDLGuiTK_scrollbar_new (orientation, adjustment);
     else
         scrollbar = SDLGuiTK_scrollbar_new (orientation, NULL);
+    if(scrollbar && has_tooltip) {
+        has_tooltip = SDL_FALSE;
+        SDLGuiTK_widget_set_tooltip_text(scrollbar, tooltip_text);
+    }
     if(scrollbar && visible)
         SDLGuiTK_widget_show (scrollbar);
     return scrollbar;
@@ -160,6 +170,11 @@ SDLGuiTK_Widget * Extract_Entry(xmlNode * node)
                 SDLGUITK_LOG ("Extract Entry property: text\n");
                 entry = SDLGuiTK_entry_new (contentget (child));
             }
+            else if(propcmp(child, "name", "tooltip_text")) {
+                SDLGUITK_LOG ("Extract Entry property: tooltip_text\n");
+                has_tooltip = SDL_TRUE;
+                strcpy(tooltip_text,contentget(child));
+            }
             else {
                 SDLGUITK_ERROR("Node Entry property unknown: ");
                 SDLGUITK_ERROR2(propget(child,"name"));
@@ -173,6 +188,10 @@ SDLGuiTK_Widget * Extract_Entry(xmlNode * node)
     }
     if(!entry)
         entry = SDLGuiTK_entry_new ("");
+    if(entry && has_tooltip) {
+        has_tooltip = SDL_FALSE;
+        SDLGuiTK_widget_set_tooltip_text(entry, tooltip_text);
+    }
     if(entry && visible)
         SDLGuiTK_widget_show (entry);
     return entry;
@@ -198,6 +217,11 @@ SDLGuiTK_Widget * Extract_Button(xmlNode * node)
                 label = SDLGuiTK_label_new (contentget(child));
                 SDLGuiTK_widget_show (label);
             }
+            else if(propcmp(child, "name", "tooltip_text")) {
+                SDLGUITK_LOG ("Extract Button property: tooltip_text\n");
+                has_tooltip = SDL_TRUE;
+                strcpy(tooltip_text,contentget(child));
+            }
             else {
                 SDLGUITK_ERROR("Node Button property unknown: ");
                 SDLGUITK_ERROR2(propget(child,"name"));
@@ -212,6 +236,10 @@ SDLGuiTK_Widget * Extract_Button(xmlNode * node)
     button = SDLGuiTK_button_new ();
     if(label)
         SDLGuiTK_container_add (SDLGuiTK_CONTAINER (button), label);
+    if(has_tooltip) {
+        has_tooltip = SDL_FALSE;
+        SDLGuiTK_widget_set_tooltip_text(button, tooltip_text);
+    }
     if(button && visible)
         SDLGuiTK_widget_show (button);
     return button;
@@ -244,6 +272,11 @@ SDLGuiTK_Widget * Extract_ToggleButton(xmlNode * node)
                 SDLGuiTK_misc_set_padding( SDLGuiTK_MISC (label), 5, 3);
                 SDLGuiTK_widget_show (label);
             }
+            else if(propcmp(child, "name", "tooltip_text")) {
+                SDLGUITK_LOG ("Extract ToggleButton property: tooltip_text\n");
+                has_tooltip = SDL_TRUE;
+                strcpy(tooltip_text,contentget(child));
+            }
             else {
                 SDLGUITK_ERROR("Node ToggleButton property unknown: ");
                 SDLGUITK_ERROR2(propget(child,"name"));
@@ -261,6 +294,10 @@ SDLGuiTK_Widget * Extract_ToggleButton(xmlNode * node)
     if(togglebutton && active)
         SDLGuiTK_toggle_button_set_active(SDLGuiTK_TOGGLE_BUTTON( togglebutton ),
                                           active);
+    if(has_tooltip) {
+        has_tooltip = SDL_FALSE;
+        SDLGuiTK_widget_set_tooltip_text(togglebutton, tooltip_text);
+    }
     if(togglebutton && visible)
         SDLGuiTK_widget_show (togglebutton);
     return togglebutton;
@@ -292,6 +329,11 @@ SDLGuiTK_Widget * Extract_CheckButton(xmlNode * node)
                 label = SDLGuiTK_label_new (contentget(child));
                 SDLGuiTK_widget_show (label);
             }
+            else if(propcmp(child, "name", "tooltip_text")) {
+                SDLGUITK_LOG ("Extract CheckButton property: tooltip_text\n");
+                has_tooltip = SDL_TRUE;
+                strcpy(tooltip_text,contentget(child));
+            }
             else {
                 SDLGUITK_ERROR("Node CheckButton property unknown: ");
                 SDLGUITK_ERROR2(propget(child,"name"));
@@ -309,6 +351,10 @@ SDLGuiTK_Widget * Extract_CheckButton(xmlNode * node)
     if(checkbutton && active)
         SDLGuiTK_toggle_button_set_active(SDLGuiTK_TOGGLE_BUTTON( checkbutton ),
                                           active);
+    if(has_tooltip) {
+        has_tooltip = SDL_FALSE;
+        SDLGuiTK_widget_set_tooltip_text(checkbutton, tooltip_text);
+    }
     if(checkbutton && visible)
         SDLGuiTK_widget_show (checkbutton);
     return checkbutton;
@@ -341,6 +387,11 @@ SDLGuiTK_Widget * Extract_RadioButton(xmlNode * node)
                 label = SDLGuiTK_label_new (contentget(child));
                 SDLGuiTK_widget_show (label);
             }
+            else if(propcmp(child, "name", "tooltip_text")) {
+                SDLGUITK_LOG ("Extract RadioButton property: tooltip_text\n");
+                has_tooltip = SDL_TRUE;
+                strcpy(tooltip_text,contentget(child));
+            }
             else if(propcmp(child, "name", "group")) {
                 SDLGUITK_LOG ("Extract RadioButton property: group\n");
                 //label = SDLGuiTK_label_new (contentget(child));
@@ -368,6 +419,10 @@ SDLGuiTK_Widget * Extract_RadioButton(xmlNode * node)
     if(radiobutton && radiogroup)
         SDLGuiTK_radio_button_join_group(SDLGuiTK_RADIO_BUTTON (radiobutton),
                                          SDLGuiTK_RADIO_BUTTON (radiogroup));
+    if(has_tooltip) {
+        has_tooltip = SDL_FALSE;
+        SDLGuiTK_widget_set_tooltip_text(radiobutton, tooltip_text);
+    }
     if(radiobutton && visible)
         SDLGuiTK_widget_show (radiobutton);
     return radiobutton;
@@ -392,6 +447,11 @@ SDLGuiTK_Widget * Extract_MenuButton(xmlNode * node)
                 SDLGUITK_LOG ("Extract MenuButton property: popup\n");
                 menubutton = SDLGuiTK_builder_get_widget (NULL, contentget(child));
             }
+            else if(propcmp(child, "name", "tooltip_text")) {
+                SDLGUITK_LOG ("Extract MenuButton property: tooltip_text\n");
+                has_tooltip = SDL_TRUE;
+                strcpy(tooltip_text,contentget(child));
+            }
             else {
                 SDLGUITK_ERROR("Node MenuButton property unknown: ");
                 SDLGUITK_ERROR2(propget(child,"name"));
@@ -402,6 +462,10 @@ SDLGuiTK_Widget * Extract_MenuButton(xmlNode * node)
             SDLGUITK_ERROR2(nameget(child));
         }
         child = child->next;
+    }
+    if(menubutton && has_tooltip) {
+        has_tooltip = SDL_FALSE;
+        SDLGuiTK_widget_set_tooltip_text(menubutton, tooltip_text);
     }
     if(menubutton && visible)
         SDLGuiTK_widget_show (menubutton);
@@ -427,6 +491,11 @@ SDLGuiTK_Widget * Extract_Label(xmlNode * node)
                 SDLGUITK_LOG ("Extract Label property: label\n");
                 label = SDLGuiTK_label_new (contentget(child));
             }
+            else if(propcmp(child, "name", "tooltip_text")) {
+                SDLGUITK_LOG ("Extract Label property: tooltip_text\n");
+                has_tooltip = SDL_TRUE;
+                strcpy(tooltip_text,contentget(child));
+            }
             else {
                 SDLGUITK_ERROR("Node Label property unknown: ");
                 SDLGUITK_ERROR2(propget(child,"name"));
@@ -437,6 +506,10 @@ SDLGuiTK_Widget * Extract_Label(xmlNode * node)
             SDLGUITK_ERROR2(nameget(child));
         }
         child = child->next;
+    }
+    if(label && has_tooltip) {
+        has_tooltip = SDL_FALSE;
+        SDLGuiTK_widget_set_tooltip_text(label, tooltip_text);
     }
     if(label && visible)
         SDLGuiTK_widget_show (label);
@@ -462,6 +535,11 @@ SDLGuiTK_Widget * Extract_Image(xmlNode * node)
                 SDLGUITK_LOG ("Extract Image property: pixbuf\n");
                 image = SDLGuiTK_image_new_from_file (contentget(child));
             }
+            else if(propcmp(child, "name", "tooltip_text")) {
+                SDLGUITK_LOG ("Extract Image property: tooltip_text\n");
+                has_tooltip = SDL_TRUE;
+                strcpy(tooltip_text,contentget(child));
+            }
             else {
                 SDLGUITK_ERROR("Node Image property unknown: ");
                 SDLGUITK_ERROR2(propget(child,"name"));
@@ -472,6 +550,10 @@ SDLGuiTK_Widget * Extract_Image(xmlNode * node)
             SDLGUITK_ERROR2(nameget(child));
         }
         child = child->next;
+    }
+    if(image && has_tooltip) {
+        has_tooltip = SDL_FALSE;
+        SDLGuiTK_widget_set_tooltip_text(image, tooltip_text);
     }
     if(image && visible)
         SDLGuiTK_widget_show (image);

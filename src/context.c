@@ -37,10 +37,13 @@
 #include "render/mywm.h"
 #include "object_prot.h"
 #include "widget_prot.h"
-#include "tooltips_prot.h"
+#include "render/tooltip_prot.h"
 #include "signal.h"
 #include "debug.h"
 #include "list.h"
+
+
+static SDL_bool tooltip_enabled = SDL_FALSE;
 
 
 static SDLGuiTK_Context * Context_create()
@@ -107,7 +110,6 @@ void PROT__context_quit()
     }
     SDLGuiTK_list_unlock( current_context->activables );
 
-    PROT__Tooltips_DestroyAll();  /* Hack to free tooltips struct */
     PROT__signal_check();
     SDL_Delay( 200 );
     PROT__signal_check();
@@ -280,6 +282,14 @@ static void Context_blit_children(SDLGuiTK_WMWidget * wmwidget)
         current =   (SDLGuiTK_WMWidget *)
                     SDLGuiTK_list_ref_next( wmwidget->children );
     }
+    if( tooltip_enabled ) {
+        SDLGuiTK_Render * render=WMWidget_getrender(wmwidget);
+        if(render==WMWidget_getrender(current_context->focused)) {
+            if(!render)
+                render = current_context->main_render;
+            PROT__Tooltip_blit (render->tooltip);
+        }
+    }
 }
 
 void SDLGuiTK_blitsurfaces()
@@ -366,7 +376,6 @@ int  SDLGuiTK_pushevent( SDL_Event *event )
                     SDLGuiTK_WMWidget * wmwidget =
                         Context_getwmwidget_withwindowid(event->window.windowID);
                     if(wmwidget) {
-                        //current_context->active_wmwidget->enter = 1;
                         current_context->active_render = wmwidget->render;
                         SDL_mutexV( current_context->mutex );
                         return 0;
@@ -378,8 +387,6 @@ int  SDLGuiTK_pushevent( SDL_Event *event )
                     SDLGuiTK_WMWidget * wmwidget =
                         Context_getwmwidget_withwindowid(event->window.windowID);
                     if(wmwidget) {
-                        //current_context->active_wmwidget->enter = 1;
-                        //current_context->active_render = wmwidget->render;
                         SDLGuiTK_widget_destroy (wmwidget->widget);
                         SDL_mutexV( current_context->mutex );
                         return 0;
@@ -405,8 +412,6 @@ int  SDLGuiTK_pushevent( SDL_Event *event )
             flag = MyWM_push_MOUSEBUTTONUP( event );
             SDL_mutexV( current_context->mutex );
             return flag;
-        /*     case SDL_KEYUP: */
-        /*       return MyWM_push_KEYUP( event ); */
         case SDL_KEYDOWN:
             printf("TEST1\n");
             flag = MyWM_push_KEYDOWN( event );
@@ -446,6 +451,24 @@ int  SDLGuiTK_pushevent( SDL_Event *event )
 
     return 0;
 }
+
+void PROT__context_ref_tooltip( SDLGuiTK_Widget * widget )
+{
+    if(!widget->has_tooltip) return;
+    if(current_context->focused) {
+        SDLGuiTK_Render * render = WMWidget_getrender (current_context->focused);
+        if(!render)
+            render = current_context->main_render;
+        PROT__Tooltip_update (render->tooltip, widget->tooltip_text);
+        tooltip_enabled = SDL_TRUE;
+    }
+}
+
+void PROT__context_unref_tooltip()
+{
+    tooltip_enabled = SDL_FALSE;
+}
+
 
 void PROT__context_renderclean()
 {

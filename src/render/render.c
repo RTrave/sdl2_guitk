@@ -44,9 +44,10 @@
 
 
 #include <SDL2/SDL_syswm.h>
-#include "render.h"
 #include "../debug.h"
 #include "../context_prot.h"
+#include "tooltip_prot.h"
+#include "render.h"
 
 
 void Render_clean()
@@ -84,6 +85,7 @@ static SDLGuiTK_Render * Render_new()
     new_render->renderer = NULL;
     new_render->window = NULL;
     new_render->id = render_id++;
+    new_render->tooltip = PROT__Tooltip_create ();
     return new_render;
 }
 
@@ -219,6 +221,7 @@ SDLGuiTK_Render * Render_create()
 void Render_destroy(SDLGuiTK_Render * render)
 {
     //TODO
+    PROT__Tooltip_destroy (render->tooltip);
     SDL_DestroyRenderer(render->renderer);
     SDL_DestroyWindow(render->window);
     free(render);

@@ -179,7 +179,7 @@ static void * Label_Realize( SDLGuiTK_Widget * widget, \
 			     void * data, void * event )
 {
   if( widget->misc->label->text_flag!=0 ) {
-    Label_make_surface( widget->misc->label );
+    //Label_make_surface( widget->misc->label );
   }
 
   return (void *) NULL;

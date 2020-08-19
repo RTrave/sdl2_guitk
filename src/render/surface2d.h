@@ -22,6 +22,7 @@
 
 #include <GL/gl.h>
 #include <SDL2/SDL_guitk.h>
+//#include "../mysdl.h"
 
 typedef struct SDLGuiTK_Surface2D SDLGuiTK_Surface2D;
 
@@ -30,7 +31,7 @@ struct SDLGuiTK_Surface2D {
     SDLGuiTK_Object    * object;      /* referent widget */
 
     /* "private" data */
-    SDL_Surface * srf;
+    //SDL_Surface * srf;
     int           w, h;
     //SDL_Texture * mtexture;
     GLfloat   alpha;
