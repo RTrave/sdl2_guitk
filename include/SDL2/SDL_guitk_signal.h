@@ -38,8 +38,25 @@ extern "C" {
   extern DECLSPEC
   void SDLGuiTK_signal_connect( SDLGuiTK_Object *object, \
 				char *type, \
-				void *(*fct)( SDLGuiTK_Widget *, void *, void * ) , \
+				void *(*fct)( SDLGuiTK_Signal *, void * ) , \
 				void *data );
+
+  /* Retrieve SDL_KeyboardEvent values*/
+  extern DECLSPEC
+  SDLGuiTK_Object * SDLGuiTK_signal_get_object( SDLGuiTK_Signal *signal);
+
+  extern DECLSPEC
+  Uint8 SDLGuiTK_signal_get_state( SDLGuiTK_Signal *signal);
+
+  extern DECLSPEC
+  Uint8 SDLGuiTK_signal_get_repeat( SDLGuiTK_Signal *signal);
+
+  extern DECLSPEC
+  SDL_Keysym * SDLGuiTK_signal_get_keysym( SDLGuiTK_Signal *signal);
+
+  /* Retrieve SDL_TextInputEvent values*/
+  extern DECLSPEC
+  char * SDLGuiTK_signal_get_text( SDLGuiTK_Signal *signal);
 
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus

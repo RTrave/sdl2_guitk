@@ -195,15 +195,15 @@ void PROT__togglebutton_destroy(SDLGuiTK_ToggleButton * togglebutton)
 }
 
 
-static void * ToggleButton_Toggled( SDLGuiTK_Widget * widget, \
-                                    void * data, void * event )
+static void * ToggleButton_Toggled( SDLGuiTK_Signal * signal, void * data )
 {
-    SDLGuiTK_ToggleButton * togglebutton=widget->container->bin->button->togglebutton;
+    SDLGuiTK_ToggleButton * togglebutton=signal->object->widget->container->bin->button->togglebutton;
 
     if(togglebutton->checkbutton)
         PROT__checkbutton_toggled (togglebutton->checkbutton);
-    if( widget->top!=NULL ) {
-        PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
+    if( signal->object->widget->parent ) {
+        PROT__signal_push( signal->object->widget->parent->object,
+                           SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY );
     }
 
     return (void *) NULL;
@@ -211,11 +211,8 @@ static void * ToggleButton_Toggled( SDLGuiTK_Widget * widget, \
 
 static void ToggleButton_set_functions( SDLGuiTK_ToggleButton * button )
 {
-    SDLGuiTK_SignalHandler * handler;
-    handler = (SDLGuiTK_SignalHandler *) button->object->signalhandler;
-
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_TOGGLED]->function = \
-            ToggleButton_Toggled;
+    PROT_signal_connect(button->object, SDLGUITK_SIGNAL_TYPE_TOGGLED,
+                        ToggleButton_Toggled, SDLGUITK_SIGNAL_LEVEL1);
 }
 
 
@@ -225,6 +222,7 @@ SDLGuiTK_Widget * SDLGuiTK_toggle_button_new()
 
     togglebutton = ToggleButton_create();
     ToggleButton_set_functions( togglebutton );
+    PROT__signal_push( togglebutton->object, SDLGUITK_SIGNAL_TYPE_REALIZE );
 
     return togglebutton->object->widget;
 }

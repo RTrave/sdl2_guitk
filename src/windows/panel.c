@@ -510,10 +510,10 @@ static void * Panel_MouseReleased( SDLGuiTK_Widget * panel, \
 
 static void Panel_setsignals( SDLGuiTK_Panel * panel )
 {
-  SDLGuiTK_SignalHandler * handler;
+  //SDLGuiTK_SignalHandler * handler;
 
-  handler = (SDLGuiTK_SignalHandler *) panel->object->signalhandler;
-
+  //handler = (SDLGuiTK_SignalHandler *) panel->object->signalhandler;
+/*
   handler->fdefault[SDLGUITK_SIGNAL_TYPE_REALIZE]->function = \
     Panel_Realize;
   handler->fdefault[SDLGUITK_SIGNAL_TYPE_DESTROY]->function = \
@@ -528,11 +528,9 @@ static void Panel_setsignals( SDLGuiTK_Panel * panel )
     Panel_MouseEnter;
   handler->fdefault[SDLGUITK_SIGNAL_TYPE_LEAVE]->function = \
     Panel_MouseLeave;
-
-/*   handler->fdefault[SDLGUITK_SIGNAL_TYPE_PRESSED]->function = \ */
-/*     Panel_MousePressed; */
   handler->fdefault[SDLGUITK_SIGNAL_TYPE_RELEASED]->function = \
     Panel_MouseReleased;
+*/
 }
 
 SDLGuiTK_Widget * SDLGuiTK_panel_new()
@@ -553,7 +551,7 @@ SDLGuiTK_Widget * SDLGuiTK_panel_new()
   panel->object->widget->parent = NULL;
   panel->object->widget->top = NULL;
 
-  PROT__signal_push( panel->object, SDLGUITK_SIGNAL_TYPE_REALIZE );
+  //PROT__signal_push( panel->object, SDLGUITK_SIGNAL_TYPE_REALIZE );
 
   return panel->object->widget;
 }
@@ -575,7 +573,7 @@ void SDLGuiTK_panel_set_position( SDLGuiTK_Widget * panel, \
 /*   SDL_mutexP( panel->object->mutex ); */
 
   panel->container->bin->panel->position = position;
-  PROT__signal_push( panel->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
+  //PROT__signal_push( panel->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
 
 /*   SDL_mutexV( panel->object->mutex ); */
 }

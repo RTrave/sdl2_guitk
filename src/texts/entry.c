@@ -199,44 +199,6 @@ static void * Entry_DrawBlit( SDLGuiTK_Widget * widget )
     return (void *) NULL;
 }
 
-static void * Entry_Realize( SDLGuiTK_Widget * widget, \
-                             void * data, void * event )
-{
-    if( widget->entry->text_flag!=0 ) {
-        Entry_make_surface( widget->entry );
-    }
-    /*   widget->changed = 0; */
-
-    return (void *) NULL;
-}
-
-static void * Entry_Show( SDLGuiTK_Widget * widget, \
-                          void * data, void * event )
-{
-    /*   widget->changed = 1; */
-/*
-    widget->shown = 1;
-    if( widget->top!=NULL ) {
-        PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-    }
-*/
-    return (void *) NULL;
-}
-
-static void * Entry_Hide( SDLGuiTK_Widget * widget, \
-                          void * data, void * event )
-{
-    /*   widget->changed = 1; */
-/*
-    widget->shown = 0;
-    if( widget->top!=NULL ) {
-        PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-    }
-*/
-    MyWM_unset_keyboard_focus (widget);
-    return (void *) NULL;
-}
-
 static SDLGuiTK_Widget * Entry_RecursiveEntering( SDLGuiTK_Widget * widget, \
         int x, int y )
 {
@@ -287,54 +249,20 @@ static int Entry_UpdateActive( SDLGuiTK_Widget * widget )
     return 1;
 }
 
-static void * Entry_MouseEnter( SDLGuiTK_Widget * widget, \
-                                void * data, void * event )
-{
-    if(widget->has_tooltip)
-        PROT__context_ref_tooltip (widget);
 
-    MyCursor_Set( SDLGUITK_CURSOR_TEXT );
-    //Enable text input
-    MyWM_start_textinput();
-
-    return (void *) NULL;
-}
-
-static void * Entry_MouseLeave( SDLGuiTK_Widget * widget, \
-                                void * data, void * event )
-{
-    if(widget->has_tooltip)
-        PROT__context_unref_tooltip ();
-    //Disable text input
-    MyWM_stop_textinput ();
-    MyCursor_Set( SDLGUITK_CURSOR_DEFAULT );
-
-    return (void *) NULL;
-}
-
-void Push_textinput( SDLGuiTK_Entry * entry, SDL_TextInputEvent * tievent )
+static void Push_textinput( SDLGuiTK_Entry * entry, char * textinput )
 {
     SDLGuiTK_Editable *editable=entry->editable;
-#ifdef HAVE_UNICODE_H
-    Uint16 unich[3];
-#endif
-
     SDLGuiTK_editable_insert_text( editable, \
-                                   tievent->text, \
+                                   textinput, \
                                    -1,
                                    &editable->cursor_position );
 }
 
-void Push_keysym( SDLGuiTK_Entry * entry, SDL_KeyboardEvent * kevent )
+static void Push_keysym( SDLGuiTK_Entry * entry, SDLGuiTK_Signal * signal )
 {
-    SDLGuiTK_Editable *editable=entry->editable;
-#ifdef HAVE_UNICODE_H
-    Uint16 unich[3];
-#endif
-    //char *tch;
-    //char tch;
-
-    switch( kevent->keysym.sym ) {
+    SDLGuiTK_Editable * editable=entry->editable;
+    switch( signal->keysym.sym ) {
     case SDLK_RIGHT:
         editable->cursor_position++;
         break;
@@ -363,56 +291,85 @@ void Push_keysym( SDLGuiTK_Entry * entry, SDL_KeyboardEvent * kevent )
     }
 }
 
-static void * Entry_TextInput( SDLGuiTK_Widget * widget, \
-                               void * data, void * event )
+
+static void * Entry_Realize( SDLGuiTK_Signal * signal, void * data )
 {
-    SDLGuiTK_Entry * entry=widget->entry;
+    SDLGuiTK_Entry * entry=signal->object->widget->entry;
+    if( entry->text_flag!=0 ) {
+        Entry_make_surface( entry );
+    }
+    /*   widget->changed = 0; */
+    return (void *) NULL;
+}
+
+static void * Entry_Hide( SDLGuiTK_Signal * signal, void * data )
+{
+    MyWM_unset_keyboard_focus (signal->object->widget);
+    return (void *) NULL;
+}
+
+static void * Entry_MouseEnter( SDLGuiTK_Signal * signal, void * data )
+{
+    MyCursor_Set( SDLGUITK_CURSOR_TEXT );
+    //Enable text input
+    MyWM_start_textinput();
+    return (void *) NULL;
+}
+
+static void * Entry_MouseLeave( SDLGuiTK_Signal * signal, void * data )
+{
+    //Disable text input
+    MyWM_stop_textinput ();
+    MyCursor_Set( SDLGUITK_CURSOR_DEFAULT );
+    return (void *) NULL;
+}
+
+static void * Entry_TextInput( SDLGuiTK_Signal * signal, void * data )
+{
+    SDLGuiTK_Entry * entry=signal->object->widget->entry;
+
+#if DEBUG_LEVEL > 2
     char tmpstr[128];
-    SDL_TextInputEvent * tievent=(SDL_TextInputEvent *) data;
-
-    sprintf( tmpstr, "Entry_TextInput(): %s\n", tievent->text );
+    sprintf( tmpstr, "Entry_TextInput(): %s\n", signal->text );
     SDLGUITK_LOG(tmpstr);
+#endif
 
-    Push_textinput( entry, tievent );
+    Push_textinput( entry, signal->text );
     entry->text_flag = 1;
-    if( widget->top!=NULL ) {
-        PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
+    if( signal->object->widget->parent ) {
+        PROT__signal_push( signal->object->widget->parent->object,
+                           SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY );
     }
     return (void *) NULL;
 }
 
-static void * Entry_Keyboard( SDLGuiTK_Widget * widget, \
-                              void * data, void * event )
+static void * Entry_Keyboard( SDLGuiTK_Signal * signal, void * data )
 {
-    SDLGuiTK_Entry * entry=widget->entry;
+    SDLGuiTK_Entry * entry=signal->object->widget->entry;
+
+#if DEBUG_LEVEL > 2
     char tmpstr[128];
-    SDL_KeyboardEvent * kevent=(SDL_KeyboardEvent *) data;
-
-    sprintf( tmpstr, "Entry_Keyboard(): %s\n", SDL_GetKeyName(kevent->keysym.sym) );
+    sprintf( tmpstr, "Entry_Keyboard(): %s\n", SDL_GetKeyName(signal->keysym.sym) );
     SDLGUITK_LOG(tmpstr);
+#endif
 
-    Push_keysym( entry, kevent );
+    Push_keysym( entry, signal );
     entry->text_flag = 1;
-    if( widget->top!=NULL ) {
-        PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
+    if( signal->object->widget->parent ) {
+        PROT__signal_push( signal->object->widget->parent->object,
+                           SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY );
     }
     return (void *) NULL;
 }
 
-static void * Entry_MousePressed( SDLGuiTK_Widget * widget, \
-                             void * data, void * event )
+static void * Entry_MousePressed( SDLGuiTK_Signal * signal, void * data )
 {
-    MyWM_set_keyboard_focus (widget);
-
+    MyWM_set_keyboard_focus (signal->object->widget);
     return (void *) NULL;
 }
 
 static void Entry_set_functions( SDLGuiTK_Entry * entry )
 {
-    SDLGuiTK_SignalHandler * handler;
-
-    handler = (SDLGuiTK_SignalHandler *) entry->object->signalhandler;
-
     entry->object->widget->RecursiveEntering = Entry_RecursiveEntering;
     entry->object->widget->RecursiveDestroy = Entry_RecursiveDestroy;
     entry->object->widget->Free = Entry_Free;
@@ -421,22 +378,26 @@ static void Entry_set_functions( SDLGuiTK_Entry * entry )
     entry->object->widget->DrawUpdate = Entry_DrawUpdate;
     entry->object->widget->DrawBlit = Entry_DrawBlit;
 
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_REALIZE]->function = \
-            Entry_Realize;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_SHOW]->function = \
-            Entry_Show;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_HIDE]->function = \
-            Entry_Hide;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_ENTER]->function = \
-            Entry_MouseEnter;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_LEAVE]->function = \
-            Entry_MouseLeave;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_TEXTINPUT]->function = \
-            Entry_TextInput;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_KEYBOARD]->function = \
-            Entry_Keyboard;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_PRESSED]->function = \
-            Entry_MousePressed;
+    PROT_signal_connect(entry->object, SDLGUITK_SIGNAL_TYPE_REALIZE,
+                        Entry_Realize, SDLGUITK_SIGNAL_LEVEL2);
+
+    PROT_signal_connect(entry->object, SDLGUITK_SIGNAL_TYPE_HIDE,
+                        Entry_Hide, SDLGUITK_SIGNAL_LEVEL2);
+
+    PROT_signal_connect(entry->object, SDLGUITK_SIGNAL_TYPE_ENTER,
+                        Entry_MouseEnter, SDLGUITK_SIGNAL_LEVEL2);
+
+    PROT_signal_connect(entry->object, SDLGUITK_SIGNAL_TYPE_LEAVE,
+                        Entry_MouseLeave, SDLGUITK_SIGNAL_LEVEL2);
+
+    PROT_signal_connect(entry->object, SDLGUITK_SIGNAL_TYPE_TEXTINPUT,
+                        Entry_TextInput, SDLGUITK_SIGNAL_LEVEL1);
+
+    PROT_signal_connect(entry->object, SDLGUITK_SIGNAL_TYPE_KEYBOARD,
+                        Entry_Keyboard, SDLGUITK_SIGNAL_LEVEL2);
+
+    PROT_signal_connect(entry->object, SDLGUITK_SIGNAL_TYPE_PRESSED,
+                        Entry_MousePressed, SDLGUITK_SIGNAL_LEVEL2);
 }
 
 
@@ -460,8 +421,9 @@ SDLGuiTK_Widget * SDLGuiTK_entry_new( const char *str )
 void SDLGuiTK_entry_set_text( SDLGuiTK_Widget * entry, const char *str )
 {
     PROT__editable_settext( entry->entry->editable, str );
-
-    PROT__signal_push( entry->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
+    if(entry->parent)
+        PROT__signal_push( entry->parent->object,
+                           SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY );
 }
 
 

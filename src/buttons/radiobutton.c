@@ -137,14 +137,14 @@ void PROT__radiobutton_DrawBlit(SDLGuiTK_RadioButton * radiobutton)
 {
     SDLGuiTK_Widget * widget = radiobutton->object->widget;
     SDLGuiTK_Button * button=radiobutton->checkbutton->togglebutton->button;
-    Uint32 bgcolor;
-    SDLGuiTK_Theme * theme;
+    //Uint32 bgcolor;
+    //SDLGuiTK_Theme * theme;
 
     button->text_area.x = 0;
     button->text_area.y = 0;
     button->text_area.w = widget->abs_area.w;
     button->text_area.h = widget->abs_area.h;
-
+/*
     theme = PROT__theme_get_and_lock();
     bgcolor = SDL_MapRGBA( widget->srf->srf->format, \
                            theme->bdcolor.r, \
@@ -152,7 +152,7 @@ void PROT__radiobutton_DrawBlit(SDLGuiTK_RadioButton * radiobutton)
                            theme->bdcolor.b, \
                            150 );
     PROT__theme_unlock( theme );
-
+*/
     radiobutton->indicator_area.x = 0;
     radiobutton->indicator_area.y = 0;
     radiobutton->indicator_area.w = 28;
@@ -194,11 +194,6 @@ void PROT__radiobutton_destroy(SDLGuiTK_RadioButton * radiobutton)
 
 static void RadioButton_set_functions( SDLGuiTK_RadioButton * button )
 {
-    //SDLGuiTK_SignalHandler * handler;
-    //handler = (SDLGuiTK_SignalHandler *) button->object->signalhandler;
-
-    //handler->fdefault[SDLGUITK_SIGNAL_TYPE_TOGGLED]->function =
-    //        ToggleButton_Toggled;
 }
 
 
@@ -208,6 +203,7 @@ SDLGuiTK_Widget * SDLGuiTK_radio_button_new()
 
     radiobutton = RadioButton_create ();
     RadioButton_set_functions( radiobutton );
+    PROT__signal_push( radiobutton->object, SDLGUITK_SIGNAL_TYPE_REALIZE );
 
     return radiobutton->object->widget;
 }
@@ -239,5 +235,6 @@ void SDLGuiTK_radio_button_join_group(SDLGuiTK_RadioButton * radiobutton,
     }
     radiobutton->group = group_source->group;
     SDLGuiTK_list_append (group_source->group, (SDLGuiTK_Object *)radiobutton);
+    PROT__signal_push( radiobutton->object, SDLGUITK_SIGNAL_TYPE_GROUPCHANGED );
 }
 

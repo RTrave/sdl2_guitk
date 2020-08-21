@@ -174,9 +174,9 @@ void SDLGuiTK_misc_set_alignment( SDLGuiTK_Misc * misc, \
     misc->xalign = xalign;
     misc->yalign = yalign;
 
-    if( misc->widget->top!=NULL ) {
-        PROT__signal_push( misc->widget->top->object, \
-                           SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
+    if( misc->widget->parent ) {
+        PROT__signal_push( misc->widget->parent->object,
+                           SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY );
     }
 }
 
@@ -187,9 +187,9 @@ void SDLGuiTK_misc_set_padding(   SDLGuiTK_Misc * misc, \
     misc->xpad = xpad;
     misc->ypad = ypad;
 
-    if( misc->widget->top!=NULL ) {
-        PROT__signal_push( misc->widget->top->object, \
-                           SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
+    if( misc->widget->parent ) {
+        PROT__signal_push( misc->widget->parent->object,
+                           SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY );
     }
 }
 

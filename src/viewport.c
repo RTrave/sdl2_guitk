@@ -83,8 +83,8 @@ static SDLGuiTK_Viewport * Viewport_create()
     new_viewport->object = new_viewport->bin->object;
     new_viewport->bin->viewport = new_viewport;
     sprintf( new_viewport->object->name, "viewport%d", ++current_id );
-    new_viewport->object->widget->top = NULL;
-    new_viewport->object->widget->parent = NULL;
+    new_viewport->object->widget->top = new_viewport->object->widget;
+    new_viewport->object->widget->parent = new_viewport->object->widget;
 
     //new_viewport->srf = MySDL_Surface_new("Viewport_srf");
     new_viewport->area.x = 0;
@@ -231,25 +231,15 @@ static void * Viewport_Free( SDLGuiTK_Widget * widget )
 }
 
 
-static void * Viewport_Realize( SDLGuiTK_Widget * widget, \
-                              void * data, void * event )
+static void * Viewport_Realize( SDLGuiTK_Signal * signal, void * data )
 {
-    Viewport_DrawUpdate( widget );
-    Viewport_DrawBlit( widget );
+    Viewport_DrawUpdate( signal->object->widget );
+    Viewport_DrawBlit( signal->object->widget );
 
     return (void *) NULL;
 }
 
-static void * Viewport_Destroy( SDLGuiTK_Widget * widget, \
-                              void * data, void * event )
-{
-    //widget->shown = 0;
-
-    return (void *) NULL;
-}
-
-static void * Viewport_Show( SDLGuiTK_Widget * widget, \
-                           void * data, void * event )
+static void * Viewport_Show( SDLGuiTK_Signal * signal, void * data )
 {
     //SDLGuiTK_Viewport * viewport=widget->container->bin->viewport;
 
@@ -262,8 +252,7 @@ static void * Viewport_Show( SDLGuiTK_Widget * widget, \
     return (void *) NULL;
 }
 
-static void * Viewport_Hide( SDLGuiTK_Widget * widget, \
-                           void * data, void * event )
+static void * Viewport_Hide( SDLGuiTK_Signal * signal, void * data )
 {
     //SDLGuiTK_Viewport * viewport=widget->container->bin->viewport;
 
@@ -274,32 +263,28 @@ static void * Viewport_Hide( SDLGuiTK_Widget * widget, \
     return (void *) NULL;
 }
 
-static void * Viewport_FrameEvent( SDLGuiTK_Widget * widget, \
-                                 void * data, void * event )
+static void * Viewport_ChildNotify( SDLGuiTK_Signal * signal, void * data )
 {
-    Viewport_DrawUpdate( widget );
-    Viewport_DrawBlit( widget );
+    Viewport_DrawUpdate( signal->object->widget );
+    Viewport_DrawBlit( signal->object->widget );
 
     return (void *) NULL;
 }
 
 
-static void * Viewport_MouseEnter( SDLGuiTK_Widget * widget, \
-                                 void * data, void * event )
+static void * Viewport_MouseEnter( SDLGuiTK_Signal * signal, void * data )
 {
 
     return (void *) NULL;
 }
 
-static void * Viewport_MouseLeave( SDLGuiTK_Widget * widget, \
-                                 void * data, void * event )
+static void * Viewport_MouseLeave( SDLGuiTK_Signal * signal, void * data )
 {
 
     return (void *) NULL;
 }
 
-static void * Viewport_MousePressed(SDLGuiTK_Widget * window,
-                                    void * data )
+static void * Viewport_MousePressed( SDLGuiTK_Signal * signal, void * data )
 {
     int x, y;
         if( SDL_GetMouseState( &x, &y) ) {
@@ -310,45 +295,51 @@ static void * Viewport_MousePressed(SDLGuiTK_Widget * window,
     return (void *) NULL;
 }
 
-static void * Viewport_MouseReleased( SDLGuiTK_Widget * widget, \
-                                    void * data, void * event )
+static void * Viewport_MouseReleased( SDLGuiTK_Signal * signal, void * data )
 {
     /*   int x, y; */
 
     /*   if( SDL_GetMouseState( &x, &y) ) { */
     /*     printf( "Mouse released in: x=%d y=%d\n", x, y ); */
     /*   } */
-    Viewport_DrawUpdate( widget );
-    Viewport_DrawBlit( widget );
+    Viewport_DrawUpdate( signal->object->widget );
+    Viewport_DrawBlit( signal->object->widget );
 
     return (void *) NULL;
 }
 
 static void Viewport_setsignals( SDLGuiTK_Viewport * viewport )
 {
-    SDLGuiTK_SignalHandler * handler;
+    viewport->object->widget->RecursiveEntering = Viewport_RecursiveEntering;
+    viewport->object->widget->RecursiveDestroy = Viewport_RecursiveDestroy;
+    viewport->object->widget->Free = Viewport_Free;
 
-    handler = (SDLGuiTK_SignalHandler *) viewport->object->signalhandler;
+    viewport->object->widget->DrawUpdate = Viewport_DrawUpdate;
+    viewport->object->widget->DrawBlit = Viewport_DrawBlit;
 
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_REALIZE]->function = \
-            Viewport_Realize;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_DESTROY]->function = \
-            Viewport_Destroy;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_SHOW]->function = \
-            Viewport_Show;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_HIDE]->function = \
-            Viewport_Hide;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_FRAMEEVENT]->function = \
-            Viewport_FrameEvent;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_ENTER]->function = \
-            Viewport_MouseEnter;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_LEAVE]->function = \
-            Viewport_MouseLeave;
+    PROT_signal_connect(viewport->object, SDLGUITK_SIGNAL_TYPE_REALIZE,
+                        Viewport_Realize, SDLGUITK_SIGNAL_LEVEL2);
 
-    /* handler->fdefault[SDLGUITK_SIGNAL_TYPE_PRESSED]->function = \ */
-    /*         Viewport_MousePressed; */
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_RELEASED]->function = \
-            Viewport_MouseReleased;
+    PROT_signal_connect(viewport->object, SDLGUITK_SIGNAL_TYPE_SHOW,
+                        Viewport_Show, SDLGUITK_SIGNAL_LEVEL2);
+
+    PROT_signal_connect(viewport->object, SDLGUITK_SIGNAL_TYPE_HIDE,
+                        Viewport_Hide, SDLGUITK_SIGNAL_LEVEL2);
+
+    PROT_signal_connect(viewport->object, SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY,
+                        Viewport_ChildNotify, SDLGUITK_SIGNAL_LEVEL2);
+
+    PROT_signal_connect(viewport->object, SDLGUITK_SIGNAL_TYPE_ENTER,
+                        Viewport_MouseEnter, SDLGUITK_SIGNAL_LEVEL2);
+
+    PROT_signal_connect(viewport->object, SDLGUITK_SIGNAL_TYPE_LEAVE,
+                        Viewport_MouseLeave, SDLGUITK_SIGNAL_LEVEL2);
+
+    PROT_signal_connect(viewport->object, SDLGUITK_SIGNAL_TYPE_PRESSED,
+                        Viewport_MousePressed, SDLGUITK_SIGNAL_LEVEL2);
+
+    PROT_signal_connect(viewport->object, SDLGUITK_SIGNAL_TYPE_RELEASED,
+                        Viewport_MouseReleased, SDLGUITK_SIGNAL_LEVEL2);
 }
 
 SDLGuiTK_Widget * SDLGuiTK_viewport_new(SDLGuiTK_Adjustment *hadjustment,
@@ -368,17 +359,7 @@ SDLGuiTK_Widget * SDLGuiTK_viewport_new(SDLGuiTK_Adjustment *hadjustment,
     viewport->vadjustment = vadjustment;
     PROT__adjustment_attach(vadjustment, viewport->object->widget);
 
-    viewport->object->widget->RecursiveEntering = Viewport_RecursiveEntering;
-    viewport->object->widget->RecursiveDestroy = Viewport_RecursiveDestroy;
-    viewport->object->widget->Free = Viewport_Free;
-
-    viewport->object->widget->DrawUpdate = Viewport_DrawUpdate;
-    viewport->object->widget->DrawBlit = Viewport_DrawBlit;
-
     Viewport_setsignals( viewport );
-
-    viewport->object->widget->parent = NULL;
-    viewport->object->widget->top = NULL;
 
     PROT__signal_push( viewport->object, SDLGUITK_SIGNAL_TYPE_REALIZE );
 

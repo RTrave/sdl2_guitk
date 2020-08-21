@@ -46,13 +46,11 @@
 
 #include "misc_prot.h"
 #include "container_prot.h"
-//#include "tooltips_prot.h"
 
 #include "windows/window_prot.h"
 
 
 static int         current_id=0;
-//static SDL_mutex * current_id_mutex=NULL;
 
 static SDLGuiTK_List * destroy_list=NULL;
 
@@ -138,9 +136,7 @@ static SDLGuiTK_Widget * Widget_create()
     new_widget->object = PROT__object_new();
     new_widget->object->widget = new_widget;
 
-    //SDL_mutexP( current_id_mutex );
     new_widget->id = current_id++;
-    //SDL_mutexV( current_id_mutex );
 
     new_widget->visible = SDL_FALSE;
     new_widget->can_focus = SDL_TRUE;
@@ -152,9 +148,6 @@ static SDLGuiTK_Widget * Widget_create()
 
     new_widget->parent = NULL;
     new_widget->top = NULL;
-    //new_widget->tooltipsdata = NULL;
-
-    /*   new_widget->changed = 0; */
 
     new_widget->misc = NULL;
     new_widget->container = NULL;
@@ -164,14 +157,10 @@ static SDLGuiTK_Widget * Widget_create()
 
     new_widget->width_request = -1;
     new_widget->height_request = -1;
-    /*   new_widget->requisition.width = 0; */
-    /*   new_widget->requisition.height = 0; */
 
     new_widget->srf = MySDL_Surface_new ("Widget_srf");
-    //new_widget->act_srf = MySDL_Surface_new ("Widget_act_srf");
     new_widget->act_srf = NULL;
     new_widget->act_alpha = 0.5;
-    /*   new_widget->srf_create = 0; */
     new_widget->req_area.x = 0;
     new_widget->req_area.y = 0;
     new_widget->req_area.w = 0;
@@ -194,58 +183,57 @@ static SDLGuiTK_Widget * Widget_create()
 
 static void Widget_destroy( SDLGuiTK_Widget * widget )
 {
-    /*   printf( "DESTR: %s\n", widget->object->name ); */
-//    if( widget->tooltipsdata!=NULL )
-//        PROT__TooltipsData_Destroy( widget->tooltipsdata );
     MySDL_Surface_free( widget->srf );
-    /*   MySDL_FreeSurface( widget->act_srf ); */
     PROT__object_destroy( widget->object );
     free( widget );
 }
 
 void PROT__widget_init()
 {
-    //current_id_mutex = SDL_CreateMutex();
-    //SDL_mutexP( current_id_mutex );
     current_id = 0;
-    //SDL_mutexV( current_id_mutex );
-
     destroy_list = SDLGuiTK_list_new();
 }
 
 void PROT__widget_uninit()
 {
     SDLGuiTK_list_destroy( destroy_list );
-    //SDL_DestroyMutex( current_id_mutex );
-    //current_id_mutex = NULL;
     current_id = 0;
 }
 
 
-static void * Widget_MouseEnter( SDLGuiTK_Widget * widget )
+static void * Widget_MouseEnter( SDLGuiTK_Signal * signal, void * data )
 {
-    if(widget->has_tooltip)
-        PROT__context_ref_tooltip (widget);
+    if(signal->object->widget->has_tooltip)
+        PROT__context_ref_tooltip (signal->object->widget);
     return (void *) NULL;
 }
 
-static void * Widget_MouseLeave( SDLGuiTK_Widget * widget )
+static void * Widget_MouseLeave( SDLGuiTK_Signal * signal, void * data )
 {
-    if(widget->has_tooltip)
+    if(signal->object->widget->has_tooltip)
         PROT__context_unref_tooltip ();
+    return (void *) NULL;
+}
+
+static void * Widget_ChildNotify( SDLGuiTK_Signal * signal, void * data )
+{
+    SDLGuiTK_Widget * widget=signal->object->widget;
+    if(widget->parent && widget->parent!=widget)
+        PROT__signal_push( widget->parent->object,
+                           SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY );
     return (void *) NULL;
 }
 
 static void Widget_set_functions( SDLGuiTK_Widget * widget )
 {
-    SDLGuiTK_SignalHandler * handler;
+    PROT_signal_connect(widget->object, SDLGUITK_SIGNAL_TYPE_ENTER,
+                        Widget_MouseEnter, SDLGUITK_SIGNAL_LEVEL1);
 
-    handler = (SDLGuiTK_SignalHandler *) widget->object->signalhandler;
+    PROT_signal_connect(widget->object, SDLGUITK_SIGNAL_TYPE_LEAVE,
+                        Widget_MouseLeave, SDLGUITK_SIGNAL_LEVEL1);
 
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_ENTER]->function =
-    Widget_MouseEnter;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_LEAVE]->function =
-    Widget_MouseLeave;
+    PROT_signal_connect(widget->object, SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY,
+                        Widget_ChildNotify, SDLGUITK_SIGNAL_LEVEL1);
 }
 
 
@@ -287,8 +275,8 @@ void SDLGuiTK_widget_show( SDLGuiTK_Widget * widget )
     widget->visible = SDL_TRUE;
     PROT__signal_push( widget->object, SDLGUITK_SIGNAL_TYPE_SHOW );
 
-    if( widget->top!=NULL ) {
-        PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
+    if( widget->parent && widget->parent!=widget ) {
+        PROT__signal_push( widget->parent->object, SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY );
     }
 }
 
@@ -304,15 +292,13 @@ void SDLGuiTK_widget_hide( SDLGuiTK_Widget * widget )
     widget->visible = SDL_FALSE;
     PROT__signal_push( widget->object, SDLGUITK_SIGNAL_TYPE_HIDE );
 
-    if( widget->top!=NULL ) {
-        PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
+    if( widget->parent && widget->parent!=widget ) {
+        PROT__signal_push( widget->parent->object, SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY );
     }
 }
 
 void SDLGuiTK_widget_destroy( SDLGuiTK_Widget * widget )
 {
-    /*   SDLGuiTK_Window * window; */
-    /*   SDLGuiTK_MenuShell * menushell; */
     SDLGuiTK_Container * container;
 #if DEBUG_LEVEL > 1
     char tmplog[256];
@@ -320,28 +306,10 @@ void SDLGuiTK_widget_destroy( SDLGuiTK_Widget * widget )
     SDLGUITK_LOG( tmplog );
 #endif
 
-    /*   window = SDLGuiTK_WINDOW( widget ); */
-    /*   if( window!=NULL ) { */
-    /*     PROT__context_unref_wmwidget( window->wm_widget ); */
-    /*   } */
-    /*   SDLGuiTK_widget_hide( widget ); */
-    /*   PROT__signal_push( widget->object, SDLGUITK_SIGNAL_TYPE_HIDE ); */
-    /*   SDL_mutexP( widget->object->mutex ); */
     (*widget->RecursiveDestroy)( widget );
     PROT__signal_push( widget->object, SDLGUITK_SIGNAL_TYPE_DESTROY );
-    /*   SDL_mutexV( widget->object->mutex ); */
 
-    /*   SDL_mutexP( widget->object->mutex ); */
-    if( widget->top!=NULL ) {
-        /*     SDL_mutexV( widget->object->mutex ); */
-        /*     SDL_mutexP( widget->top->object->mutex ); */
-        PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-        /*     SDL_mutexV( widget->top->object->mutex ); */
-        /*     SDL_mutexP( widget->object->mutex ); */
-        widget->top = NULL;
-    }
-    /*   SDL_mutexV( widget->object->mutex ); */
-    if( widget->parent!=NULL ) {
+    if( widget->parent && widget->parent!=widget ) {
         SDLGUITK_LOG( "SDLGuiTK_widget_destroy(): widget->parent!=NULL\n" );
         container = SDLGuiTK_CONTAINER(widget->parent);
         if( container!=NULL ) {
@@ -349,9 +317,9 @@ void SDLGuiTK_widget_destroy( SDLGuiTK_Widget * widget )
         } else {
             SDLGUITK_ERROR( "SDLGuiTK_widget_destroy(): widget->parent not known\n" );
         }
+        widget->top = NULL;
         widget->parent = NULL;
     }
-
 
     SDLGuiTK_list_lock( destroy_list );
     SDLGuiTK_list_append( destroy_list, (SDLGuiTK_Object *) widget );
@@ -361,46 +329,14 @@ void SDLGuiTK_widget_destroy( SDLGuiTK_Widget * widget )
 
 void  PROT__widget_DrawUpdate( SDLGuiTK_Widget * widget )
 {
-    /* int width, height; */
-
-    /* if( widget->req_area.w<widget->width_request ) */
-    /*     width = widget->width_request; */
-    /* else */
-    /*     width = widget->req_area.w; */
-    /* if( widget->req_area.h<widget->height_request ) */
-    /*     height = widget->height_request; */
-    /* else */
-    /*     height = widget->req_area.h; */
-
-    /* widget->abs_area.w = width; */
-    /* widget->abs_area.h = height; */
-    /* widget->rel_area.w = width; */
-    /* widget->rel_area.h = height; */
-
     if( widget->req_area.w<widget->width_request )
         widget->req_area.w = widget->width_request;
     if( widget->req_area.h<widget->height_request )
         widget->req_area.h = widget->height_request;
-    /*
-    if( widget->abs_area.w<widget->width_request ) {
-        widget->abs_area.w = widget->width_request;
-    }
-    if( widget->abs_area.h<widget->height_request ){
-        widget->abs_area.h = widget->height_request;
-    }
-    if( widget->abs_area.w<widget->rel_area.w ) {
-        widget->abs_area.w = widget->rel_area.w;
-    }
-    if( widget->abs_area.h<widget->rel_area.h ) {
-        widget->abs_area.h = widget->rel_area.h;
-    }
-    */
 }
 
 void PROT__widget_DrawBlit(   SDLGuiTK_Widget * widget )
 {
-    /*   if( widget->srf_create==1 ) { */
-
     widget->abs_area.w = widget->req_area.w;
     widget->abs_area.h = widget->req_area.h;
     widget->rel_area.w = widget->req_area.w;
@@ -411,13 +347,6 @@ void PROT__widget_DrawBlit(   SDLGuiTK_Widget * widget )
                             widget->abs_area.h );
     if(widget->srf->srf==NULL)
         SDLGUITK_ERROR("No srf created in Widget DrawBlit()\n");
-    //SDL_SetAlpha( widget->srf, SDL_RLEACCEL, 255 );
-    /*   } */
-
-    /* ACTIVABLE CODE TODO */
-    /*   if( widget->misc!=NULL ) { */
-    /*     MyWM_append_activable( widget ); */
-    /*   } */
 }
 
 void PROT__widget_reset_req_area( SDLGuiTK_Widget *widget )
@@ -451,13 +380,11 @@ void PROT__widget_destroypending()
 void SDLGuiTK_widget_set_size_request( SDLGuiTK_Widget * widget, \
                                        int width, int height )
 {
-    /*   SDL_mutexP( widget->object->mutex ); */
     widget->width_request = width;
     widget->height_request = height;
-    /*   SDL_mutexV( widget->object->mutex ); */
 
-    if( widget->top!=NULL ) {
-        PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
+    if( widget->parent && widget->parent!=widget ) {
+        PROT__signal_push( widget->parent->object, SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY );
     }
 }
 
@@ -468,7 +395,6 @@ SDLGuiTK_Widget * PROT__widget_is_entering( SDLGuiTK_Widget * widget,
     SDLGuiTK_Widget * current=NULL;
 
     if(!widget->can_focus) return NULL;
-    //printf( "Test entering (%s); %d %d  ...\n ", widget->object->name, x, y );
     if( ( x>=widget->act_area.x &&
           x<=(widget->act_area.x + widget->act_area.w) ) &&
         ( y>=widget->act_area.y &&
@@ -478,23 +404,16 @@ SDLGuiTK_Widget * PROT__widget_is_entering( SDLGuiTK_Widget * widget,
             widget->has_focus = SDL_TRUE;
             PROT__signal_push( widget->object, SDLGUITK_SIGNAL_TYPE_ENTER );
         }
-        /*       printf( "Test entering; RecursiveEntering\n " ); */
         current = (*widget->RecursiveEntering) (widget, x, y );
         if( current==NULL ) {
-            /* 	printf( "Test entering no new\n " ); */
             return widget;
         } else {
-            /* 	printf( "Test entering founded %s\n ", current->object->name ); */
             return current;
         }
     } else {
         if( widget->has_focus ) {
-            /* 	SDL_mutexP( widget->object->mutex ); */
             widget->has_focus = SDL_FALSE;
-            // TOOLTIP HERE
-            //if( widget->tooltipsdata!=NULL ) widget->tooltipsdata->updated = 0;
             PROT__signal_push( widget->object, SDLGUITK_SIGNAL_TYPE_LEAVE );
-            /* 	SDL_mutexV( widget->object->mutex ); */
         }
         return NULL;
     }

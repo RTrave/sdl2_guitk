@@ -99,9 +99,9 @@ void SDLGuiTK_adjustment_set_value(SDLGuiTK_Adjustment *adjustment,
     PROT__signal_push(adjustment->object,
                       SDLGUITK_SIGNAL_TYPE_VALUECHANGED );
     for(int i=0; i<=adjustment->parent_nb; i++){
-        if( adjustment->parent[i]!=NULL && adjustment->parent[i]->top!=NULL ) {
-            PROT__signal_push (adjustment->parent[i]->top->object,
-                           SDLGUITK_SIGNAL_TYPE_FRAMEEVENT);
+        if( adjustment->parent[i] ) {
+            PROT__signal_push ( adjustment->parent[i]->object,
+                                SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY);
         }
     }
 }

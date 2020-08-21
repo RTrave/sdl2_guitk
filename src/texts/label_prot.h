@@ -1,4 +1,4 @@
-/* 
+/*
    SDL_guitk - GUI toolkit designed for SDL environnements (GTK-style).
 
    Copyright (C) 2003 Trave Roman
@@ -15,7 +15,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
+   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 #pragma once
@@ -26,16 +26,16 @@
 
 /* SDLGuiTK_Label structure definition */
 struct SDLGuiTK_Label {
-  SDLGuiTK_Object * object;      /* referent object */
+    SDLGuiTK_Object * object;      /* referent object */
 
-  SDLGuiTK_Misc * misc;          /* herits from */
+    SDLGuiTK_Misc * misc;          /* herits from */
 
-  /* "public" data */
-  char * text;
+    /* "public" data */
+    char * text;
 
-  /* "private" data */
-  int             text_flag;
-  SDL_Rect        text_area;
-  MySDL_Surface   * srf;
+    /* "private" data */
+    int             text_flag;
+    SDL_Rect        text_area;
+    MySDL_Surface   * srf;
 };
 

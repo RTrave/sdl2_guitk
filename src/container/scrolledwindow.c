@@ -219,40 +219,6 @@ static void * ScrolledWindow_DrawBlit( SDLGuiTK_Widget * widget )
 }
 
 
-static void * ScrolledWindow_Realize( SDLGuiTK_Widget * widget, \
-                              void * data, void * event )
-{
-    //SDLGuiTK_ScrolledWindow * scrolledwindow=widget->container->bin->scrolledwindow;
-
-    /*   widget->changed = 0; */
-
-    return (void *) NULL;
-}
-
-static void * ScrolledWindow_Show( SDLGuiTK_Widget * widget, \
-                           void * data, void * event )
-{
-    //widget->shown = 1;
-    /*   widget->changed = 1; */
-    //if( widget->top!=NULL ) {
-    //    PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-    //}
-
-    return (void *) NULL;
-}
-
-static void * ScrolledWindow_Hide( SDLGuiTK_Widget * widget, \
-                           void * data, void * event )
-{
-    //widget->shown = 0;
-    /*   widget->changed = 1; */
-    //if( widget->top!=NULL ) {
-    //    PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-    //}
-
-    return (void *) NULL;
-}
-
 static SDLGuiTK_Widget * ScrolledWindow_RecursiveEntering( SDLGuiTK_Widget * widget, \
         int x, int y )
 {
@@ -291,109 +257,15 @@ static void * ScrolledWindow_Free( SDLGuiTK_Widget * widget )
     return (void *) NULL;
 }
 
-static void * ScrolledWindow_MouseEnter( SDLGuiTK_Widget * widget, \
-                                 void * data, void * event )
-{
-    //SDLGuiTK_ScrolledWindow * scrolledwindow=widget->container->bin->scrolledwindow;
-
-    //if( button->srf!=button->active_srf ) {
-        //button->srf = button->active_srf;
-        /*     if( widget->top!=NULL ) { */
-        /*       PROT__signal_push( widget->top->object,SDLGUITK_SIGNAL_TYPE_FRAMEEVENT ); */
-        /*     } */
-    //}
-    //ButtonCache( widget );
-    //widget->act_srf = button->active_srf;
-    /*   widget->top->container->bin->window->wm_widget->active_2D->texture_flag = 1; */
-
-    return (void *) NULL;
-}
-
-static void * ScrolledWindow_MouseLeave( SDLGuiTK_Widget * widget, \
-                                 void * data, void * event )
-{
-    //SDLGuiTK_ScrolledWindow * scrolledwindow=widget->container->bin->scrolledwindow;
-
-    /*   if( button->srf!=button->inactive_srf ) { */
-    /*     button->srf = button->inactive_srf; */
-
-// CODE TO AVOID NO-GL non refresh trouble.
-    /*   if( widget->top!=NULL ) { */
-    /*     PROT__signal_push( widget->top->object,SDLGUITK_SIGNAL_TYPE_FRAMEEVENT ); */
-    /*   } */
-    /*   } */
-    //widget->act_srf = NULL;
-    //widget->act_alpha = 0.5;
-    //button->active_alpha_mod = -0.01;
-    //button->pressed_flag = 0;
-
-    return (void *) NULL;
-}
-
-static void * ScrolledWindow_MousePressed( SDLGuiTK_Widget * widget, \
-                                   void * data, void * event )
-{
-    //SDLGuiTK_ScrolledWindow * scrolledwindow=widget->container->bin->scrolledwindow;
-
-    /*   SDL_mutexP( button->mutex ); */
-    /*   if( button->activate_srf!=button->button->clicked_srf ) { */
-    /*     button->activate_srf = button->button->clicked_srf; */
-    /*   } */
-    /*   SDL_mutexV( button->mutex ); */
-
-    //button->pressed_flag = 1;
-
-    return (void *) NULL;
-}
-
-static void * ScrolledWindow_MouseReleased( SDLGuiTK_Widget * widget, \
-                                    void * data, void * event )
-{
-    //SDLGuiTK_ScrolledWindow * scrolledwindow=widget->container->bin->scrolledwindow;
-    /*   SDL_mutexP( button->mutex ); */
-    /*   if( button->activate_srf==button->button->clicked_srf ) { */
-    /*     button->activate_srf = button->button->active_srf; */
-    /*   } */
-    /*   SDL_mutexV( button->mutex ); */
-
-    /*if( button->pressed_flag==1 ) {
-        button->pressed_flag = 0;
-        PROT__signal_push( widget->object, SDLGUITK_SIGNAL_TYPE_CLICKED );
-    }
-*/
-    return (void *) NULL;
-}
 
 static void ScrolledWindow_set_functions( SDLGuiTK_ScrolledWindow * scrolledwindow )
 {
-    SDLGuiTK_SignalHandler * handler;
-
     scrolledwindow->object->widget->RecursiveEntering = ScrolledWindow_RecursiveEntering;
     scrolledwindow->object->widget->RecursiveDestroy = ScrolledWindow_RecursiveDestroy;
-    //scrolledwindow->object->widget->UpdateActive = ScrolledWindow_UpdateActive;
     scrolledwindow->object->widget->Free = ScrolledWindow_Free;
 
     scrolledwindow->object->widget->DrawUpdate = ScrolledWindow_DrawUpdate;
     scrolledwindow->object->widget->DrawBlit = ScrolledWindow_DrawBlit;
-
-    handler = (SDLGuiTK_SignalHandler *) scrolledwindow->object->signalhandler;
-
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_REALIZE]->function = \
-            ScrolledWindow_Realize;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_SHOW]->function = \
-            ScrolledWindow_Show;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_HIDE]->function = \
-            ScrolledWindow_Hide;
-
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_ENTER]->function = \
-            ScrolledWindow_MouseEnter;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_LEAVE]->function = \
-            ScrolledWindow_MouseLeave;
-
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_PRESSED]->function = \
-            ScrolledWindow_MousePressed;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_RELEASED]->function = \
-            ScrolledWindow_MouseReleased;
 }
 
 SDLGuiTK_Widget * SDLGuiTK_scrolled_window_new()
@@ -401,18 +273,7 @@ SDLGuiTK_Widget * SDLGuiTK_scrolled_window_new()
     SDLGuiTK_ScrolledWindow * scrolledwindow;
 
     scrolledwindow = ScrolledWindow_create();
-    /*   strcpy( button->text, "." ); */
     ScrolledWindow_set_functions( scrolledwindow );
-    //Button_make_surface( button );
-    /*   button->srf = button->inactive_srf; */
-    /*
-    scrolledwindow->hscrollbar = SDLGuiTK_scrollbar_new (SDLGUITK_ORIENTATION_HORIZONTAL,
-                                                         NULL);
-    scrolledwindow->vscrollbar = SDLGuiTK_scrollbar_new (SDLGUITK_ORIENTATION_VERTICAL,
-                                                         NULL);
-    SDLGuiTK_widget_show (scrolledwindow->hscrollbar);
-    SDLGuiTK_widget_show (scrolledwindow->vscrollbar);
-    */
     PROT__signal_push( scrolledwindow->object, SDLGUITK_SIGNAL_TYPE_REALIZE );
 
     return scrolledwindow->object->widget;
@@ -433,8 +294,6 @@ SDLGuiTK_Widget * PROT__scrolledwindow_add(SDLGuiTK_ScrolledWindow *scrolledwind
         SDLGuiTK_widget_show( viewport );
         SDLGuiTK_container_add(SDLGuiTK_CONTAINER(viewport), widget );
     }
-    //viewport = SDLGuiTK_viewport_new(NULL, NULL);
-    //SDLGuiTK_container_add( SDLGuiTK_CONTAINER(win_widget), viewport );
     scrolledwindow->hscrollbar = SDLGuiTK_scrollbar_new (SDLGUITK_ORIENTATION_HORIZONTAL,
                                                          SDLGuiTK_viewport_get_hadjustment(SDLGuiTK_VIEWPORT(viewport)));
     scrolledwindow->vscrollbar = SDLGuiTK_scrollbar_new (SDLGUITK_ORIENTATION_VERTICAL,
@@ -442,9 +301,6 @@ SDLGuiTK_Widget * PROT__scrolledwindow_add(SDLGuiTK_ScrolledWindow *scrolledwind
     SDLGuiTK_widget_show (scrolledwindow->hscrollbar);
     SDLGuiTK_widget_show (scrolledwindow->vscrollbar);
 
-    //image = SDLGuiTK_image_new_from_file( "test.bmp" );
-    //SDLGuiTK_container_add(SDLGuiTK_CONTAINER(viewport), widget );
-    //SDLGuiTK_widget_show( image );
     return viewport;
 }
 

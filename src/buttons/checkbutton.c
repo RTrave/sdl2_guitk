@@ -140,8 +140,8 @@ void PROT__checkbutton_DrawBlit(SDLGuiTK_CheckButton * checkbutton)
 {
     SDLGuiTK_Widget * widget = checkbutton->object->widget;
     SDLGuiTK_Button * button=checkbutton->togglebutton->button;
-    Uint32 bgcolor;
-    SDLGuiTK_Theme * theme;
+    //Uint32 bgcolor;
+    //SDLGuiTK_Theme * theme;
 
     if(checkbutton->radiobutton) {
         PROT__radiobutton_DrawBlit (checkbutton->radiobutton);
@@ -151,7 +151,7 @@ void PROT__checkbutton_DrawBlit(SDLGuiTK_CheckButton * checkbutton)
     button->text_area.y = 0;
     button->text_area.w = widget->abs_area.w;
     button->text_area.h = widget->abs_area.h;
-
+/*
     theme = PROT__theme_get_and_lock();
     bgcolor = SDL_MapRGBA( widget->srf->srf->format, \
                            theme->bdcolor.r, \
@@ -159,7 +159,7 @@ void PROT__checkbutton_DrawBlit(SDLGuiTK_CheckButton * checkbutton)
                            theme->bdcolor.b, \
                            150 );
     PROT__theme_unlock( theme );
-
+*/
     checkbutton->indicator_area.x = 0;
     checkbutton->indicator_area.y = 0;
     checkbutton->indicator_area.w = 28;
@@ -192,11 +192,7 @@ void PROT__checkbutton_destroy(SDLGuiTK_CheckButton * checkbutton)
 
 static void CheckButton_set_functions( SDLGuiTK_CheckButton * button )
 {
-    //SDLGuiTK_SignalHandler * handler;
-    //handler = (SDLGuiTK_SignalHandler *) button->object->signalhandler;
 
-    //handler->fdefault[SDLGUITK_SIGNAL_TYPE_TOGGLED]->function =
-    //        ToggleButton_Toggled;
 }
 
 
@@ -206,6 +202,7 @@ SDLGuiTK_Widget * SDLGuiTK_check_button_new()
 
     checkbutton = CheckButton_create ();
     CheckButton_set_functions( checkbutton );
+    PROT__signal_push( checkbutton->object, SDLGUITK_SIGNAL_TYPE_REALIZE );
 
     return checkbutton->object->widget;
 }

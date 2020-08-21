@@ -90,8 +90,8 @@ static SDLGuiTK_Window * Window_create()
     new_window->object = new_window->bin->object;
     new_window->bin->window = new_window;
     sprintf( new_window->object->name, "window%d", ++current_id );
-    new_window->object->widget->top = NULL;
-    new_window->object->widget->parent = NULL;
+    new_window->object->widget->top = new_window->object->widget;
+    new_window->object->widget->parent = new_window->object->widget;
 
     new_window->position = SDLGUITK_WINDOW_CENTER;
 
@@ -299,147 +299,91 @@ static void * Window_Free( SDLGuiTK_Widget * widget )
 
 
 
-static void * Window_Realize( SDLGuiTK_Widget * widget, \
-                              void * data, void * event )
+static void * Window_Realize( SDLGuiTK_Signal * signal, void * data )
 {
-    Window_UpdatePosition( widget->container->bin->window );
-    Window_DrawUpdate( widget );
-    Window_DrawBlit( widget );
-
     return (void *) NULL;
 }
 
-static void * Window_Destroy( SDLGuiTK_Widget * widget, \
-                              void * data, void * event )
+static void * Window_Map( SDLGuiTK_Signal * signal, void * data )
 {
-    /*   SDLGuiTK_Window * window=widget->container->bin->window; */
-
-    /*   SDL_mutexV( widget->object->mutex ); */
-    /*   PROT__context_unref_wmwidget( window->wm_widget ); */
-    /*   SDL_mutexP( widget->object->mutex ); */
-    //widget->visible = SDL_FALSE;
-
+    SDLGuiTK_Window * window=signal->object->widget->container->bin->window;
+    Window_UpdatePosition( window );
+    Window_DrawUpdate( signal->object->widget );
+    Window_DrawBlit( signal->object->widget );
     return (void *) NULL;
 }
 
-static void * Window_Show( SDLGuiTK_Widget * widget, \
-                           void * data, void * event )
+static void * Window_Show( SDLGuiTK_Signal * signal, void * data )
 {
-    SDLGuiTK_Window * window=widget->container->bin->window;
-
-    //if( widget->visible ) return (void *) NULL;
-    //widget->visible = SDL_TRUE;
+    SDLGuiTK_Window * window=signal->object->widget->container->bin->window;
     Window_UpdatePosition( window );
     PROT__context_ref_wmwidget( window->wm_widget );
-
     return (void *) NULL;
 }
 
-static void * Window_Hide( SDLGuiTK_Widget * widget, \
-                           void * data, void * event )
+static void * Window_Hide( SDLGuiTK_Signal * signal, void * data )
 {
-    SDLGuiTK_Window * window=widget->container->bin->window;
-
-    //if( !widget->visible ) return (void *) NULL;
+    SDLGuiTK_Window * window=signal->object->widget->container->bin->window;
     PROT__context_unref_wmwidget( window->wm_widget );
-    //widget->visible = SDL_FALSE;
+    return (void *) NULL;
+}
+
+static void * Window_ChildNotify( SDLGuiTK_Signal * signal, void * data )
+{
+    Window_DrawUpdate( signal->object->widget );
+    Window_DrawBlit( signal->object->widget );
+    PROT_MyWM_checkactive( signal->object->widget ); //TODO: is coherent here ?
 
     return (void *) NULL;
 }
 
-static void * Window_FrameEvent( SDLGuiTK_Widget * widget, \
-                                 void * data, void * event )
+static void * Window_MouseEnter( SDLGuiTK_Signal * signal, void * data )
 {
-    Window_DrawUpdate( widget );
-    Window_DrawBlit( widget );
-    PROT_MyWM_checkactive( widget ); //TODO: is coherent here ?
-
-    return (void *) NULL;
-}
-
-static void * Window_MouseEnter( SDLGuiTK_Widget * widget, \
-                                 void * data, void * event )
-{
-    /*   widget->WM_srf = widget->container->bin->window->active_srf; */
-    /*   if( widget->absolute_srf!=widget->container->bin->window->active_srf ) { */
-    /*     widget->absolute_srf = widget->container->bin->window->active_srf; */
-    /*   } */
-    /*   PROT__box_activate( window->window->main_box->box ); */
     MyCursor_Set( SDLGUITK_CURSOR_DEFAULT );
-
     return (void *) NULL;
 }
 
-static void * Window_MouseLeave( SDLGuiTK_Widget * widget, \
-                                 void * data, void * event )
+static void * Window_MouseLeave( SDLGuiTK_Signal * signal, void * data )
 {
-    /*   widget->WM_srf = widget->container->bin->window->shaded_srf; */
-    /*   if( widget->absolute_srf!=widget->container->bin->window->shaded_srf ) { */
-    /*     widget->absolute_srf = widget->container->bin->window->shaded_srf; */
-    /*   } */
-    /*   PROT__box_update_relwin( window->window->main_box->box ); */
-    /*   Intern__SDLGuiTK_events_unref_widgets(); */
     MyCursor_Unset();
-
     return (void *) NULL;
 }
 
-
-
-/* static void * Window_MousePressed( SDLGuiTK_Widget * window, \ */
-/* 				   void * data ) */
-/* { */
-/*   int x, y; */
-/*   if( SDL_GetMouseState( &x, &y) ) { */
-/*     printf( "Mouse pressed in: x=%d y=%d\n", x, y ); */
-/*     window->moving = 1; */
-/*   } */
-
-/*   return (void *) NULL; */
-/* } */
-
-static void * Window_MouseReleased( SDLGuiTK_Widget * window, \
-                                    void * data, void * event )
+static void * Window_MouseReleased( SDLGuiTK_Signal * signal, void * data )
 {
-    /*   int x, y; */
-
-    /*   if( SDL_GetMouseState( &x, &y) ) { */
-    /*     printf( "Mouse released in: x=%d y=%d\n", x, y ); */
-    /*   } */
-    /*   printf( "Mouse released in: x=%d y=%d\n", x, y ); */
-    /*   PROT__box_update_relwin( window->window->main_box->box ); */
-    Window_DrawUpdate( window );
-    Window_DrawBlit( window );
-
+    //SDLGuiTK_Window * window=signal->object->widget->container->bin->window;
+    Window_DrawUpdate( signal->object->widget );
+    Window_DrawBlit( signal->object->widget );
     return (void *) NULL;
 }
 
 
 static void Window_setsignals( SDLGuiTK_Window * window )
 {
-    SDLGuiTK_SignalHandler * handler;
+    PROT_signal_connect(window->object, SDLGUITK_SIGNAL_TYPE_REALIZE,
+                        Window_Realize, SDLGUITK_SIGNAL_LEVEL2);
 
-    handler = (SDLGuiTK_SignalHandler *) window->object->signalhandler;
+    PROT_signal_connect(window->object, SDLGUITK_SIGNAL_TYPE_MAP,
+                        Window_Map, SDLGUITK_SIGNAL_LEVEL2);
 
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_REALIZE]->function = \
-            Window_Realize;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_DESTROY]->function = \
-            Window_Destroy;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_SHOW]->function = \
-            Window_Show;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_HIDE]->function = \
-            Window_Hide;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_FRAMEEVENT]->function = \
-            Window_FrameEvent;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_ENTER]->function = \
-            Window_MouseEnter;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_LEAVE]->function = \
-            Window_MouseLeave;
+    PROT_signal_connect(window->object, SDLGUITK_SIGNAL_TYPE_SHOW,
+                        Window_Show, SDLGUITK_SIGNAL_LEVEL2);
 
-    /*   handler->fdefault[SDLGUITK_SIGNAL_TYPE_PRESSED]->function = \ */
-    /*     Window_MousePressed; */
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_RELEASED]->function = \
-            Window_MouseReleased;
+    PROT_signal_connect(window->object, SDLGUITK_SIGNAL_TYPE_HIDE,
+                        Window_Hide, SDLGUITK_SIGNAL_LEVEL2);
+
+    PROT_signal_connect(window->object, SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY,
+                        Window_ChildNotify, SDLGUITK_SIGNAL_LEVEL2);
+
+    PROT_signal_connect(window->object, SDLGUITK_SIGNAL_TYPE_ENTER,
+                        Window_MouseEnter, SDLGUITK_SIGNAL_LEVEL2);
+
+    PROT_signal_connect(window->object, SDLGUITK_SIGNAL_TYPE_LEAVE,
+                        Window_MouseLeave, SDLGUITK_SIGNAL_LEVEL2);
+
+    PROT_signal_connect(window->object, SDLGUITK_SIGNAL_TYPE_RELEASED,
+                        Window_MouseReleased, SDLGUITK_SIGNAL_LEVEL2);
+
 }
 
 SDLGuiTK_Widget * SDLGuiTK_window_new()
@@ -470,7 +414,7 @@ void SDLGuiTK_window_set_title( SDLGuiTK_Widget * window,\
                                 const char *title )
 {
     WMWidget_set_title (window->container->bin->window->wm_widget, title);
-    PROT__signal_push( window->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
+    PROT__signal_push( window->object, SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY );
 }
 
 void SDLGuiTK_window_set_position( SDLGuiTK_Widget * window, \
@@ -478,6 +422,6 @@ void SDLGuiTK_window_set_position( SDLGuiTK_Widget * window, \
                                    void *data )
 {
     window->container->bin->window->position = position;
-    PROT__signal_push( window->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
+    PROT__signal_push( window->object, SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY );
 }
 

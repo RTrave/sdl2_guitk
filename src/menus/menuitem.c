@@ -224,50 +224,6 @@ static void * MenuItem_RecursiveDestroy( SDLGuiTK_Widget * widget )
     return (void *) NULL;
 }
 
-
-static void * MenuItem_Realize( SDLGuiTK_Widget * widget, \
-                                void * data, void * event )
-{
-    return (void *) NULL;
-}
-
-static void * MenuItem_Show( SDLGuiTK_Widget * widget, \
-                             void * data, void * event )
-{
-
-    return (void *) NULL;
-}
-
-static void * MenuItem_Hide( SDLGuiTK_Widget * widget, \
-                             void * data, void * event )
-{
-
-    return (void *) NULL;
-}
-
-static void * MenuItem_MouseEnter( SDLGuiTK_Widget * widget, \
-                                   void * data, void * event )
-{
-    SDLGuiTK_MenuItem * menuitem=widget->container->bin->menuitem;
-
-    Make_activesrf( widget );
-    widget->act_srf = menuitem->active_srf;
-    widget->act_alpha = 0.5;
-    menuitem->active_flag = 1;
-    return (void *) NULL;
-}
-
-static void * MenuItem_MouseLeave( SDLGuiTK_Widget * widget, \
-                                   void * data, void * event )
-{
-    SDLGuiTK_MenuItem * menuitem=widget->container->bin->menuitem;
-    MySDL_FreeSurface( widget->act_srf );
-    widget->act_srf = NULL;
-    widget->act_alpha = 0.5;
-    menuitem->active_alpha_mod = -0.01;
-    return (void *) NULL;
-}
-
 static int MenuItem_UpdateActive( SDLGuiTK_Widget * widget)
 {
     SDLGuiTK_MenuItem * menuitem=widget->container->bin->menuitem;
@@ -285,14 +241,36 @@ static int MenuItem_UpdateActive( SDLGuiTK_Widget * widget)
     return 0;
 }
 
-static void * MenuItem_MousePressed( SDLGuiTK_Widget * widget, \
-                                     void * data, void * event )
+
+static void * MenuItem_MouseEnter( SDLGuiTK_Signal * signal, void * data )
 {
-    SDLGuiTK_MenuItem * menuitem=widget->container->bin->menuitem;
+    SDLGuiTK_MenuItem * menuitem=signal->object->widget->container->bin->menuitem;
+
+    Make_activesrf( signal->object->widget );
+    signal->object->widget->act_srf = menuitem->active_srf;
+    signal->object->widget->act_alpha = 0.5;
+    menuitem->active_flag = 1;
+    return (void *) NULL;
+}
+
+static void * MenuItem_MouseLeave( SDLGuiTK_Signal * signal, void * data )
+{
+    SDLGuiTK_MenuItem * menuitem=signal->object->widget->container->bin->menuitem;
+    MySDL_FreeSurface( signal->object->widget->act_srf );
+    signal->object->widget->act_srf = NULL;
+    signal->object->widget->act_alpha = 0.5;
+    menuitem->active_alpha_mod = -0.01;
+    return (void *) NULL;
+}
+
+static void * MenuItem_MousePressed( SDLGuiTK_Signal * signal, void * data )
+{
+    SDLGuiTK_MenuItem * menuitem=signal->object->widget->container->bin->menuitem;
     SDLGuiTK_Menu * menu=menuitem->menu;
 
     menu->selected = menuitem;
-    PROT__signal_push( menu->menushell->widget->object, SDLGUITK_SIGNAL_TYPE_SELECTIONDONE );
+    PROT__signal_push( menu->menushell->widget->object,
+                       SDLGUITK_SIGNAL_TYPE_SELECTIONDONE );
 
     return (void *) NULL;
 }
@@ -301,10 +279,6 @@ static void * MenuItem_MousePressed( SDLGuiTK_Widget * widget, \
 
 static void MenuItem_Init_functions( SDLGuiTK_MenuItem * menuitem )
 {
-    SDLGuiTK_SignalHandler * handler;
-
-    handler = (SDLGuiTK_SignalHandler *) menuitem->object->signalhandler;
-
     menuitem->object->widget->RecursiveEntering = MenuItem_RecursiveEntering;
     menuitem->object->widget->RecursiveDestroy = MenuItem_RecursiveDestroy;
     menuitem->object->widget->Free = MenuItem_Free;
@@ -313,19 +287,14 @@ static void MenuItem_Init_functions( SDLGuiTK_MenuItem * menuitem )
     menuitem->object->widget->DrawBlit = MenuItem_DrawBlit;
     menuitem->object->widget->UpdateActive = MenuItem_UpdateActive;
 
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_REALIZE]->function = \
-            MenuItem_Realize;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_SHOW]->function = \
-            MenuItem_Show;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_HIDE]->function = \
-            MenuItem_Hide;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_ENTER]->function = \
-            MenuItem_MouseEnter;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_LEAVE]->function = \
-            MenuItem_MouseLeave;
+    PROT_signal_connect(menuitem->object, SDLGUITK_SIGNAL_TYPE_ENTER,
+                        MenuItem_MouseEnter, SDLGUITK_SIGNAL_LEVEL2);
 
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_PRESSED]->function = \
-            MenuItem_MousePressed;
+    PROT_signal_connect(menuitem->object, SDLGUITK_SIGNAL_TYPE_LEAVE,
+                        MenuItem_MouseLeave, SDLGUITK_SIGNAL_LEVEL2);
+
+    PROT_signal_connect(menuitem->object, SDLGUITK_SIGNAL_TYPE_PRESSED,
+                        MenuItem_MousePressed, SDLGUITK_SIGNAL_LEVEL2);
 }
 
 SDLGuiTK_Widget *SDLGuiTK_menuitem_new() {
@@ -355,6 +324,9 @@ SDLGuiTK_Widget *SDLGuiTK_menuitem_new_with_label( char *label ) {
 void SDLGuiTK_menuitem_select( SDLGuiTK_MenuItem *menu_item ) {
     SDLGuiTK_Menu * menu=menu_item->menu;
     menu->selected = menu_item;
-    PROT__signal_push( menu->container->widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
+    if( menu_item->menu ) {
+        PROT__signal_push( menu_item->menu->object,
+                           SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY );
+    }
 }
 

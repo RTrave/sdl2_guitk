@@ -217,31 +217,9 @@ static void * Menu_Free( SDLGuiTK_Widget * widget )
     return (void *) NULL;
 }
 
-static void * Menu_Realize( SDLGuiTK_Widget * widget, \
-                            void * data, void * event )
+static void * Menu_MousePressed( SDLGuiTK_Signal * signal, void * data )
 {
-    return (void *) NULL;
-}
-
-static void * Menu_Show( SDLGuiTK_Widget * widget, \
-                         void * data, void * event )
-{
-
-    return (void *) NULL;
-}
-
-static void * Menu_Hide( SDLGuiTK_Widget * widget, \
-                         void * data, void * event )
-{
-
-    return (void *) NULL;
-}
-
-
-static void * Menu_MousePressed( SDLGuiTK_Widget * widget, \
-                                 void * data, void * event )
-{
-    SDLGuiTK_Menu * menu=widget->container->menu;
+    SDLGuiTK_Menu * menu=signal->object->widget->container->menu;
     PROT__menushell_start( menu );
 
     return (void *) NULL;
@@ -249,10 +227,6 @@ static void * Menu_MousePressed( SDLGuiTK_Widget * widget, \
 
 static void Menu_Init_functions( SDLGuiTK_Menu * menu )
 {
-    SDLGuiTK_SignalHandler * handler;
-
-    handler = (SDLGuiTK_SignalHandler *) menu->object->signalhandler;
-
     menu->object->widget->RecursiveEntering = Menu_RecursiveEntering;
     menu->object->widget->RecursiveDestroy = Menu_RecursiveDestroy;
     menu->object->widget->Free = Menu_Free;
@@ -260,15 +234,8 @@ static void Menu_Init_functions( SDLGuiTK_Menu * menu )
     menu->object->widget->DrawUpdate = Menu_DrawUpdate;
     menu->object->widget->DrawBlit = Menu_DrawBlit;
 
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_REALIZE]->function = \
-            Menu_Realize;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_SHOW]->function = \
-            Menu_Show;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_HIDE]->function = \
-            Menu_Hide;
-
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_PRESSED]->function = \
-            Menu_MousePressed;
+    PROT_signal_connect(menu->object, SDLGUITK_SIGNAL_TYPE_PRESSED,
+                        Menu_MousePressed, SDLGUITK_SIGNAL_LEVEL2);
 }
 
 

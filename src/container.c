@@ -156,7 +156,6 @@ void PROT__container_destroy( SDLGuiTK_Container * container )
 
 void PROT__container_set_top( SDLGuiTK_Container *container, SDLGuiTK_Widget *top)
 {
-    SDLGuiTK_Widget * child;
     if(container->bin)
         PROT__bin_set_top (container->bin, top);
     else if(container->box)
@@ -246,8 +245,8 @@ void SDLGuiTK_container_set_border_width( SDLGuiTK_Container * container,\
 {
     container->border_width = border_width;
 
-    if( container->widget->top )
-        PROT__signal_push( container->widget->top->object, \
-                           SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
+    if( container->widget->parent )
+        PROT__signal_push( container->widget->parent->object, \
+                           SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY );
 }
 

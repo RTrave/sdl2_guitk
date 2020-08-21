@@ -99,7 +99,7 @@ static void * Box_DrawUpdate( SDLGuiTK_Widget * widget )
 {
     SDLGuiTK_Box * box=widget->container->box;
     BoxChild * current_child;
-    SDLGuiTK_Widget * current;
+    //SDLGuiTK_Widget * current;
 
     /* INIT BOX VALUES */
     box->shown_nb = 0;
@@ -121,7 +121,7 @@ static void * Box_DrawUpdate( SDLGuiTK_Widget * widget )
 
     current_child = (BoxChild *) SDLGuiTK_list_ref_init( box->children );
     while( current_child ) {
-        current = current_child->child;
+        //current = current_child->child;
 
         /* UPDATE CHILD ASCENDENTS */
         //current->top = widget->top;
@@ -371,57 +371,15 @@ static void * Box_Free( SDLGuiTK_Widget * widget )
     return (void *) NULL;
 }
 
-static void * Box_Realize( SDLGuiTK_Widget * widget, \
-                           void * data, void * event )
-{
-    return (void *) NULL;
-}
-
-static void * Box_Show( SDLGuiTK_Widget * widget, \
-                        void * data, void * event )
-{
-/*
-    widget->shown = 1;
-    if( widget->top!=NULL ) {
-        PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-    }
-*/
-    return (void *) NULL;
-}
-
-static void * Box_Hide( SDLGuiTK_Widget * widget, \
-                        void * data, void * event )
-{
-/*
-    widget->shown = 0;
-    if( widget->top!=NULL ) {
-        PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-    }
-*/
-    return (void *) NULL;
-}
-
-
 
 static void Box_Init_functions( SDLGuiTK_Box * box )
 {
-    SDLGuiTK_SignalHandler * handler;
-
-    handler = (SDLGuiTK_SignalHandler *) box->object->signalhandler;
-
     box->object->widget->RecursiveEntering = Box_RecursiveEntering;
     box->object->widget->RecursiveDestroy = Box_RecursiveDestroy;
     box->object->widget->Free = Box_Free;
 
     box->object->widget->DrawUpdate = Box_DrawUpdate;
     box->object->widget->DrawBlit = Box_DrawBlit;
-
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_REALIZE]->function = \
-            Box_Realize;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_SHOW]->function = \
-            Box_Show;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_HIDE]->function = \
-            Box_Hide;
 }
 
 
@@ -467,9 +425,7 @@ void SDLGuiTK_box_pack_start( SDLGuiTK_Box * box, \
     widget->parent = box->object->widget;
     PROT__widget_set_top (widget, box->object->widget->top);
 
-    //SDLGuiTK_list_lock( box->children );
     SDLGuiTK_list_append( box->children, (SDLGuiTK_Object *) child );
-    //SDLGuiTK_list_unlock( box->children );
 }
 
 
@@ -477,6 +433,10 @@ void SDLGuiTK_box_pack_start( SDLGuiTK_Box * box, \
 void SDLGuiTK_box_set_spacing( SDLGuiTK_Box * box, int spacing )
 {
     box->spacing = spacing;
+    if( box->object->widget->parent ) {
+        PROT__signal_push( box->object->widget->parent->object,
+                           SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY );
+    }
 }
 
 
@@ -493,6 +453,10 @@ int  SDLGuiTK_box_get_spacing( SDLGuiTK_Box * box )
 void SDLGuiTK_box_set_homogeneous( SDLGuiTK_Box * box, SDL_bool homogeneous )
 {
     box->homogeneous = homogeneous;
+    if( box->object->widget->parent ) {
+        PROT__signal_push( box->object->widget->parent->object,
+                           SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY );
+    }
 }
 
 SDL_bool  SDLGuiTK_box_get_homogeneous( SDLGuiTK_Box * box )
@@ -519,7 +483,11 @@ void PROT__box_remove( SDLGuiTK_Box * this_box, \
     SDLGUITK_LOG( tmplog );
 #endif
 
-    if( (child=BoxChild_remove(this_box,widget))!=NULL ) {
+    if( (child=(BoxChild *) SDLGuiTK_list_remove(this_box->children,(SDLGuiTK_Object *)widget)) ) {
+        if( this_box->object->widget->parent ) {
+            PROT__signal_push( this_box->object->widget->parent->object,
+                               SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY );
+        }
         widget->parent = NULL;
         PROT__widget_set_top (widget, NULL);
         BoxChild_destroy( child );

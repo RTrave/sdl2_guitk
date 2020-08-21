@@ -86,15 +86,12 @@ static SDLGuiTK_Bin * Bin_create()
     new_bin->margin_left = 0;
     new_bin->margin_right = 0;
 
-    //new_bin->srf = MySDL_Surface_new ("Bin_srf");
-
     return new_bin;
 }
 
 static void Bin_destroy( SDLGuiTK_Bin * bin )
 {
     PROT__container_destroy( bin->container );
-    //MySDL_Surface_free( bin->srf );
     free( bin );
 }
 
@@ -115,7 +112,6 @@ void PROT__bin_destroy( SDLGuiTK_Bin * bin )
 
 void PROT__bin_set_top( SDLGuiTK_Bin *bin, SDLGuiTK_Widget *top)
 {
-    //if(bin->viewport) return;
     if(bin->child)
         PROT__widget_set_top(bin->child, top);
 }
@@ -148,9 +144,9 @@ void PROT__bin_add( SDLGuiTK_Bin * bin, SDLGuiTK_Widget * widget )
     SDLGUITK_LOG( tmpstr );
 #endif
 
-    if(bin->object->widget->top)
-        PROT__signal_push( bin->object->widget->top->object,
-                           SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
+    if(bin->object->widget->parent)
+        PROT__signal_push( bin->object->widget->parent->object,
+                           SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY );
 }
 
 void PROT__bin_remove( SDLGuiTK_Bin * bin, SDLGuiTK_Widget * widget )
@@ -166,15 +162,14 @@ void PROT__bin_remove( SDLGuiTK_Bin * bin, SDLGuiTK_Widget * widget )
         return;
     }
 
+    if( bin->object->widget->parent ) {
+        PROT__signal_push( bin->object->widget->parent->object, \
+                           SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY );
+    }
     bin->child = NULL;
     widget->parent = NULL;
     PROT__widget_set_top (widget, NULL);
-    /*   widget->top = NULL; */
 
-    if( bin->object->widget->top ) {
-        PROT__signal_push( bin->object->widget->top->object, \
-                           SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-    }
 }
 
 
@@ -188,54 +183,19 @@ void PROT__bin_DrawUpdate( SDLGuiTK_Bin * bin )
         PROT__container_DrawUpdate( bin->container );
         return;
     }
-    //if(bin->child!=NULL) {
 
-        /* UPDATE CHILD ASCENDENTS */
-        //bin->child->parent = widget;
-        //if( widget->top!=NULL ) {
-        //    bin->child->top = widget->top;
-        //} else {
-        //    bin->child->top = widget;
-        //}
+    (*bin->child->DrawUpdate)( bin->child );
+    bin->container->children_area.w = bin->child->req_area.w;
+    bin->container->children_area.h = bin->child->req_area.h;
 
-        /* IF CHILD SHOWN */
-        //if( bin->child->shown==1 ) {
-            (*bin->child->DrawUpdate)( bin->child );
-            bin->container->children_area.w = bin->child->req_area.w;
-            bin->container->children_area.h = bin->child->req_area.h;
-        /* } else { */
-        /*     bin->container->children_area.w = 0; */
-        /*     bin->container->children_area.h = 0; */
-        /* } */
 #if DEBUG_LEVEL >= 3
     /* printf("*** %s PROT__bin_DrawUpdate\n", widget->object->name); */
     /* printf("*** bin children_area1 w:%d h:%d\n", bin->container->children_area.w, bin->container->children_area.h); */
 #endif
 
-        /* ... IF NO CHILD */
-    /* } else { */
-
-    /*     bin->container->children_area.w = 0; */
-    /*     bin->container->children_area.h = 0; */
-
-    /* } */
-
     PROT__container_DrawUpdate( bin->container );
 
     widget->req_area.w += ( bin->margin_left + bin->margin_right );
-    /* Bin forces child to fit its size */
-    //if(bin->child!=NULL) {
-#if DEBUG_LEVEL >= 3
-    /* printf("*** bin children_area2 w:%d h:%d\n", bin->container->children_area.w, bin->container->children_area.h); */
-#endif
-
-/* PROT__widget_set_req_area(bin->child, */
-/*                               bin->container->children_area.w, */
-/*                               bin->container->children_area.h); */
-
-        //bin->child->req_area.w = bin->container->children_area.w;
-        //bin->child->req_area.h = bin->container->children_area.h;
-    //}
 }
 
 void PROT__bin_DrawBlit(   SDLGuiTK_Bin * bin )
@@ -248,17 +208,6 @@ void PROT__bin_DrawBlit(   SDLGuiTK_Bin * bin )
         return;
     }
 
-    /* Bin forces child to fit its size */
-    //if(bin->child!=NULL) {
-    /* PROT__widget_set_req_area(bin->child, */
-    /*                           bin->container->children_area.w, */
-    /*                           bin->container->children_area.h); */
-        //bin->child->req_area.w = bin->container->children_area.w;
-        //bin->child->req_area.h = bin->container->children_area.h;
-    //}
-
-    // Ajust widget with margin size
-    //widget->req_area.w += ( bin->margin_left + bin->margin_right );
     PROT__container_DrawBlit( bin->container );
 
     /* CHILD POSITION SUGGESTION  */
@@ -272,13 +221,6 @@ void PROT__bin_DrawBlit(   SDLGuiTK_Bin * bin )
     bin->child->rel_area.y =
         bin->container->children_area.y;
 
-    /* CHILD SIZE SUGGESTION  */
-    //if( bin->child->shown==1 /* && bin->child->hided_parent==0 */ ) {
-        // TODO: retired suggestion, handled by Bin heriteds
-        //bin->child->abs_area.w = bin->container->children_area.w;
-        //bin->child->abs_area.h = bin->container->children_area.h;
-        //bin->child->req_area.w = bin->container->children_area.w;
-        //bin->child->req_area.h = bin->container->children_area.h;
     PROT__widget_set_req_area(
         bin->child,
         bin->container->children_area.w - ( bin->margin_left + bin->margin_right ),
@@ -288,20 +230,10 @@ void PROT__bin_DrawBlit(   SDLGuiTK_Bin * bin )
     /* printf("*** bin req_area w:%d h:%d\n", widget->req_area.w, widget->req_area.h); */
     /* printf("*** bin abs_area w:%d h:%d\n", widget->abs_area.w, widget->abs_area.h); */
 #endif
-        (*bin->child->DrawBlit)( bin->child );
-        /*     SDL_BlitSurface( bin->child->srf, NULL, \ */
-        /* 		     widget->srf, &bin->child->rel_area ); */
-        /*     SDL_UpdateRects( widget->srf, 1, &bin->child->rel_area ); */
+    (*bin->child->DrawBlit)( bin->child );
 
-        // then add margin_right if needed
-        bin->container->children_area.w += bin->margin_right;
-    //} else {
-    //    bin->child->abs_area.w = 0;
-    //    bin->child->abs_area.h = 0;
-    //}
-
-    /*   SDL_mutexV( bin->child->object->mutex ); */
-
+    // then add margin_right if needed
+    bin->container->children_area.w += bin->margin_right;
 }
 
 

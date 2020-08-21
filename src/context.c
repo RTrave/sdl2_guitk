@@ -413,12 +413,10 @@ int  SDLGuiTK_pushevent( SDL_Event *event )
             SDL_mutexV( current_context->mutex );
             return flag;
         case SDL_KEYDOWN:
-            printf("TEST1\n");
             flag = MyWM_push_KEYDOWN( event );
             SDL_mutexV( current_context->mutex );
             return flag;
         case SDL_TEXTINPUT:
-            printf("TEST2\n");
             flag = MyWM_push_TEXTINPUT( event );
             SDL_mutexV( current_context->mutex );
             return flag;

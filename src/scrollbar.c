@@ -190,97 +190,6 @@ static void * Scrollbar_DrawBlit( SDLGuiTK_Widget * widget )
     return (void *) NULL;
 }
 
-
-static void * Scrollbar_Realize( SDLGuiTK_Widget * widget, \
-                                 void * data, void * event )
-{
-
-    return (void *) NULL;
-}
-
-static void * Scrollbar_Show( SDLGuiTK_Widget * widget, \
-                              void * data, void * event )
-{
-/*
-    widget->shown = 1;
-    if( widget->top!=NULL ) {
-        PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-    }
-*/
-    return (void *) NULL;
-}
-
-static void * Scrollbar_Hide( SDLGuiTK_Widget * widget, \
-                              void * data, void * event )
-{
-/*
-    widget->shown = 0;
-    if( widget->top!=NULL ) {
-        PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-    }
-*/
-    return (void *) NULL;
-}
-
-static void * Scrollbar_MouseEnter(SDLGuiTK_Widget * widget, \
-                                   void * data, void * event )
-{
-    if(widget->has_tooltip)
-        PROT__context_ref_tooltip (widget);
-
-    widget->scrollbar->mousein = 1;
-
-    return NULL;
-}
-
-static void * Scrollbar_MouseLeave(SDLGuiTK_Widget * widget,
-                                   void * data, void * event )
-{
-    if(widget->has_tooltip)
-        PROT__context_unref_tooltip ();
-
-    widget->scrollbar->mousein = 0;
-    widget->scrollbar->buttonOn = 0;
-
-    return NULL;
-}
-
-static void * Scrollbar_MousePressed(SDLGuiTK_Widget * widget, \
-                                     void * data, void * event )
-{
-    SDLGuiTK_Scrollbar * scrollbar = widget->scrollbar;
-    int x, y;
-    SDL_GetMouseState (&x, &y);
-    //printf("TEST mouse: %d/%d\n", x, y);
-    if(x>=scrollbar->button_act_area.x &&
-       x<(scrollbar->button_act_area.x+scrollbar->button_act_area.w) &&
-       y>=scrollbar->button_act_area.y &&
-       y<(scrollbar->button_act_area.y+scrollbar->button_act_area.h)) {
-           printf("OK SBButton pressed\n");
-           scrollbar->buttonOn = 1;
-           scrollbar->mbutton_x = x;
-           scrollbar->mbutton_y = y;
-       }
-
-    return NULL;
-}
-
-static void * Scrollbar_MouseReleased(SDLGuiTK_Widget * widget,
-                                      void * data, void * event )
-{
-    SDLGuiTK_Scrollbar * scrollbar = widget->scrollbar;
-    scrollbar->buttonOn = 0;
-
-    return NULL;
-}
-
-static void * Scrollbar_MouseClicked(SDLGuiTK_Widget * widget,
-                                      void * data, void * event )
-{
-    return NULL;
-}
-
-
 static SDLGuiTK_Widget * Scrollbar_RecursiveEntering( SDLGuiTK_Widget * widget, \
                                                   int x, int y )
 {
@@ -335,12 +244,52 @@ static void * Scrollbar_Free( SDLGuiTK_Widget * widget )
     return (void *) NULL;
 }
 
+
+static void * Scrollbar_MouseEnter(SDLGuiTK_Signal * signal, void * data )
+{
+    signal->object->widget->scrollbar->mousein = 1;
+
+    return NULL;
+}
+
+static void * Scrollbar_MouseLeave(SDLGuiTK_Signal * signal, void * data )
+{
+    signal->object->widget->scrollbar->mousein = 0;
+    signal->object->widget->scrollbar->buttonOn = 0;
+
+    return NULL;
+}
+
+static void * Scrollbar_MousePressed(SDLGuiTK_Signal * signal, void * data )
+{
+    SDLGuiTK_Scrollbar * scrollbar = signal->object->widget->scrollbar;
+    int x, y;
+    SDL_GetMouseState (&x, &y);
+    //printf("TEST mouse: %d/%d\n", x, y);
+    if(x>=scrollbar->button_act_area.x &&
+       x<(scrollbar->button_act_area.x+scrollbar->button_act_area.w) &&
+       y>=scrollbar->button_act_area.y &&
+       y<(scrollbar->button_act_area.y+scrollbar->button_act_area.h)) {
+           printf("OK SBButton pressed\n");
+           scrollbar->buttonOn = 1;
+           scrollbar->mbutton_x = x;
+           scrollbar->mbutton_y = y;
+       }
+
+    return NULL;
+}
+
+static void * Scrollbar_MouseReleased(SDLGuiTK_Signal * signal, void * data )
+{
+    SDLGuiTK_Scrollbar * scrollbar = signal->object->widget->scrollbar;
+    scrollbar->buttonOn = 0;
+
+    return NULL;
+}
+
 static void Scrollbar_set_functions( SDLGuiTK_Scrollbar * scrollbar )
 {
     SDLGuiTK_Widget * widget=scrollbar->object->widget;
-    SDLGuiTK_SignalHandler * handler;
-
-    handler = (SDLGuiTK_SignalHandler *) scrollbar->object->signalhandler;
 
     widget->RecursiveEntering = Scrollbar_RecursiveEntering;
     widget->RecursiveDestroy = Scrollbar_RecursiveDestroy;
@@ -349,23 +298,17 @@ static void Scrollbar_set_functions( SDLGuiTK_Scrollbar * scrollbar )
     widget->DrawUpdate = Scrollbar_DrawUpdate;
     widget->DrawBlit = Scrollbar_DrawBlit;
 
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_REALIZE]->function = \
-            Scrollbar_Realize;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_SHOW]->function = \
-            Scrollbar_Show;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_HIDE]->function = \
-            Scrollbar_Hide;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_ENTER]->function = \
-            Scrollbar_MouseEnter;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_LEAVE]->function = \
-            Scrollbar_MouseLeave;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_PRESSED]->function = \
-            Scrollbar_MousePressed;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_RELEASED]->function = \
-            Scrollbar_MouseReleased;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_CLICKED]->function = \
-            Scrollbar_MouseClicked;
+    PROT_signal_connect(scrollbar->object, SDLGUITK_SIGNAL_TYPE_ENTER,
+                        Scrollbar_MouseEnter, SDLGUITK_SIGNAL_LEVEL2);
 
+    PROT_signal_connect(scrollbar->object, SDLGUITK_SIGNAL_TYPE_LEAVE,
+                        Scrollbar_MouseLeave, SDLGUITK_SIGNAL_LEVEL2);
+
+    PROT_signal_connect(scrollbar->object, SDLGUITK_SIGNAL_TYPE_PRESSED,
+                        Scrollbar_MousePressed, SDLGUITK_SIGNAL_LEVEL2);
+
+    PROT_signal_connect(scrollbar->object, SDLGUITK_SIGNAL_TYPE_RELEASED,
+                        Scrollbar_MouseReleased, SDLGUITK_SIGNAL_LEVEL2);
 }
 
 SDLGuiTK_Widget *SDLGuiTK_scrollbar_new(int orientation,

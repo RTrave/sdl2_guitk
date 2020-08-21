@@ -156,38 +156,6 @@ static void * Alignment_DrawBlit( SDLGuiTK_Widget * widget )
     return (void *) NULL;
 }
 
-static void * Alignment_Realize( SDLGuiTK_Widget * widget, \
-                                 void * data, void * event )
-{
-    //if( widget->top!=NULL ) {
-    //    PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-    //}
-
-    return (void *) NULL;
-}
-
-static void * Alignment_Show( SDLGuiTK_Widget * widget, \
-                              void * data, void * event )
-{
-    //widget->shown = 1;
-    //if( widget->top!=NULL ) {
-    //    PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-    //}
-
-    return (void *) NULL;
-}
-
-static void * Alignment_Hide( SDLGuiTK_Widget * widget, \
-                              void * data, void * event )
-{
-    //widget->shown = 0;
-    //if( widget->top!=NULL ) {
-    //    PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-    //}
-
-    return (void *) NULL;
-}
-
 static void * Alignment_Free( SDLGuiTK_Widget * data )
 {
     Alignment_destroy( data->container->bin->alignment );
@@ -207,9 +175,7 @@ static SDLGuiTK_Widget * Alignment_RecursiveEntering( SDLGuiTK_Widget * widget, 
         return NULL;
     }
 
-    /*   SDL_mutexP( child->object->mutex ); */
     active = PROT__widget_is_entering( child, x, y );
-    /*   SDL_mutexV( child->object->mutex ); */
 
     return active;
 }
@@ -228,23 +194,12 @@ static void * Alignment_RecursiveDestroy( SDLGuiTK_Widget * data )
 
 static void Alignment_Init_functions( SDLGuiTK_Alignment * alignment )
 {
-    SDLGuiTK_SignalHandler * handler;
-
-    handler = (SDLGuiTK_SignalHandler *) alignment->object->signalhandler;
-
     alignment->object->widget->RecursiveEntering = Alignment_RecursiveEntering;
     alignment->object->widget->RecursiveDestroy = Alignment_RecursiveDestroy;
     alignment->object->widget->Free = Alignment_Free;
 
     alignment->object->widget->DrawUpdate = Alignment_DrawUpdate;
     alignment->object->widget->DrawBlit = Alignment_DrawBlit;
-
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_REALIZE]->function = \
-            Alignment_Realize;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_SHOW]->function = \
-            Alignment_Show;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_HIDE]->function = \
-            Alignment_Hide;
 
 }
 
@@ -273,6 +228,10 @@ void SDLGuiTK_alignment_set( SDLGuiTK_Alignment *alignment, \
     alignment->yalign = yalign;
     alignment->xscale = xscale;
     alignment->yscale = yscale;
+    if( alignment->object->widget->parent ) {
+        PROT__signal_push( alignment->object->widget->parent->object,
+                           SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY );
+    }
 }
 
 

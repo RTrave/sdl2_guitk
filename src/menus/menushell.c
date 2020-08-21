@@ -223,102 +223,77 @@ static void * MenuShell_Free( SDLGuiTK_Widget * widget )
     return (void *) NULL;
 }
 
-static void * MenuShell_Show( SDLGuiTK_Widget * widget, \
-                              void * data, void * event )
+
+static void * MenuShell_Show( SDLGuiTK_Signal * signal, void * data )
 {
-    struct SDLGuiTK_MenuShell * menushell=widget->menushell;
+    struct SDLGuiTK_MenuShell * menushell=signal->object->widget->menushell;
 
-    MenuShell_DrawUpdate( widget );
-    MenuShell_DrawBlit( widget );
+    MenuShell_DrawUpdate( signal->object->widget );
+    MenuShell_DrawBlit( signal->object->widget );
     PROT__context_ref_wmwidget( menushell->wm_widget );
-
     return (void *) NULL;
 }
 
-static void * MenuShell_Hide( SDLGuiTK_Widget * widget, \
-                              void * data, void * event )
+static void * MenuShell_Hide( SDLGuiTK_Signal * signal, void * data )
 {
-    struct SDLGuiTK_MenuShell * menushell=widget->menushell;
+    struct SDLGuiTK_MenuShell * menushell=signal->object->widget->menushell;
 
     PROT__context_unref_wmwidget( menushell->wm_widget );
     WMWidget_Delete( menushell->wm_widget );
     menushell->wm_widget = NULL;
-
     return (void *) NULL;
 }
 
-static void * MenuShell_MouseEnter( SDLGuiTK_Widget * widget, \
-                                    void * data, void * event )
+static void * MenuShell_MouseEnter( SDLGuiTK_Signal * signal, void * data )
 {
     MyCursor_Set( SDLGUITK_CURSOR_DEFAULT );
     return (void *) NULL;
 }
 
-static void * MenuShell_MouseLeave( SDLGuiTK_Widget * widget, \
-                                    void * data, void * event )
+static void * MenuShell_MouseLeave( SDLGuiTK_Signal * signal, void * data )
 {
-    struct SDLGuiTK_MenuShell * menushell=widget->menushell;
-    if(!widget->visible) {
+    //struct SDLGuiTK_MenuShell * menushell=signal->object->widget->menushell;
+    if(!signal->object->widget->visible) {
         SDLGUITK_ERROR("Workaround: mywm re-call LEAVE event!\n");
         return (void *) NULL;
     }
     MyCursor_Unset();
-    SDLGuiTK_widget_hide (widget);
-
+    SDLGuiTK_widget_hide (signal->object->widget);
     return (void *) NULL;
 }
 
-static void * MenuShell_Map( SDLGuiTK_Widget * widget, \
-                                 void * data, void * event )
+static void * MenuShell_Map( SDLGuiTK_Signal * signal, void * data )
 {
-    //SDLGuiTK_MenuShell * menushell=widget->menushell;
-    MenuShell_DrawUpdate( widget );
-    MenuShell_DrawBlit( widget );
-    //PROT_MyWM_checkactive( widget );
+    MenuShell_DrawUpdate( signal->object->widget );
+    MenuShell_DrawBlit( signal->object->widget );
+    PROT_MyWM_checkactive( signal->object->widget );
     return (void *) NULL;
 }
 
-static void * MenuShell_Activate( SDLGuiTK_Widget * widget, \
-                                  void * data, void * event )
+static void * MenuShell_Activate( SDLGuiTK_Signal * signal, void * data )
 {
-    //MenuShell_DrawUpdate( widget );
-    //MenuShell_DrawBlit( widget );
-    SDLGuiTK_widget_show (widget);
-
+    SDLGuiTK_widget_show (signal->object->widget);
     return (void *) NULL;
 }
 
-static void * MenuShell_DeActivate( SDLGuiTK_Widget * widget, \
-                                    void * data, void * event )
+static void * MenuShell_DeActivate( SDLGuiTK_Signal * signal, void * data )
 {
-    SDLGuiTK_widget_hide (widget);
-
+    SDLGuiTK_widget_hide (signal->object->widget);
     return (void *) NULL;
 }
 
-static void * MenuShell_MousePressed( SDLGuiTK_Widget * widget, \
-                                      void * data, void * event )
+static void * MenuShell_SelectionDone( SDLGuiTK_Signal * signal, void * data )
 {
-
-    return (void *) NULL;
-}
-
-static void * MenuShell_SelectionDone( SDLGuiTK_Widget * widget, \
-                                       void * data, void * event )
-{
-    SDLGuiTK_Menu * menu=widget->menushell->menu;
-    SDLGuiTK_widget_hide (widget);
-    PROT__signal_push( menu->container->widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
+    SDLGuiTK_Menu * menu=signal->object->widget->menushell->menu;
+    SDLGuiTK_widget_hide (signal->object->widget);
+    PROT__signal_push( menu->container->widget->top->object,
+                       SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY );
 
     return (void *) NULL;
 }
 
 static void MenuShell_Init_functions( struct SDLGuiTK_MenuShell * menushell )
 {
-    SDLGuiTK_SignalHandler * handler;
-
-    handler = (SDLGuiTK_SignalHandler *) menushell->object->signalhandler;
-
     menushell->object->widget->RecursiveEntering = MenuShell_RecursiveEntering;
     menushell->object->widget->RecursiveDestroy = MenuShell_RecursiveDestroy;
     menushell->object->widget->Free = MenuShell_Free;
@@ -326,25 +301,29 @@ static void MenuShell_Init_functions( struct SDLGuiTK_MenuShell * menushell )
     menushell->object->widget->DrawUpdate = MenuShell_DrawUpdate;
     menushell->object->widget->DrawBlit = MenuShell_DrawBlit;
 
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_MAP]->function = \
-            MenuShell_Map;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_SHOW]->function = \
-            MenuShell_Show;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_HIDE]->function = \
-            MenuShell_Hide;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_ENTER]->function = \
-            MenuShell_MouseEnter;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_LEAVE]->function = \
-            MenuShell_MouseLeave;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_ACTIVATE]->function = \
-            MenuShell_Activate;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_DEACTIVATE]->function = \
-            MenuShell_DeActivate;
+    PROT_signal_connect(menushell->object, SDLGUITK_SIGNAL_TYPE_SHOW,
+                        MenuShell_Show, SDLGUITK_SIGNAL_LEVEL2);
 
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_PRESSED]->function = \
-            MenuShell_MousePressed;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_SELECTIONDONE]->function = \
-            MenuShell_SelectionDone;
+    PROT_signal_connect(menushell->object, SDLGUITK_SIGNAL_TYPE_HIDE,
+                        MenuShell_Hide, SDLGUITK_SIGNAL_LEVEL2);
+
+    PROT_signal_connect(menushell->object, SDLGUITK_SIGNAL_TYPE_MAP,
+                        MenuShell_Map, SDLGUITK_SIGNAL_LEVEL2);
+
+    PROT_signal_connect(menushell->object, SDLGUITK_SIGNAL_TYPE_ENTER,
+                        MenuShell_MouseEnter, SDLGUITK_SIGNAL_LEVEL2);
+
+    PROT_signal_connect(menushell->object, SDLGUITK_SIGNAL_TYPE_LEAVE,
+                        MenuShell_MouseLeave, SDLGUITK_SIGNAL_LEVEL2);
+
+    PROT_signal_connect(menushell->object, SDLGUITK_SIGNAL_TYPE_ACTIVATECURRENT,
+                        MenuShell_Activate, SDLGUITK_SIGNAL_LEVEL1);
+
+    PROT_signal_connect(menushell->object, SDLGUITK_SIGNAL_TYPE_DEACTIVATE,
+                        MenuShell_DeActivate, SDLGUITK_SIGNAL_LEVEL1);
+
+    PROT_signal_connect(menushell->object, SDLGUITK_SIGNAL_TYPE_SELECTIONDONE,
+                        MenuShell_SelectionDone, SDLGUITK_SIGNAL_LEVEL1);
 }
 
 void
@@ -355,6 +334,7 @@ PROT__menushell_create( SDLGuiTK_Menu * menu ) {
     MenuShell_Init_functions( menushell );
     menushell->menu = menu;
     menu->menushell = menushell;
+    PROT__signal_push( menushell->object, SDLGUITK_SIGNAL_TYPE_REALIZE );
 }
 
 void
@@ -374,13 +354,15 @@ void SDLGuiTK_menu_shell_append( SDLGuiTK_Menu *menu, \
     SDLGuiTK_list_lock( menu->menushell->children );
     SDLGuiTK_list_append( menu->menushell->children, (SDLGuiTK_Object *) child );
     SDLGuiTK_list_unlock( menu->menushell->children );
+    PROT__signal_push( menu->menushell->object,
+                       SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY );
 }
 
 void
 PROT__menushell_start( SDLGuiTK_Menu * menu ) {
     menu->menushell->wm_widget = WMWidget_New( menu->menushell->object->widget );
     menu->menushell->wm_widget->border_width = 1;
-    PROT__signal_push( menu->menushell->object, SDLGUITK_SIGNAL_TYPE_ACTIVATE );
+    PROT__signal_push( menu->menushell->object, SDLGUITK_SIGNAL_TYPE_ACTIVATECURRENT );
 
 }
 

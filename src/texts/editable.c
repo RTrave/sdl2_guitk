@@ -49,7 +49,7 @@
 #include "editable_prot.h"
 
 
-static int current_id=0;
+//static int current_id=0;
 
 SDLGuiTK_Editable * PROT__editable_new( SDLGuiTK_Object * object )
 {

@@ -1,4 +1,4 @@
-/* 
+/*
    SDL_guitk - GUI toolkit designed for SDL environnements (GTK-style).
 
    Copyright (C) 2003 Trave Roman
@@ -15,7 +15,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
+   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 #pragma once
@@ -27,52 +27,67 @@ typedef struct SDLGuiTK_SignalFunction SDLGuiTK_SignalFunction;
 
 
 /* SDLGuiTK_Signal types defines */
-#define SDLGUITK_SIGNAL_TYPE_NONE         ((int)  0)
-#define SDLGUITK_SIGNAL_TYPE_REALIZE      ((int)  1)
-#define SDLGUITK_SIGNAL_TYPE_DESTROY      ((int)  2)
-#define SDLGUITK_SIGNAL_TYPE_SHOW         ((int)  3)
-#define SDLGUITK_SIGNAL_TYPE_HIDE         ((int)  4)
-#define SDLGUITK_SIGNAL_TYPE_FRAMEEVENT   ((int)  5)
-#define SDLGUITK_SIGNAL_TYPE_KEYBOARD     ((int)  6)
-#define SDLGUITK_SIGNAL_TYPE_MAP          ((int)  7)
-#define SDLGUITK_SIGNAL_TYPE_UNMAP        ((int)  8)
-#define SDLGUITK_SIGNAL_TYPE_ENTER        ((int) 10)
-#define SDLGUITK_SIGNAL_TYPE_LEAVE        ((int) 11)
-#define SDLGUITK_SIGNAL_TYPE_PRESSED      ((int) 20)
-#define SDLGUITK_SIGNAL_TYPE_RELEASED     ((int) 21)
-#define SDLGUITK_SIGNAL_TYPE_CLICKED      ((int) 22)
-#define SDLGUITK_SIGNAL_TYPE_TOGGLED      ((int) 23)
-#define SDLGUITK_SIGNAL_TYPE_ACTIVATE      ((int) 30)
-#define SDLGUITK_SIGNAL_TYPE_DEACTIVATE    ((int) 31)
-#define SDLGUITK_SIGNAL_TYPE_SELECTIONDONE ((int) 32)
-#define SDLGUITK_SIGNAL_TYPE_TEXTINPUT    ((int) 33)
-#define SDLGUITK_SIGNAL_TYPE_CHANGED      ((int) 34)
-#define SDLGUITK_SIGNAL_TYPE_VALUECHANGED ((int) 35)
+#define SDLGUITK_SIGNAL_TYPE_NONE                 ((int)  0)
+// Object
+#define SDLGUITK_SIGNAL_TYPE_REALIZE              ((int)  1)
+#define SDLGUITK_SIGNAL_TYPE_DESTROY              ((int)  2)
+// Widget
+#define SDLGUITK_SIGNAL_TYPE_SHOW                 ((int) 10)
+#define SDLGUITK_SIGNAL_TYPE_HIDE                 ((int) 11)
+#define SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY          ((int) 12)
+#define SDLGUITK_SIGNAL_TYPE_KEYBOARD             ((int) 13)
+#define SDLGUITK_SIGNAL_TYPE_MAP                  ((int) 14)
+#define SDLGUITK_SIGNAL_TYPE_UNMAP                ((int) 15)
+#define SDLGUITK_SIGNAL_TYPE_ENTER                ((int) 16)
+#define SDLGUITK_SIGNAL_TYPE_LEAVE                ((int) 17)
+#define SDLGUITK_SIGNAL_TYPE_PRESSED              ((int) 18)
+#define SDLGUITK_SIGNAL_TYPE_RELEASED             ((int) 19)
+// Button
+#define SDLGUITK_SIGNAL_TYPE_CLICKED              ((int) 30)
+// ToggleButton
+#define SDLGUITK_SIGNAL_TYPE_TOGGLED              ((int) 31)
+// RadioButton
+#define SDLGUITK_SIGNAL_TYPE_GROUPCHANGED         ((int) 32)
+// Menu
+#define SDLGUITK_SIGNAL_TYPE_ACTIVATECURRENT      ((int) 40)
+#define SDLGUITK_SIGNAL_TYPE_DEACTIVATE           ((int) 41)
+#define SDLGUITK_SIGNAL_TYPE_SELECTIONDONE        ((int) 42)
+// Entry
+#define SDLGUITK_SIGNAL_TYPE_TEXTINPUT            ((int) 50)
+#define SDLGUITK_SIGNAL_TYPE_CHANGED              ((int) 51)
+// ??
+#define SDLGUITK_SIGNAL_TYPE_VALUECHANGED         ((int) 52)
 
-#define SDLGUITK_SIGNAL_TYPE_MAXID        ((int) 64)
+#define SDLGUITK_SIGNAL_TYPE_MAXID                ((int) 64)
 
 
 /* SDLGuiTK_SignalHandler structure definition */
 struct SDLGuiTK_SignalHandler {
-  SDLGuiTK_Object * object;
-  SDLGuiTK_SignalFunction * fdefault[SDLGUITK_SIGNAL_TYPE_MAXID];
-  SDLGuiTK_SignalFunction * fuserdef[SDLGUITK_SIGNAL_TYPE_MAXID];
+    SDLGuiTK_Object * object;
+    SDL_bool has_fdefault1[SDLGUITK_SIGNAL_TYPE_MAXID];
+    SDLGuiTK_SignalFunction * fdefault1[SDLGUITK_SIGNAL_TYPE_MAXID];
+    SDL_bool has_fdefault2[SDLGUITK_SIGNAL_TYPE_MAXID];
+    SDLGuiTK_SignalFunction * fdefault2[SDLGUITK_SIGNAL_TYPE_MAXID];
+    SDL_bool has_fexternal[SDLGUITK_SIGNAL_TYPE_MAXID];
+    SDLGuiTK_SignalFunction * fexternal[SDLGUITK_SIGNAL_TYPE_MAXID];
 };
 
 
 /* SDLGuiTK_SignalFunction structure definition */
 struct SDLGuiTK_SignalFunction {
-  SDLGuiTK_Object * object; /* unused */
-  void * (*function)( SDLGuiTK_Widget *, void *, void * );
-  void * data;
+    SDLGuiTK_Object * object; /* unused */
+    void * (*function)( SDLGuiTK_Signal *, void * );
+    void * data;
 };
 
 
 struct SDLGuiTK_Signal {
-  SDLGuiTK_Object * object;  /* Signal receptor */
-  int type;
-    SDL_KeyboardEvent * kevent;
-    SDL_TextInputEvent * tievent;
+    SDLGuiTK_Object * object;   /* Signal receptor */
+    int type;
+    Uint8 state;                /* from SDL_KeyboardEvent */
+    Uint8 repeat;               /* from SDL_KeyboardEvent */
+    SDL_Keysym keysym;          /* from SDL_KeyboardEvent */
+    char text[32];              /* from SDL_TextInputEvent */
 };
 
 
@@ -85,13 +100,17 @@ extern void PROT__signal_check();
 
 extern
 void PROT__signal_push( SDLGuiTK_Object *object, int type );
+extern // for Key and TextInput
+void PROT__signal_push_event( SDLGuiTK_Object *object, int type,
+                              SDL_Event *event );
 
+#define SDLGUITK_SIGNAL_LEVEL1         ((int)  1)
+#define SDLGUITK_SIGNAL_LEVEL2         ((int)  2)
 extern
-void PROT__signal_textinput( SDLGuiTK_Object *object, int type,
-			   SDL_TextInputEvent * tievent );
-extern
-void PROT__signal_pushkey( SDLGuiTK_Object *object, int type,
-			   SDL_KeyboardEvent * kevent );
+void PROT_signal_connect( SDLGuiTK_Object * object,
+                          int type,
+                          void * (*fct)( SDLGuiTK_Signal *, void * ),
+                          int signal_level );
 
 /* Create a new initialized SDLGuiTK_Signal structure */
 extern
@@ -100,30 +119,34 @@ extern
 void PROT__signalhandler_destroy( SDLGuiTK_Object *handler );
 
 
-/* /\* Use to unsafely call events: have to be called by signals thread *\/ */
-/* extern void PROT__signal_directpush( SDLGuiTK_Widget * widget, \ */
-/* 				     int type ); */
-
-
 /* signal traductions */
-#define SDLGUITK_SIGNAL_TEXT_REALIZE     ("realize")
-#define SDLGUITK_SIGNAL_TEXT_DESTROY     ("destroy")
-#define SDLGUITK_SIGNAL_TEXT_SHOW        ("show")
-#define SDLGUITK_SIGNAL_TEXT_HIDE        ("hide")
-#define SDLGUITK_SIGNAL_TEXT_FRAMEEVENT  ("frame_event")
-#define SDLGUITK_SIGNAL_TEXT_KEYBOARD    ("keyboard")
-#define SDLGUITK_SIGNAL_TEXT_MAP         ("map")
-#define SDLGUITK_SIGNAL_TEXT_UNMAP       ("unmap")
-#define SDLGUITK_SIGNAL_TEXT_ENTER       ("enter")
-#define SDLGUITK_SIGNAL_TEXT_LEAVE       ("leave")
-#define SDLGUITK_SIGNAL_TEXT_PRESSED     ("pressed")
-#define SDLGUITK_SIGNAL_TEXT_RELEASED    ("released")
-#define SDLGUITK_SIGNAL_TEXT_CLICKED     ("clicked")
-#define SDLGUITK_SIGNAL_TEXT_TOGGLED     ("toggled")
-#define SDLGUITK_SIGNAL_TEXT_ACTIVATE    ("activate")
-#define SDLGUITK_SIGNAL_TEXT_DEACTIVATE  ("deactivate")
-#define SDLGUITK_SIGNAL_TEXT_SELECTIONDONE ("selection_done")
-#define SDLGUITK_SIGNAL_TEXT_TEXTINPUT   ("text_input")
-#define SDLGUITK_SIGNAL_TEXT_CHANGED     ("changed")
-#define SDLGUITK_SIGNAL_TEXT_VALUECHANGED ("value-changed")
+// Object
+#define SDLGUITK_SIGNAL_TEXT_REALIZE            ("realize")
+#define SDLGUITK_SIGNAL_TEXT_DESTROY            ("destroy")
+// Widget
+#define SDLGUITK_SIGNAL_TEXT_SHOW               ("show")
+#define SDLGUITK_SIGNAL_TEXT_HIDE               ("hide")
+#define SDLGUITK_SIGNAL_TEXT_CHILDNOTIFY        ("child-notify")
+#define SDLGUITK_SIGNAL_TEXT_KEYBOARD           ("key-press-event")
+#define SDLGUITK_SIGNAL_TEXT_MAP                ("map")
+#define SDLGUITK_SIGNAL_TEXT_UNMAP              ("unmap")
+#define SDLGUITK_SIGNAL_TEXT_ENTER              ("enter-notify-event")
+#define SDLGUITK_SIGNAL_TEXT_LEAVE              ("leave-notify-event")
+#define SDLGUITK_SIGNAL_TEXT_PRESSED            ("button-press-event")
+#define SDLGUITK_SIGNAL_TEXT_RELEASED           ("button-release-event")
+// Button
+#define SDLGUITK_SIGNAL_TEXT_CLICKED            ("clicked")
+// ToggleButton
+#define SDLGUITK_SIGNAL_TEXT_TOGGLED            ("toggled")
+// RadioButton
+#define SDLGUITK_SIGNAL_TEXT_GROUPCHANGED       ("group-changed")
+// Menu
+#define SDLGUITK_SIGNAL_TEXT_ACTIVATECURRENT    ("activate-current")
+#define SDLGUITK_SIGNAL_TEXT_DEACTIVATE         ("deactivate")
+#define SDLGUITK_SIGNAL_TEXT_SELECTIONDONE      ("selection-done")
+// Entry
+#define SDLGUITK_SIGNAL_TEXT_TEXTINPUT          ("text_input")
+#define SDLGUITK_SIGNAL_TEXT_CHANGED            ("changed")
+// ??
+#define SDLGUITK_SIGNAL_TEXT_VALUECHANGED       ("value-changed")
 

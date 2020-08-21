@@ -354,17 +354,15 @@ int MyWM_push_MOUSEBUTTONUP( SDL_Event *event )
 int MyWM_push_TEXTINPUT( SDL_Event *event )
 {
     if( keyboard_focus ) {
-        PROT__signal_textinput( keyboard_focus->object, \
-                                SDLGUITK_SIGNAL_TYPE_TEXTINPUT, \
-                                &event->text );
-        /*     printf( "Test Key %d\n", event->key.keysym.sym ); */
+        PROT__signal_push_event( keyboard_focus->object, \
+                                 SDLGUITK_SIGNAL_TYPE_TEXTINPUT, \
+                                 event );
         return 1;
     }
     else if( focused_widget ) {
-        PROT__signal_textinput( focused_widget->object, \
-                                SDLGUITK_SIGNAL_TYPE_TEXTINPUT, \
-                                &event->text );
-        /*     printf( "Test Key %d\n", event->key.keysym.sym ); */
+        PROT__signal_push_event( focused_widget->object, \
+                                 SDLGUITK_SIGNAL_TYPE_TEXTINPUT, \
+                                 event );
         return 1;
     }
     return 0;
@@ -373,15 +371,15 @@ int MyWM_push_TEXTINPUT( SDL_Event *event )
 int MyWM_push_KEYDOWN( SDL_Event *event )
 {
     if( keyboard_focus ) {
-        PROT__signal_pushkey( keyboard_focus->object, \
-                              SDLGUITK_SIGNAL_TYPE_KEYBOARD, \
-                              &event->key );
+        PROT__signal_push_event( keyboard_focus->object, \
+                                 SDLGUITK_SIGNAL_TYPE_KEYBOARD, \
+                                 event );
         return 1;
     }
     else if( focused_widget ) {
-        PROT__signal_pushkey( focused_widget->object, \
-                              SDLGUITK_SIGNAL_TYPE_KEYBOARD, \
-                              &event->key );
+        PROT__signal_push_event( focused_widget->object, \
+                                 SDLGUITK_SIGNAL_TYPE_KEYBOARD, \
+                                 event );
         return 1;
     }
     return 0;

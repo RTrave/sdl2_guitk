@@ -176,40 +176,6 @@ static void * Image_DrawBlit( SDLGuiTK_Widget * widget )
     return (void *) NULL;
 }
 
-static void * Image_Realize( SDLGuiTK_Widget * widget, \
-                             void * data, void * event )
-{
-    /*   if( widget->misc->image->text_flag!=0 ) { */
-    Image_make_surface( widget->misc->image );
-    /*   } */
-
-    return (void *) NULL;
-}
-
-static void * Image_Show( SDLGuiTK_Widget * widget, \
-                          void * data, void * event )
-{
-/*
-    widget->shown = 1;
-    if( widget->top!=NULL ) {
-        PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-    }
-*/
-    return (void *) NULL;
-}
-
-static void * Image_Hide( SDLGuiTK_Widget * widget, \
-                          void * data, void * event )
-{
-/*
-    widget->shown = 0;
-    if( widget->top!=NULL ) {
-        PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-    }
-*/
-    return (void *) NULL;
-}
-
 static SDLGuiTK_Widget * Image_RecursiveEntering( SDLGuiTK_Widget * widget, \
         int x, int y )
 {
@@ -231,12 +197,16 @@ static void * Image_Free( SDLGuiTK_Widget * widget )
     return (void *) NULL;
 }
 
+static void * Image_Realize( SDLGuiTK_Signal * signal, void * data )
+{
+    Image_make_surface( signal->object->widget->misc->image );
+    return (void *) NULL;
+}
+
+
 static void Image_set_functions( SDLGuiTK_Image * image )
 {
     SDLGuiTK_Widget * widget=image->object->widget;
-    SDLGuiTK_SignalHandler * handler;
-
-    handler = (SDLGuiTK_SignalHandler *) image->object->signalhandler;
 
     widget->RecursiveEntering = Image_RecursiveEntering;
     widget->RecursiveDestroy = Image_RecursiveDestroy;
@@ -245,12 +215,8 @@ static void Image_set_functions( SDLGuiTK_Image * image )
     widget->DrawUpdate = Image_DrawUpdate;
     widget->DrawBlit = Image_DrawBlit;
 
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_REALIZE]->function = \
-            Image_Realize;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_SHOW]->function = \
-            Image_Show;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_HIDE]->function = \
-            Image_Hide;
+     PROT_signal_connect(image->object, SDLGUITK_SIGNAL_TYPE_REALIZE,
+                         Image_Realize, SDLGUITK_SIGNAL_LEVEL2);
 }
 
 

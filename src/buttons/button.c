@@ -257,42 +257,6 @@ static void * Button_DrawBlit( SDLGuiTK_Widget * widget )
 }
 
 
-static void * Button_Realize( SDLGuiTK_Widget * widget, \
-                              void * data, void * event )
-{
-    SDLGuiTK_Button * button=widget->container->bin->button;
-
-    if( button->text_flag!=0 ) {
-        Button_make_surface( button );
-    }
-
-    return (void *) NULL;
-}
-
-static void * Button_Show( SDLGuiTK_Widget * widget, \
-                           void * data, void * event )
-{
-/*
-    widget->shown = 1;
-    if( widget->top!=NULL ) {
-        PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-    }
-*/
-    return (void *) NULL;
-}
-
-static void * Button_Hide( SDLGuiTK_Widget * widget, \
-                           void * data, void * event )
-{
-/*
-    widget->shown = 0;
-    if( widget->top!=NULL ) {
-        PROT__signal_push( widget->top->object, SDLGUITK_SIGNAL_TYPE_FRAMEEVENT );
-    }
-*/
-    return (void *) NULL;
-}
-
 static SDLGuiTK_Widget * Button_RecursiveEntering( SDLGuiTK_Widget * widget, \
         int x, int y )
 {
@@ -339,55 +303,51 @@ static int Button_UpdateActive( SDLGuiTK_Widget * widget)
 }
 
 
-static void * Button_MouseEnter( SDLGuiTK_Widget * widget, \
-                                 void * data, void * event )
+static void * Button_Realize( SDLGuiTK_Signal * signal, void * data )
 {
-    SDLGuiTK_Button * button=widget->container->bin->button;
-
-    if(widget->has_tooltip)
-        PROT__context_ref_tooltip (widget);
-
-    widget->act_alpha = 0.15;
-    button->active_alpha_mod = -0.005;
-    ButtonCache( widget );
-    widget->act_srf = button->active_srf;
-
+    SDLGuiTK_Button * button=signal->object->widget->container->bin->button;
+    if( button->text_flag!=0 )
+        Button_make_surface( button );
     return (void *) NULL;
 }
 
-static void * Button_MouseLeave( SDLGuiTK_Widget * widget, \
-                                 void * data, void * event )
+static void * Button_MouseEnter( SDLGuiTK_Signal * signal, void * data )
 {
-    SDLGuiTK_Button * button=widget->container->bin->button;
+    SDLGuiTK_Button * button=signal->object->widget->container->bin->button;
+    //if(widget->has_tooltip)
+    //    PROT__context_ref_tooltip (widget);
+    signal->object->widget->act_alpha = 0.15;
+    button->active_alpha_mod = -0.005;
+    ButtonCache( signal->object->widget );
+    signal->object->widget->act_srf = button->active_srf;
+    return (void *) NULL;
+}
 
-    if(widget->has_tooltip)
-        PROT__context_unref_tooltip ();
-    widget->act_srf = NULL;
-    widget->act_alpha = 0.15;
+static void * Button_MouseLeave( SDLGuiTK_Signal * signal, void * data )
+{
+    SDLGuiTK_Button * button=signal->object->widget->container->bin->button;
+    //if(widget->has_tooltip)
+    //    PROT__context_unref_tooltip ();
+    signal->object->widget->act_srf = NULL;
+    signal->object->widget->act_alpha = 0.15;
     button->active_alpha_mod = -0.005;
     button->pressed_flag = 0;
-
     return (void *) NULL;
 }
 
-static void * Button_MousePressed( SDLGuiTK_Widget * widget, \
-                                   void * data, void * event )
+static void * Button_MousePressed( SDLGuiTK_Signal * signal, void * data )
 {
-    SDLGuiTK_Button * button=widget->container->bin->button;
-
+    SDLGuiTK_Button * button=signal->object->widget->container->bin->button;
     button->pressed_flag = 1;
-
     return (void *) NULL;
 }
 
-static void * Button_MouseReleased( SDLGuiTK_Widget * widget, \
-                                    void * data, void * event )
+static void * Button_MouseReleased( SDLGuiTK_Signal * signal, void * data )
 {
-    SDLGuiTK_Button * button=widget->container->bin->button;
-
+    SDLGuiTK_Button * button=signal->object->widget->container->bin->button;
     if( button->pressed_flag==1 ) {
         button->pressed_flag = 0;
-        PROT__signal_push( widget->object, SDLGUITK_SIGNAL_TYPE_CLICKED );
+        PROT__signal_push( signal->object, SDLGUITK_SIGNAL_TYPE_CLICKED );
     }
     if(button->togglebutton)
         PROT__togglebutton_clicked (button->togglebutton);
@@ -396,8 +356,6 @@ static void * Button_MouseReleased( SDLGuiTK_Widget * widget, \
 
 static void Button_set_functions( SDLGuiTK_Button * button )
 {
-    SDLGuiTK_SignalHandler * handler;
-
     button->object->widget->RecursiveEntering = Button_RecursiveEntering;
     button->object->widget->RecursiveDestroy = Button_RecursiveDestroy;
     button->object->widget->UpdateActive = Button_UpdateActive;
@@ -406,24 +364,20 @@ static void Button_set_functions( SDLGuiTK_Button * button )
     button->object->widget->DrawUpdate = Button_DrawUpdate;
     button->object->widget->DrawBlit = Button_DrawBlit;
 
-    handler = (SDLGuiTK_SignalHandler *) button->object->signalhandler;
+    PROT_signal_connect(button->object, SDLGUITK_SIGNAL_TYPE_REALIZE,
+                        Button_Realize, SDLGUITK_SIGNAL_LEVEL2);
 
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_REALIZE]->function = \
-            Button_Realize;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_SHOW]->function = \
-            Button_Show;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_HIDE]->function = \
-            Button_Hide;
+    PROT_signal_connect(button->object, SDLGUITK_SIGNAL_TYPE_ENTER,
+                        Button_MouseEnter, SDLGUITK_SIGNAL_LEVEL2);
 
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_ENTER]->function = \
-            Button_MouseEnter;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_LEAVE]->function = \
-            Button_MouseLeave;
+    PROT_signal_connect(button->object, SDLGUITK_SIGNAL_TYPE_LEAVE,
+                        Button_MouseLeave, SDLGUITK_SIGNAL_LEVEL2);
 
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_PRESSED]->function = \
-            Button_MousePressed;
-    handler->fdefault[SDLGUITK_SIGNAL_TYPE_RELEASED]->function = \
-            Button_MouseReleased;
+    PROT_signal_connect(button->object, SDLGUITK_SIGNAL_TYPE_PRESSED,
+                        Button_MousePressed, SDLGUITK_SIGNAL_LEVEL2);
+
+    PROT_signal_connect(button->object, SDLGUITK_SIGNAL_TYPE_RELEASED,
+                        Button_MouseReleased, SDLGUITK_SIGNAL_LEVEL2);
 }
 
 

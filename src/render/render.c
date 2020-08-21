@@ -196,10 +196,8 @@ SDLGuiTK_Render * Render_create()
         glGetIntegerv( GL_STENCIL_BITS, &i );
         sprintf( tmpstr, "GL_STENCIL_BITS: %d\n", i );
         SDLGUITK_OUTPUT( tmpstr );
-        printf( "CREATE\n" );
         glGetIntegerv( GL_DEPTH_BITS, &i );
         sprintf( tmpstr, "GL_DEPTH_BITS: %d\n", i );
-        printf( "CREATE\n" );
         SDLGUITK_OUTPUT( tmpstr );
 
 #endif
@@ -213,7 +211,7 @@ SDLGuiTK_Render * Render_create()
     glewInit();
 #endif
 
-    SDL_Delay(500);
+    SDL_Delay(100);
     return main_render;
 }
 
