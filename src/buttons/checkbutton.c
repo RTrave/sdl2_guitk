@@ -90,7 +90,6 @@ static SDLGuiTK_CheckButton * CheckButton_create()
 
     new_checkbutton->indicator_srf = MySDL_Surface_new ("CheckButtonIndic_srf");
 
-    //new_checkbutton->toggled = 0;
     new_checkbutton->togglebutton->button->bin->margin_left = 28;
 
     return new_checkbutton;
@@ -111,23 +110,7 @@ static void CheckButton_destroy( SDLGuiTK_CheckButton * checkbutton )
 static void CheckButton_Indicator(SDLGuiTK_CheckButton * checkbutton)
 {
    SDLGuiTK_Theme * theme;
-/*
-    SDL_Rect area;
-    MySDL_CreateRGBSurface (checkbutton->indicator_srf, 28, 28);
-    MySDL_FillRect (checkbutton->indicator_srf, NULL,
-                    SDL_MapRGBA(checkbutton->indicator_srf->srf->format, 0, 0, 0, 255));
 
-    area.x = 5; area.y = 5;
-    area.w = 18; area.h = 18;
-    MySDL_FillRect (checkbutton->indicator_srf, &area,
-                    SDL_MapRGBA(checkbutton->indicator_srf->srf->format, 255, 255, 255, 255));
-    if(checkbutton->togglebutton->toggled)
-        return;
-    area.x = 7; area.y = 7;
-    area.w = 14; area.h = 14;
-    MySDL_FillRect (checkbutton->indicator_srf, &area,
-                    SDL_MapRGBA(checkbutton->indicator_srf->srf->format, 0, 0, 0, 255));
-*/
     theme = PROT__theme_get_and_lock();
     if(checkbutton->togglebutton->toggled)
         checkbutton->indicator_srf->srf =
@@ -151,8 +134,6 @@ void PROT__checkbutton_DrawUpdate(SDLGuiTK_CheckButton * checkbutton)
     widget->req_area.w+=28;
     CheckButton_Indicator( checkbutton );
     PROT__widget_set_req_area(widget, 28, checkbutton->indicator_srf->srf->h);
-    //widget->container->bin->container->children_area.w -= 28;
-    //widget->req_area.h+=SCROLLBAR_SIZE;
 }
 
 void PROT__checkbutton_DrawBlit(SDLGuiTK_CheckButton * checkbutton)
@@ -161,25 +142,22 @@ void PROT__checkbutton_DrawBlit(SDLGuiTK_CheckButton * checkbutton)
     SDLGuiTK_Button * button=checkbutton->togglebutton->button;
     Uint32 bgcolor;
     SDLGuiTK_Theme * theme;
-    MySDL_Surface * srf=MySDL_Surface_new ("CheckButton_DrawBlit_srf");
 
     if(checkbutton->radiobutton) {
         PROT__radiobutton_DrawBlit (checkbutton->radiobutton);
         return;
     }
-    MySDL_CreateRGBSurface( srf, widget->abs_area.w, widget->abs_area.h );
     button->text_area.x = 0;
     button->text_area.y = 0;
     button->text_area.w = widget->abs_area.w;
     button->text_area.h = widget->abs_area.h;
 
     theme = PROT__theme_get_and_lock();
-    bgcolor = SDL_MapRGBA( srf->srf->format, \
+    bgcolor = SDL_MapRGBA( widget->srf->srf->format, \
                            theme->bdcolor.r, \
                            theme->bdcolor.g, \
                            theme->bdcolor.b, \
                            150 );
-    MySDL_FillRect( srf, NULL, bgcolor );
     PROT__theme_unlock( theme );
 
     checkbutton->indicator_area.x = 0;

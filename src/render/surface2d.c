@@ -138,6 +138,8 @@ GLuint MySDL_GL_LoadTexture(SDL_Surface *surface, GLfloat *texcoord, GLuint *tex
     if( ! *tex ) {
         glGenTextures(1, &texture);
     } else {
+        glDeleteTextures (1, tex);
+        glGenTextures(1, tex);
         texture = *tex;
     }
     glBindTexture(GL_TEXTURE_2D, texture);

@@ -88,11 +88,9 @@ static SDLGuiTK_RadioButton * RadioButton_create()
     new_radiobutton->checkbutton = PROT__check_button_new_from_radiobutton (new_radiobutton);
     new_radiobutton->object = new_radiobutton->checkbutton->object;
     sprintf( new_radiobutton->object->name, "radiobutton%d", ++current_id );
-    //new_radiobutton->radiobutton = NULL;
 
     new_radiobutton->indicator_srf = MySDL_Surface_new ("RadioButtonIndic_srf");
 
-    //new_checkbutton->toggled = 0;
     new_radiobutton->group = NULL;
     new_radiobutton->checkbutton->togglebutton->button->bin->margin_left = 28;
 
@@ -105,8 +103,6 @@ static void RadioButton_destroy( SDLGuiTK_RadioButton * radiobutton )
 
     // Button destroy himself and call ToggleButton_destroy
     //PROT__button_destroy( togglebutton->button );
-    //if(checkbutton->checkbutton)
-    //    PROT__checkbutton_destroy (checkbutton->checkbutton);
     free( radiobutton );
 }
 
@@ -143,22 +139,18 @@ void PROT__radiobutton_DrawBlit(SDLGuiTK_RadioButton * radiobutton)
     SDLGuiTK_Button * button=radiobutton->checkbutton->togglebutton->button;
     Uint32 bgcolor;
     SDLGuiTK_Theme * theme;
-    MySDL_Surface * srf=MySDL_Surface_new ("CheckButton_DrawBlit_srf");
 
-
-    MySDL_CreateRGBSurface( srf, widget->abs_area.w, widget->abs_area.h );
     button->text_area.x = 0;
     button->text_area.y = 0;
     button->text_area.w = widget->abs_area.w;
     button->text_area.h = widget->abs_area.h;
 
     theme = PROT__theme_get_and_lock();
-    bgcolor = SDL_MapRGBA( srf->srf->format, \
+    bgcolor = SDL_MapRGBA( widget->srf->srf->format, \
                            theme->bdcolor.r, \
                            theme->bdcolor.g, \
                            theme->bdcolor.b, \
                            150 );
-    MySDL_FillRect( srf, NULL, bgcolor );
     PROT__theme_unlock( theme );
 
     radiobutton->indicator_area.x = 0;

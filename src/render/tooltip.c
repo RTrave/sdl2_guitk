@@ -97,7 +97,7 @@ static void * Tooltip_DrawBlit( SDLGuiTK_Widget * widget )
     Uint32 bgcolor;
     SDLGuiTK_Theme * theme;
 
-    tooltip->srf=MySDL_Surface_new ("Button_DrawBlit_srf");
+    //tooltip->srf=MySDL_Surface_new ("Button_DrawBlit_srf");
 
     PROT__bin_DrawBlit( tooltip->bin );
 
