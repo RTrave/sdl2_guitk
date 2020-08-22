@@ -30,6 +30,8 @@ struct SDLGuiTK_Entry {
 
     SDLGuiTK_Widget * widget;      /* herits from */
 
+    SDLGuiTK_SpinButton * spinbutton;
+
     /* "public" data */
     SDLGuiTK_Editable * editable;
     int                 is_editable;
@@ -37,9 +39,13 @@ struct SDLGuiTK_Entry {
 
 
     /* "private" data */
+    int             pressed_flag;
     int             text_flag;
     SDL_Rect        view_area;
     MySDL_Surface * srf;
 };
+
+SDLGuiTK_Entry * PROT__entry_new_from_spinbutton(
+                                    SDLGuiTK_SpinButton * spinbutton);
 
 

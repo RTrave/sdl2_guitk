@@ -159,8 +159,6 @@ static SDLGuiTK_Widget * Widget_create()
     new_widget->height_request = -1;
 
     new_widget->srf = MySDL_Surface_new ("Widget_srf");
-    new_widget->act_srf = NULL;
-    new_widget->act_alpha = 0.5;
     new_widget->req_area.x = 0;
     new_widget->req_area.y = 0;
     new_widget->req_area.w = 0;
@@ -177,6 +175,13 @@ static SDLGuiTK_Widget * Widget_create()
     new_widget->act_area.y = 0;
     new_widget->act_area.w = 0;
     new_widget->act_area.h = 0;
+
+    new_widget->active_srf = NULL;
+    new_widget->active_alpha = 0.5;
+    new_widget->active_area.x = 0;
+    new_widget->active_area.y = 0;
+    new_widget->active_area.w = 0;
+    new_widget->active_area.h = 0;
 
     return new_widget;
 }

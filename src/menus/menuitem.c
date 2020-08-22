@@ -227,13 +227,13 @@ static void * MenuItem_RecursiveDestroy( SDLGuiTK_Widget * widget )
 static int MenuItem_UpdateActive( SDLGuiTK_Widget * widget)
 {
     SDLGuiTK_MenuItem * menuitem=widget->container->bin->menuitem;
-    if( widget->act_alpha>=0.5 ) {
+    if( widget->active_alpha>=0.5 ) {
         menuitem->active_alpha_mod = -0.01;
     };
-    if( widget->act_alpha<=0.25 ) {
+    if( widget->active_alpha<=0.25 ) {
         menuitem->active_alpha_mod = 0.01;
     };
-    widget->act_alpha+=menuitem->active_alpha_mod;
+    widget->active_alpha+=menuitem->active_alpha_mod;
     if( menuitem->active_flag==1 ) {
         menuitem->active_flag = 0;
         return 1;
@@ -245,10 +245,16 @@ static int MenuItem_UpdateActive( SDLGuiTK_Widget * widget)
 static void * MenuItem_MouseEnter( SDLGuiTK_Signal * signal, void * data )
 {
     SDLGuiTK_MenuItem * menuitem=signal->object->widget->container->bin->menuitem;
+    SDLGuiTK_Widget * widget = signal->object->widget;
 
     Make_activesrf( signal->object->widget );
-    signal->object->widget->act_srf = menuitem->active_srf;
-    signal->object->widget->act_alpha = 0.5;
+    widget->active_srf = menuitem->active_srf;
+    widget->active_alpha = 0.5;
+    widget->active_area.x = widget->act_area.x;
+    widget->active_area.y = widget->act_area.y;
+    widget->active_area.w = widget->act_area.w;
+    widget->active_area.h = widget->act_area.h;
+
     menuitem->active_flag = 1;
     return (void *) NULL;
 }
@@ -256,9 +262,11 @@ static void * MenuItem_MouseEnter( SDLGuiTK_Signal * signal, void * data )
 static void * MenuItem_MouseLeave( SDLGuiTK_Signal * signal, void * data )
 {
     SDLGuiTK_MenuItem * menuitem=signal->object->widget->container->bin->menuitem;
-    MySDL_FreeSurface( signal->object->widget->act_srf );
-    signal->object->widget->act_srf = NULL;
-    signal->object->widget->act_alpha = 0.5;
+    SDLGuiTK_Widget * widget = signal->object->widget;
+
+    MySDL_FreeSurface( widget->active_srf );
+    widget->active_srf = NULL;
+    widget->active_alpha = 0.5;
     menuitem->active_alpha_mod = -0.01;
     return (void *) NULL;
 }

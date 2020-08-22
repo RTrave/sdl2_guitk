@@ -19,31 +19,35 @@
 
 */
 
-#pragma once
+#ifndef _SDLguitk_spinbutton_h
+#define _SDLguitk_spinbutton_h
 
-#include <SDL2/SDL_guitk.h>
+//#include <SDL2/SDL.h>
+#include "SDL_guitk.h"
+
+/* Set up for C function definitions, even when using C++ */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+  /* SDLGuiTK_SpinButton structure definition */
+  typedef struct SDLGuiTK_SpinButton SDLGuiTK_SpinButton;
+
+  extern DECLSPEC
+  SDLGuiTK_SpinButton *SDLGuiTK_SPINBUTTON( SDLGuiTK_Widget *widget );
 
 
-/* SDLGuiTK_ScrolledWindow structure definition */
-struct SDLGuiTK_Adjustment {
-    SDLGuiTK_Object * object;     /* referent object */
+  /*  */
+  extern DECLSPEC
+  SDLGuiTK_Widget * SDLGuiTK_spin_button_new( SDLGuiTK_Adjustment *adjustment,
+                                              double climb_rate,
+                                              int digits );
 
-  /* "public" data */
-    SDLGuiTK_Widget *parent[5];
-    int parent_nb;
-    double value;
-    double lower;
-    double upper;
-    double step_increment;
-
-  /* "private" data */
+/* Ends C function definitions when using C++ */
+#ifdef __cplusplus
 };
+#endif
 
-extern
-void PROT__adjustment_attach(SDLGuiTK_Adjustment *adjustment,
-                             SDLGuiTK_Widget *parent);
+#endif /* _SDLguitk_spinbutton_h */
 
-extern
-void PROT__adjustment_set_ratio(SDLGuiTK_Adjustment *adjustment,
-                                   double               ratio);
 

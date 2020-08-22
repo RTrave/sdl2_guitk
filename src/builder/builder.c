@@ -81,6 +81,8 @@ SDLGuiTK_Widget * Extract_object(xmlNode * node)
         widget = Extract_Scrollbar(node);
     else if(propcmp(node, "class", "GtkEntry"))
         widget = Extract_Entry(node);
+    else if(propcmp(node, "class", "GtkSpinButton"))
+        widget = Extract_SpinButton(node);
     else if(propcmp(node, "class", "GtkButton"))
         widget = Extract_Button(node);
     else if(propcmp(node, "class", "GtkToggleButton"))

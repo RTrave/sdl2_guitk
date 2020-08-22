@@ -89,7 +89,28 @@ SDLGuiTK_Adjustment * SDLGuiTK_adjustment_new(double value,
 void SDLGuiTK_adjustment_set_value(SDLGuiTK_Adjustment *adjustment,
                                    double               value)
 {
-    value = (adjustment->lower + value*(adjustment->upper-adjustment->lower));
+    //value = (adjustment->lower + value*(adjustment->upper-adjustment->lower));
+    if(value<adjustment->lower)
+        value = adjustment->lower;
+    if(value>adjustment->upper)
+        value = adjustment->upper;
+    adjustment->value = value;
+    //printf("Adjustment value=%f\n", value);
+    PROT__signal_push(adjustment->object,
+                      SDLGUITK_SIGNAL_TYPE_VALUECHANGED );
+    for(int i=0; i<=adjustment->parent_nb; i++){
+        if( adjustment->parent[i] ) {
+            PROT__signal_push ( adjustment->parent[i]->object,
+                                SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY);
+        }
+    }
+}
+
+void PROT__adjustment_set_ratio(SDLGuiTK_Adjustment *adjustment,
+                                   double               ratio)
+{
+    double value;
+    value = (adjustment->lower + ratio*(adjustment->upper-adjustment->lower));
     if(value<adjustment->lower)
         value = adjustment->lower;
     if(value>adjustment->upper)

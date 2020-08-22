@@ -197,6 +197,64 @@ SDLGuiTK_Widget * Extract_Entry(xmlNode * node)
     return entry;
 }
 
+SDLGuiTK_Widget * Extract_SpinButton(xmlNode * node)
+{
+    SDLGuiTK_Widget *spinbutton = NULL;
+    SDLGuiTK_Adjustment *adjustment = NULL;
+    xmlNode * child;
+    SDL_bool visible = SDL_FALSE;
+    double climb_rate = 0;
+    int digits = 0;
+    SDL_bool have_text = SDL_FALSE;
+    char text[1024];
+    SDLGUITK_LOG ("Extract SpinButton ..\n");
+    child = node->children;
+    while(child)
+    {
+        if(namecmp(child,"property")) {
+            if(propcmp(child, "name", "visible")) {
+                SDLGUITK_LOG ("Extract SpinButton property: visible\n");
+                if(contentcmp(child, "True"))
+                    visible = SDL_TRUE;
+            }
+            else if(propcmp(child, "name", "text")) {
+                SDLGUITK_LOG ("Extract SpinButton property: text\n");
+                strcpy (text, contentget (child));
+                have_text = SDL_TRUE;
+                //spinbutton = SDLGuiTK_spinbutton_new (contentget (child));
+            }
+            else if(propcmp(child, "name", "adjustment")) {
+                SDLGUITK_LOG ("Extract SpinButton property: adjustment\n");
+                adjustment = SDLGuiTK_builder_get_object (NULL, contentget(child))->adjustment;
+            }
+            else if(propcmp(child, "name", "tooltip_text")) {
+                SDLGUITK_LOG ("Extract SpinButton property: tooltip_text\n");
+                has_tooltip = SDL_TRUE;
+                strcpy(tooltip_text,contentget(child));
+            }
+            else {
+                SDLGUITK_ERROR("Node SpinButton property unknown: ");
+                SDLGUITK_ERROR2(propget(child,"name"));
+            }
+        }
+        else if (isnode(child)) {
+            SDLGUITK_ERROR("Node SpinButton name unknown: ");
+            SDLGUITK_ERROR2(nameget(child));
+        }
+        child = child->next;
+    }
+    spinbutton = SDLGuiTK_spin_button_new (adjustment, climb_rate, digits);
+    if(spinbutton && have_text)
+        SDLGuiTK_entry_set_text (spinbutton, text);
+    if(spinbutton && has_tooltip) {
+        has_tooltip = SDL_FALSE;
+        SDLGuiTK_widget_set_tooltip_text(spinbutton, tooltip_text);
+    }
+    if(spinbutton && visible)
+        SDLGuiTK_widget_show (spinbutton);
+    return spinbutton;
+}
+
 SDLGuiTK_Widget * Extract_Button(xmlNode * node)
 {
     SDLGuiTK_Widget *button = NULL, *label = NULL;

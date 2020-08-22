@@ -47,6 +47,7 @@
 
 #include "editable_prot.h"
 #include "entry_prot.h"
+#include "spinbutton_prot.h"
 
 
 
@@ -80,6 +81,7 @@ static SDLGuiTK_Entry * Entry_create()
     new_entry->widget->entry = new_entry;
     new_entry->object = new_entry->widget->object;
     sprintf( new_entry->object->name, "entry%d", ++current_id );
+    new_entry->spinbutton = NULL;
 
     new_entry->editable = PROT__editable_new( new_entry->object );
 
@@ -87,6 +89,7 @@ static SDLGuiTK_Entry * Entry_create()
     new_entry->max_length = 1;
 
     new_entry->srf = MySDL_Surface_new ("Entry_srf");
+    new_entry->pressed_flag = 0;
     new_entry->text_flag = 1;
     new_entry->view_area.x = 0;
     new_entry->view_area.y = 0;
@@ -98,6 +101,8 @@ static SDLGuiTK_Entry * Entry_create()
 
 static void Entry_destroy( SDLGuiTK_Entry * entry )
 {
+    if(entry->spinbutton)
+        PROT__spinbutton_destroy (entry->spinbutton);
     MySDL_Surface_free( entry->srf );
 
     PROT__editable_destroy( entry->editable );
@@ -127,6 +132,8 @@ static void * Entry_DrawUpdate( SDLGuiTK_Widget * widget )
 {
     SDLGuiTK_Entry * entry=widget->entry;
 
+    PROT__widget_reset_req_area( widget );
+
     Entry_make_surface( entry );
 
     PROT__widget_set_req_area(widget, 100, 22);
@@ -134,6 +141,8 @@ static void * Entry_DrawUpdate( SDLGuiTK_Widget * widget )
     //entry->widget->req_area.h = entry->srf->srf->h;
 
     PROT__widget_DrawUpdate( entry->widget );
+    if(entry->spinbutton)
+        PROT__spinbutton_DrawUpdate (entry->spinbutton);
 
     return (void *) NULL;
 }
@@ -151,7 +160,7 @@ static void Entry_active_area( SDLGuiTK_Entry * entry )
 
 static void * Entry_DrawBlit( SDLGuiTK_Widget * widget )
 {
-    int wdiff=0; // hdiff=0;
+    int wdiff=0, hdiff=0;
     float cursor_ratio=1;
     //int xdiff=0, ydiff=0;
     SDL_Rect fg_area;
@@ -161,6 +170,12 @@ static void * Entry_DrawBlit( SDLGuiTK_Widget * widget )
     SDLGuiTK_Theme * theme;
 
     PROT__widget_DrawBlit( entry->widget );
+
+    if(entry->spinbutton) {
+        PROT__spinbutton_DrawBlit (entry->spinbutton);
+        Entry_active_area( entry );
+        return 0;
+    }
 
     Entry_active_area( entry );
 
@@ -182,6 +197,10 @@ static void * Entry_DrawBlit( SDLGuiTK_Widget * widget )
     MySDL_FillRect( widget->srf, &fg_area, bgcolor );
     wdiff = entry->srf->srf->w - widget->abs_area.w +4;
     //hdiff = entry->srf->srf->h - widget->abs_area.h;
+    hdiff = entry->srf->srf->h - widget->abs_area.h +4;
+    if(hdiff<0)
+        fg_area.y -= hdiff/2;
+    fg_area.h = entry->srf->srf->h;
     if(wdiff>0) {
         cursor_ratio = ((float)editable->cursor_position /
                         (float)unicode_strlen(editable->text,-1));
@@ -202,6 +221,9 @@ static void * Entry_DrawBlit( SDLGuiTK_Widget * widget )
 static SDLGuiTK_Widget * Entry_RecursiveEntering( SDLGuiTK_Widget * widget, \
         int x, int y )
 {
+    if(widget->entry->spinbutton) {
+        PROT__spinbutton_RecursiveEntering (widget->entry->spinbutton, x, y);
+    }
     /*   printf( "cursor load RecursiveEntering\n" ); */
     /*   MyCursor_Set( SDLGUITK_CURSOR_TEXT ); */
     return NULL;
@@ -238,11 +260,11 @@ static int Entry_UpdateActive( SDLGuiTK_Widget * widget )
 
     if( idef!=0 ) {
         idef = 0;
-        widget->act_srf->srf = srf_act2;
+        widget->active_srf->srf = srf_act2;
         /*     widget->top->container->bin->window->wm_widget->active_2D->texture_flag = 1; */
     } else {
         idef = 1;
-        widget->act_srf->srf = srf_act1;
+        widget->active_srf->srf = srf_act1;
         /*     widget->top->container->bin->window->wm_widget->active_2D->texture_flag = 1; */
     }
 
@@ -310,6 +332,9 @@ static void * Entry_Hide( SDLGuiTK_Signal * signal, void * data )
 
 static void * Entry_MouseEnter( SDLGuiTK_Signal * signal, void * data )
 {
+    SDLGuiTK_Entry * entry=signal->object->widget->entry;
+    if(entry->spinbutton)
+        PROT__spinbutton_enter(entry->spinbutton);
     MyCursor_Set( SDLGUITK_CURSOR_TEXT );
     //Enable text input
     MyWM_start_textinput();
@@ -318,6 +343,9 @@ static void * Entry_MouseEnter( SDLGuiTK_Signal * signal, void * data )
 
 static void * Entry_MouseLeave( SDLGuiTK_Signal * signal, void * data )
 {
+    SDLGuiTK_Entry * entry=signal->object->widget->entry;
+    if(entry->spinbutton)
+        PROT__spinbutton_leave(entry->spinbutton);
     //Disable text input
     MyWM_stop_textinput ();
     MyCursor_Set( SDLGUITK_CURSOR_DEFAULT );
@@ -333,7 +361,9 @@ static void * Entry_TextInput( SDLGuiTK_Signal * signal, void * data )
     sprintf( tmpstr, "Entry_TextInput(): %s\n", signal->text );
     SDLGUITK_LOG(tmpstr);
 #endif
-
+    if(entry->spinbutton)
+        if(!PROT__spinbutton_inputtext_verif (entry->spinbutton, signal->text))
+            return (void *) NULL;
     Push_textinput( entry, signal->text );
     entry->text_flag = 1;
     if( signal->object->widget->parent ) {
@@ -353,6 +383,10 @@ static void * Entry_Keyboard( SDLGuiTK_Signal * signal, void * data )
     SDLGUITK_LOG(tmpstr);
 #endif
 
+    if(entry->spinbutton) {
+        if(PROT__spinbutton_keyboard (entry->spinbutton, &signal->keysym))
+           return (void *) NULL;
+    }
     Push_keysym( entry, signal );
     entry->text_flag = 1;
     if( signal->object->widget->parent ) {
@@ -364,7 +398,25 @@ static void * Entry_Keyboard( SDLGuiTK_Signal * signal, void * data )
 
 static void * Entry_MousePressed( SDLGuiTK_Signal * signal, void * data )
 {
+    SDLGuiTK_Entry * entry=signal->object->widget->entry;
+    if(entry->spinbutton)
+        PROT__spinbutton_pressed (entry->spinbutton);
     MyWM_set_keyboard_focus (signal->object->widget);
+    printf("TEST 1 !!!\n");
+    entry->pressed_flag = 1;
+    return (void *) NULL;
+}
+
+static void * Entry_MouseReleased( SDLGuiTK_Signal * signal, void * data )
+{
+    SDLGuiTK_Entry * entry=signal->object->widget->entry;
+    if( entry->pressed_flag==1 ) {
+        entry->pressed_flag = 0;
+        //PROT__signal_push( signal->object, SDLGUITK_SIGNAL_TYPE_CLICKED );
+    }
+    printf("TEST 2 !!!\n");
+    if(entry->spinbutton)
+        PROT__spinbutton_clicked (entry->spinbutton);
     return (void *) NULL;
 }
 
@@ -398,6 +450,9 @@ static void Entry_set_functions( SDLGuiTK_Entry * entry )
 
     PROT_signal_connect(entry->object, SDLGUITK_SIGNAL_TYPE_PRESSED,
                         Entry_MousePressed, SDLGUITK_SIGNAL_LEVEL2);
+
+    PROT_signal_connect(entry->object, SDLGUITK_SIGNAL_TYPE_RELEASED,
+                        Entry_MouseReleased, SDLGUITK_SIGNAL_LEVEL2);
 }
 
 
@@ -420,10 +475,22 @@ SDLGuiTK_Widget * SDLGuiTK_entry_new( const char *str )
 
 void SDLGuiTK_entry_set_text( SDLGuiTK_Widget * entry, const char *str )
 {
-    PROT__editable_settext( entry->entry->editable, str );
+    char *text;
+    int free_text=0;
+    if(entry->entry->spinbutton) {
+        text = (char *) PROT__spinbutton_set_text(entry->entry->spinbutton, str);
+        free_text = 1;
+        //return;
+    } else
+        text = (char *) str;
+    PROT__editable_settext( entry->entry->editable, text );
+    entry->entry->text_flag = 1;
     if(entry->parent)
         PROT__signal_push( entry->parent->object,
                            SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY );
+
+    if(free_text)
+        free(text);
 }
 
 
@@ -434,3 +501,21 @@ char * SDLGuiTK_entry_get_text( SDLGuiTK_Widget *entry )
     strcpy( text, entry->entry->editable->text );
     return text;
 }
+
+SDLGuiTK_Entry * PROT__entry_new_from_spinbutton(
+                                    SDLGuiTK_SpinButton * spinbutton)
+{
+    SDLGuiTK_Entry * entry;
+
+    entry = Entry_create();
+    entry->spinbutton = spinbutton;
+    SDLGuiTK_editable_insert_text( entry->editable, \
+                                   "0", \
+                                   -1, \
+                                   &entry->editable->cursor_position );
+    Entry_set_functions( entry );
+    /*   entry->object->widget->changed = 1; */
+
+    return entry;
+}
+

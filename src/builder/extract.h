@@ -25,6 +25,7 @@
 SDLGuiTK_Object * Extract_Adjustment(xmlNode * node);
 SDLGuiTK_Widget * Extract_Scrollbar(xmlNode * node);
 SDLGuiTK_Widget * Extract_Entry(xmlNode * node);
+SDLGuiTK_Widget * Extract_SpinButton(xmlNode * node);
 SDLGuiTK_Widget * Extract_Button(xmlNode * node);
 SDLGuiTK_Widget * Extract_ToggleButton(xmlNode * node);
 SDLGuiTK_Widget * Extract_CheckButton(xmlNode * node);

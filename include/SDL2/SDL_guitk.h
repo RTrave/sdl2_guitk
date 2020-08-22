@@ -48,6 +48,7 @@
 #include "SDL_guitk_misc.h"
 #include "SDL_guitk_button.h"
 #include "SDL_guitk_entry.h"
+#include "SDL_guitk_spinbutton.h"
 #include "SDL_guitk_label.h"
 #include "SDL_guitk_container.h"
 #include "SDL_guitk_bin.h"

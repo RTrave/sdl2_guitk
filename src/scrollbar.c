@@ -206,7 +206,7 @@ static SDLGuiTK_Widget * Scrollbar_RecursiveEntering( SDLGuiTK_Widget * widget, 
             //printf("Mx:%d / AbsX:%d, AbsW:%d\n ", mx, widget->abs_area.x, widget->abs_area.w);
             double value =
                 (((double)mx - (double)widget->abs_area.x) / ((double)widget->abs_area.w));
-            SDLGuiTK_adjustment_set_value(scrollbar->adjustment,
+            PROT__adjustment_set_ratio(scrollbar->adjustment,
                                           value);
             scrollbar->button_area.x += mdiff;
             scrollbar->button_act_area.x += mdiff;
@@ -220,7 +220,7 @@ static SDLGuiTK_Widget * Scrollbar_RecursiveEntering( SDLGuiTK_Widget * widget, 
             double value =
                 (((double)my - (double)widget->abs_area.y) /
                  ((double)widget->abs_area.h-SCROLLBAR_SIZE));
-            SDLGuiTK_adjustment_set_value(scrollbar->adjustment,
+            PROT__adjustment_set_ratio(scrollbar->adjustment,
                                           value);
             scrollbar->button_area.y += mdiff;
             scrollbar->button_act_area.y += mdiff;

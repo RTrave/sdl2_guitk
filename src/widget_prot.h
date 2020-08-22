@@ -61,13 +61,15 @@ struct SDLGuiTK_Widget {
     int    (*UpdateActive  )( SDLGuiTK_Widget * );
 
     /* "private" data */
-    SDL_Rect      req_area;        /* (w,h) set in DrawUpdate() of herited */
-    SDL_Rect      abs_area;        /* (w,h) set in self DrawUpdate() */
-    SDL_Rect      rel_area;        /* (w,h) set in self DrawUpdate() */
-    SDL_Rect      act_area;
+    SDL_Rect        req_area;        /* (w,h) set in DrawUpdate() of herited */
+    SDL_Rect        abs_area;        /* (w,h) set in self DrawUpdate() */
+    SDL_Rect        rel_area;        /* (w,h) set in self DrawUpdate() */
+    SDL_Rect        act_area;
     MySDL_Surface * srf;
-    MySDL_Surface * act_srf;
-    float         act_alpha;
+    // Active surface elements
+    SDL_Rect        active_area;
+    MySDL_Surface * active_srf;
+    float           active_alpha;
 };
 
 

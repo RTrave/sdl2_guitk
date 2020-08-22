@@ -288,13 +288,13 @@ static int Button_UpdateActive( SDLGuiTK_Widget * widget)
 {
     SDLGuiTK_Button * button=widget->container->bin->button;
 
-    if( widget->act_alpha>=0.15 ) {
+    if( widget->active_alpha>=0.15 ) {
         button->active_alpha_mod = -0.005;
     };
-    if( widget->act_alpha<=0.10 ) {
+    if( widget->active_alpha<=0.10 ) {
         button->active_alpha_mod = 0.005;
     };
-    widget->act_alpha+=button->active_alpha_mod;
+    widget->active_alpha+=button->active_alpha_mod;
     if( button->active_cflag==1 ) {
         button->active_cflag = 0;
         return 1;
@@ -314,22 +314,30 @@ static void * Button_Realize( SDLGuiTK_Signal * signal, void * data )
 static void * Button_MouseEnter( SDLGuiTK_Signal * signal, void * data )
 {
     SDLGuiTK_Button * button=signal->object->widget->container->bin->button;
+    SDLGuiTK_Widget * widget=signal->object->widget;
     //if(widget->has_tooltip)
     //    PROT__context_ref_tooltip (widget);
-    signal->object->widget->act_alpha = 0.15;
+    widget->active_alpha = 0.15;
     button->active_alpha_mod = -0.005;
     ButtonCache( signal->object->widget );
-    signal->object->widget->act_srf = button->active_srf;
+    widget->active_srf = button->active_srf;
+    widget->active_area.x = widget->act_area.x;
+    widget->active_area.y = widget->act_area.y;
+    widget->active_area.w = widget->act_area.w;
+    widget->active_area.h = widget->act_area.h;
+
+
     return (void *) NULL;
 }
 
 static void * Button_MouseLeave( SDLGuiTK_Signal * signal, void * data )
 {
     SDLGuiTK_Button * button=signal->object->widget->container->bin->button;
+    SDLGuiTK_Widget * widget=signal->object->widget;
     //if(widget->has_tooltip)
     //    PROT__context_unref_tooltip ();
-    signal->object->widget->act_srf = NULL;
-    signal->object->widget->act_alpha = 0.15;
+    widget->active_srf = NULL;
+    widget->active_alpha = 0.15;
     button->active_alpha_mod = -0.005;
     button->pressed_flag = 0;
     return (void *) NULL;

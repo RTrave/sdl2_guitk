@@ -503,7 +503,7 @@ void * MyWM_blitsurface( SDLGuiTK_WMWidget * wm_widget )
     Surface2D_blitsurface( surface2D, \
                            wm_widget->area.x, wm_widget->area.y );
 
-    if( focused_widget && focused_widget->act_srf ) {
+    if( focused_widget && focused_widget->active_srf ) {
         if( focused_widget->top==wm_widget->widget ) {
             int act_flag=0;
             /*     if( ! active_2D ) { active_2D = MySDL_surface2D_new(); }; */
@@ -511,14 +511,14 @@ void * MyWM_blitsurface( SDLGuiTK_WMWidget * wm_widget )
             act_flag = (int) (*focused_widget->UpdateActive) ( focused_widget );
             if ( act_flag!=0 ) { /*  */
                 Surface2D_update( animate_2D,
-                                  focused_widget->act_srf->srf );
+                                  focused_widget->active_srf->srf );
                 /*       active_2D->texture_flag = 0; */
             }
-            animate_2D->alpha = (GLfloat) focused_widget->act_alpha;
+            animate_2D->alpha = (GLfloat) focused_widget->active_alpha;
             //if( focused_widget->act_srf->srf==animate_2D->srf) {
                 Surface2D_blitsurface( animate_2D,		    \
-                                       focused_widget->act_area.x,	\
-                                       focused_widget->act_area.y );
+                                       focused_widget->active_area.x,	\
+                                       focused_widget->active_area.y );
             //}
         }
     }
