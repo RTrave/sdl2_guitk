@@ -75,6 +75,8 @@ static SDLGuiTK_Scrollbar * Scrollbar_create()
     sprintf( new_scrollbar->object->name, "scrollbar%d", ++current_id );
     new_scrollbar->widget->scrollbar = new_scrollbar;
 
+    new_scrollbar->widget->focus_on_click = SDL_TRUE;
+
     new_scrollbar->orientation = SDLGUITK_ORIENTATION_HORIZONTAL;
     new_scrollbar->adjustment = NULL;
 

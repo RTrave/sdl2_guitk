@@ -402,7 +402,6 @@ static void * Entry_MousePressed( SDLGuiTK_Signal * signal, void * data )
     if(entry->spinbutton)
         PROT__spinbutton_pressed (entry->spinbutton);
     MyWM_set_keyboard_focus (signal->object->widget);
-    printf("TEST 1 !!!\n");
     entry->pressed_flag = 1;
     return (void *) NULL;
 }
@@ -414,7 +413,6 @@ static void * Entry_MouseReleased( SDLGuiTK_Signal * signal, void * data )
         entry->pressed_flag = 0;
         //PROT__signal_push( signal->object, SDLGUITK_SIGNAL_TYPE_CLICKED );
     }
-    printf("TEST 2 !!!\n");
     if(entry->spinbutton)
         PROT__spinbutton_clicked (entry->spinbutton);
     return (void *) NULL;

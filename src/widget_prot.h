@@ -42,6 +42,7 @@ struct SDLGuiTK_Widget {
     SDL_bool              has_default;
     SDL_bool              has_tooltip;
     char                * tooltip_text;
+    SDL_bool              focus_on_click;
     int activable_child;
 
     /* "private" data */

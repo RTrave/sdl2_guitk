@@ -36,6 +36,7 @@
 
 
 #include "mywm.h"
+#include "../object_prot.h"
 #include "../widget_prot.h"
 #include "../wmwidget.h"
 #include "../signal.h"
@@ -45,6 +46,7 @@
 
 static SDLGuiTK_Widget    * focused_widget=NULL;
 static SDLGuiTK_Widget    * keyboard_focus=NULL;
+static SDLGuiTK_Widget    * mouse_focus=NULL;
 static SDL_bool             is_textinput=SDL_FALSE;
 static SDLGuiTK_Surface2D * animate_2D=NULL;
 
@@ -65,6 +67,23 @@ void MyWM_unset_keyboard_focus(SDLGuiTK_Widget * widget)
     keyboard_focus->has_default = SDL_FALSE;
     keyboard_focus = NULL;
 }
+
+void MyWM_set_mouse_focus(SDLGuiTK_Widget * widget)
+{
+    if(mouse_focus==widget) return;
+    if(mouse_focus) {
+        MyWM_unset_mouse_focus(mouse_focus);
+    }
+    mouse_focus = widget;
+}
+
+void MyWM_unset_mouse_focus(SDLGuiTK_Widget * widget)
+{
+    if(mouse_focus!=widget) return;
+    mouse_focus = NULL;
+    PROT_MyWM_checkactive( widget );
+}
+
 
 void MyWM_start_textinput()
 {
@@ -290,13 +309,27 @@ void PROT_MyWM_leaveall()
 
 void PROT_MyWM_checkactive( SDLGuiTK_Widget * widget )
 {
-    int x, y;
+    if(mouse_focus) {
+        //int x, y;
+        //SDL_GetMouseState( &x, &y );
+        //(*mouse_focus->RecursiveEntering) (mouse_focus, x, y );
+        return;
+    }
+   int x, y;
     SDL_GetMouseState( &x, &y );
     MyWM_push_MOUSEMOTION_in( x, y );
 }
 
 int MyWM_push_MOUSEMOTION( SDL_Event *event )
 {
+    if(mouse_focus &&
+       (current_context->focused && current_context->focused->widget!=mouse_focus))
+    {
+        int x, y;
+        SDL_GetMouseState( &x, &y );
+        (*mouse_focus->RecursiveEntering) (mouse_focus, x, y );
+        return 1;
+    }
     SDLGuiTK_list_lock( current_context->activables );
     if( current_context->focused ) {
 
@@ -444,6 +477,8 @@ int MyWM_push_WINDOWEVENT( SDL_Event *event )
 #endif
         break;
     case SDL_WINDOWEVENT_LEAVE:
+        if(mouse_focus)
+            MyWM_unset_mouse_focus (mouse_focus);
 #if DEBUG_LEVEL >= 3
         SDL_Log("Mouse left window %d", event->window.windowID);
 #endif

@@ -41,6 +41,7 @@
 #include "widget_prot.h"
 #include "signal.h"
 #include "render/surface2d.h"
+#include "render/mywm.h"
 #include "wmwidget.h"
 #include "context_prot.h"
 
@@ -144,6 +145,7 @@ static SDLGuiTK_Widget * Widget_create()
     new_widget->has_default = SDL_FALSE;
     new_widget->has_tooltip = SDL_FALSE;
     new_widget->tooltip_text = NULL;
+    new_widget->focus_on_click = SDL_FALSE;
     new_widget->activable_child = 0;
 
     new_widget->parent = NULL;
@@ -208,14 +210,16 @@ void PROT__widget_uninit()
 
 static void * Widget_MouseEnter( SDLGuiTK_Signal * signal, void * data )
 {
-    if(signal->object->widget->has_tooltip)
-        PROT__context_ref_tooltip (signal->object->widget);
+    SDLGuiTK_Widget * widget=signal->object->widget;
+    if(widget->has_tooltip)
+        PROT__context_ref_tooltip (widget);
     return (void *) NULL;
 }
 
 static void * Widget_MouseLeave( SDLGuiTK_Signal * signal, void * data )
 {
-    if(signal->object->widget->has_tooltip)
+    SDLGuiTK_Widget * widget=signal->object->widget;
+    if(widget->has_tooltip)
         PROT__context_unref_tooltip ();
     return (void *) NULL;
 }
@@ -229,6 +233,49 @@ static void * Widget_ChildNotify( SDLGuiTK_Signal * signal, void * data )
     return (void *) NULL;
 }
 
+static void * Widget_MousePressed( SDLGuiTK_Signal * signal, void * data )
+{
+    SDLGuiTK_Widget * widget=signal->object->widget;
+    if(widget->focus_on_click)
+        MyWM_set_mouse_focus (widget);
+    else {
+        SDLGuiTK_Widget * parent=widget->parent;
+        while(parent) {
+            if(parent->focus_on_click) {
+                PROT__signal_push( parent->object,
+                                   SDLGUITK_SIGNAL_TYPE_PRESSED );
+                return (void *) NULL;
+            }
+            if(parent==parent->parent)
+                return (void *) NULL;
+            parent = parent->parent;
+        }
+    }
+    return (void *) NULL;
+}
+
+static void * Widget_MouseReleased( SDLGuiTK_Signal * signal, void * data )
+{
+    SDLGuiTK_Widget * widget=signal->object->widget;
+    if(widget->focus_on_click)
+        MyWM_unset_mouse_focus (widget);
+    else {
+        SDLGuiTK_Widget * parent=widget->parent;
+        while(parent) {
+            if(parent->focus_on_click) {
+                PROT__signal_push( parent->object,
+                                   SDLGUITK_SIGNAL_TYPE_RELEASED );
+                return (void *) NULL;
+            }
+            if(parent==parent->parent)
+                return (void *) NULL;
+            parent = parent->parent;
+        }
+    }
+    return (void *) NULL;
+}
+
+
 static void Widget_set_functions( SDLGuiTK_Widget * widget )
 {
     PROT_signal_connect(widget->object, SDLGUITK_SIGNAL_TYPE_ENTER,
@@ -236,6 +283,12 @@ static void Widget_set_functions( SDLGuiTK_Widget * widget )
 
     PROT_signal_connect(widget->object, SDLGUITK_SIGNAL_TYPE_LEAVE,
                         Widget_MouseLeave, SDLGUITK_SIGNAL_LEVEL1);
+
+    PROT_signal_connect(widget->object, SDLGUITK_SIGNAL_TYPE_PRESSED,
+                        Widget_MousePressed, SDLGUITK_SIGNAL_LEVEL1);
+
+    PROT_signal_connect(widget->object, SDLGUITK_SIGNAL_TYPE_RELEASED,
+                        Widget_MouseReleased, SDLGUITK_SIGNAL_LEVEL1);
 
     PROT_signal_connect(widget->object, SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY,
                         Widget_ChildNotify, SDLGUITK_SIGNAL_LEVEL1);

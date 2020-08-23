@@ -32,6 +32,8 @@ void MyWM_Uninit();
 // Keyboard focus handling
 void MyWM_set_keyboard_focus(SDLGuiTK_Widget * widget);
 void MyWM_unset_keyboard_focus(SDLGuiTK_Widget * widget);
+void MyWM_set_mouse_focus(SDLGuiTK_Widget * widget);
+void MyWM_unset_mouse_focus(SDLGuiTK_Widget * widget);
 void MyWM_start_textinput();
 void MyWM_stop_textinput();
 
