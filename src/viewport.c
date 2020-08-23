@@ -86,6 +86,8 @@ static SDLGuiTK_Viewport * Viewport_create()
     new_viewport->object->widget->top = new_viewport->object->widget;
     new_viewport->object->widget->parent = new_viewport->object->widget;
 
+    new_viewport->object->widget->focus_on_click = SDL_TRUE;
+
     //new_viewport->srf = MySDL_Surface_new("Viewport_srf");
     new_viewport->area.x = 0;
     new_viewport->area.y = 0;
@@ -94,6 +96,7 @@ static SDLGuiTK_Viewport * Viewport_create()
     new_viewport->force_width = 0;
     new_viewport->force_height = 0;
     new_viewport->is_active = 0;
+    new_viewport->is_moving = SDL_FALSE;
 
     //new_viewport->wm_widget = WMWidget_New( new_viewport->object->widget );
     //new_viewport->wm_widget->border_width = 0;
@@ -146,10 +149,11 @@ static void * Viewport_DrawBlit( SDLGuiTK_Widget * widget )
     PROT__bin_DrawBlit( viewport->bin );
 
     viewport->area.w = widget->container->children_area.w;
-    viewport->area.h = widget->container->children_area.h;
     int diff_w = viewport->bin->child->rel_area.w - viewport->area.w;
-    int diff_h = viewport->bin->child->rel_area.h - viewport->area.h;
     viewport->area.x = (int) diff_w*Adjustment_ratio(viewport->hadjustment);
+
+    viewport->area.h = widget->container->children_area.h;
+    int diff_h = viewport->bin->child->rel_area.h - viewport->area.h;
     viewport->area.y = (int) diff_h*Adjustment_ratio(viewport->vadjustment);
 
     MySDL_BlitSurface( viewport->bin->child->srf, &viewport->area, \
@@ -182,6 +186,32 @@ static void * Viewport_DrawBlit( SDLGuiTK_Widget * widget )
     return (void *) NULL;
 }
 
+static void Viewport_Move(SDLGuiTK_Viewport *viewport, int x, int y)
+{
+    SDLGuiTK_Widget * widget=viewport->object->widget;
+    int mdiff = 0;
+    if(viewport->bin->child->req_area.w>widget->container->children_area.w)
+        mdiff = x-viewport->mbutton_x;
+    if(mdiff!=0) {
+        double value = Adjustment_ratio (viewport->hadjustment) -
+                (((double)mdiff) / ((double)viewport->bin->child->req_area.w-(double)widget->container->children_area.w));
+        PROT__adjustment_set_ratio(viewport->hadjustment, value);
+        //scrollbar->button_area.x += mdiff;
+        //scrollbar->button_act_area.x += mdiff;
+        viewport->mbutton_x += mdiff;
+    }
+    mdiff = 0;
+    if(viewport->bin->child->req_area.h>widget->container->children_area.h)
+        mdiff = y-viewport->mbutton_y;
+    if(mdiff!=0) {
+        double value = Adjustment_ratio (viewport->vadjustment) -
+                (((double)mdiff) / ((double)viewport->bin->child->req_area.h-(double)widget->container->children_area.h));
+        PROT__adjustment_set_ratio(viewport->vadjustment, value);
+        //scrollbar->button_area.x += mdiff;
+        //scrollbar->button_act_area.x += mdiff;
+        viewport->mbutton_y += mdiff;
+    }
+}
 
 static SDLGuiTK_Widget * Viewport_RecursiveEntering( SDLGuiTK_Widget * widget, \
         int x, int y )
@@ -196,6 +226,10 @@ static SDLGuiTK_Widget * Viewport_RecursiveEntering( SDLGuiTK_Widget * widget, \
         return NULL;
     }
     if( !child->visible ) {
+        return NULL;
+    }
+    if(viewport->is_moving) {
+        Viewport_Move(viewport, x, y);
         return NULL;
     }
     if((x>=widget->act_area.x && x<(widget->act_area.x+widget->act_area.w)) &&
@@ -280,30 +314,39 @@ static void * Viewport_MouseEnter( SDLGuiTK_Signal * signal, void * data )
 
 static void * Viewport_MouseLeave( SDLGuiTK_Signal * signal, void * data )
 {
+    SDLGuiTK_Widget * widget=signal->object->widget;
+    SDLGuiTK_Viewport * viewport=widget->container->bin->viewport;
+    viewport->is_moving = SDL_FALSE;
 
     return (void *) NULL;
 }
 
 static void * Viewport_MousePressed( SDLGuiTK_Signal * signal, void * data )
 {
+    SDLGuiTK_Widget * widget=signal->object->widget;
+    SDLGuiTK_Viewport * viewport=widget->container->bin->viewport;
     int x, y;
-        if( SDL_GetMouseState( &x, &y) ) {
+    if( SDL_GetMouseState( &x, &y) ) {
         printf( "Mouse pressed on viewport: x=%d y=%d\n", x, y );
+        viewport->mbutton_x = x;
+        viewport->mbutton_y = y;
+        viewport->is_moving = SDL_TRUE;
         //window->moving = 1;
     }
-
     return (void *) NULL;
 }
 
 static void * Viewport_MouseReleased( SDLGuiTK_Signal * signal, void * data )
 {
-    /*   int x, y; */
-
-    /*   if( SDL_GetMouseState( &x, &y) ) { */
-    /*     printf( "Mouse released in: x=%d y=%d\n", x, y ); */
-    /*   } */
-    Viewport_DrawUpdate( signal->object->widget );
-    Viewport_DrawBlit( signal->object->widget );
+    SDLGuiTK_Widget * widget=signal->object->widget;
+    SDLGuiTK_Viewport * viewport=widget->container->bin->viewport;
+   int x, y;
+    if( SDL_GetMouseState( &x, &y) ) {
+        printf( "Mouse released on viewport: x=%d y=%d\n", x, y );
+    }
+    viewport->is_moving = SDL_FALSE;
+    //Viewport_DrawUpdate( widget );
+    //Viewport_DrawBlit( widget );
 
     return (void *) NULL;
 }

@@ -43,6 +43,8 @@ struct SDLGuiTK_Viewport {
     SDL_Rect        area;
     int force_width, force_height;
     int is_active;
+    SDL_bool is_moving;
+    int mbutton_x, mbutton_y;
 };
 
 
