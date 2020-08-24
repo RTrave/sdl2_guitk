@@ -365,8 +365,9 @@ int  SDLGuiTK_pushevent( SDL_Event *event )
         if(current_context->type==SDLGUITK_CONTEXT_MODE_MULTIPLE) {
             if(event->window.event==SDL_WINDOWEVENT_LEAVE) {
                 if(current_context->focused) {
+                    MyWM_push_WINDOWEVENT( event );
                     current_context->active_render = NULL;
-                    PROT_MyWM_leaveall();
+                    current_context->focused = NULL;
                     SDL_mutexV( current_context->mutex );
                     return 0;
                 }

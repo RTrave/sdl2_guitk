@@ -146,6 +146,8 @@ static void WMWidget_DrawTitleSurface( SDLGuiTK_WMWidget * wm_widget )
 
 SDLGuiTK_Render * WMWidget_getrender( SDLGuiTK_WMWidget * wm_widget )
 {
+    if(!wm_widget)
+        return NULL;
     if(wm_widget->render)
         return wm_widget->render;
     if(wm_widget->is_wmchild && wm_widget->wmparent && wm_widget->wmparent->render)

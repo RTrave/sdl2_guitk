@@ -477,8 +477,12 @@ int MyWM_push_WINDOWEVENT( SDL_Event *event )
 #endif
         break;
     case SDL_WINDOWEVENT_LEAVE:
-        if(mouse_focus)
-            MyWM_unset_mouse_focus (mouse_focus);
+        if(mouse_focus && focused_widget) {
+            PROT__signal_push( focused_widget->object,
+                               SDLGUITK_SIGNAL_TYPE_RELEASED );
+            focused_widget = NULL;
+            LeaveAll ();
+        }
 #if DEBUG_LEVEL >= 3
         SDL_Log("Mouse left window %d", event->window.windowID);
 #endif
