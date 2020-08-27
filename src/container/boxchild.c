@@ -115,12 +115,12 @@ void       BoxChild_DrawUpdate( BoxChild * child )
 
     /* update child area for parent box suggestion */
     if( box->type==SDLGUITK_BOX_H ) {
-        child->area.w = widget->req_area.w + child->padding;
+        child->area.w = widget->req_area.w + 2*child->padding;
         child->area.h = widget->req_area.h;
     }
     if( box->type==SDLGUITK_BOX_V ) {
         child->area.w = widget->req_area.w;
-        child->area.h = widget->req_area.h + child->padding;
+        child->area.h = widget->req_area.h + 2*child->padding;
     }
 
 }

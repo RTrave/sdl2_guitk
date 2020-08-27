@@ -60,6 +60,7 @@
 #include "SDL_guitk_panel.h"
 #include "SDL_guitk_viewport.h"
 #include "SDL_guitk_scrolledwindow.h"
+#include "SDL_guitk_progressbar.h"
 
 #include "SDL_guitk_builder.h"
 

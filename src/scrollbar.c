@@ -87,6 +87,7 @@ static SDLGuiTK_Scrollbar * Scrollbar_create()
 
 static void Scrollbar_destroy( SDLGuiTK_Scrollbar * scrollbar )
 {
+    MySDL_Surface_free (scrollbar->srf);
     PROT__widget_destroy( scrollbar->widget );
     free( scrollbar );
 }
@@ -206,10 +207,10 @@ static SDLGuiTK_Widget * Scrollbar_RecursiveEntering( SDLGuiTK_Widget * widget, 
         if(scrollbar->buttonOn==1 && mdiff!=0){
             //wdiff = scrollbar->button_area.x;
             //printf("Mx:%d / AbsX:%d, AbsW:%d\n ", mx, widget->abs_area.x, widget->abs_area.w);
-            double value =
+            double fraction =
                 (((double)mx - (double)widget->abs_area.x) / ((double)widget->abs_area.w));
-            PROT__adjustment_set_ratio(scrollbar->adjustment,
-                                          value);
+            PROT__adjustment_set_fraction(scrollbar->adjustment,
+                                          fraction);
             scrollbar->button_area.x += mdiff;
             scrollbar->button_act_area.x += mdiff;
             scrollbar->mbutton_x += mdiff;
@@ -219,11 +220,11 @@ static SDLGuiTK_Widget * Scrollbar_RecursiveEntering( SDLGuiTK_Widget * widget, 
         if(scrollbar->buttonOn==1 && mdiff!=0){
             //wdiff = scrollbar->button_area.y;
             //printf("Mx:%d / AbsX:%d, AbsW:%d\n ", mx, widget->abs_area.x, widget->abs_area.w);
-            double value =
+            double fraction =
                 (((double)my - (double)widget->abs_area.y) /
                  ((double)widget->abs_area.h-SCROLLBAR_SIZE));
-            PROT__adjustment_set_ratio(scrollbar->adjustment,
-                                          value);
+            PROT__adjustment_set_fraction(scrollbar->adjustment,
+                                          fraction);
             scrollbar->button_area.y += mdiff;
             scrollbar->button_act_area.y += mdiff;
             scrollbar->mbutton_y += mdiff;
@@ -332,4 +333,8 @@ SDLGuiTK_Widget *SDLGuiTK_scrollbar_new(int orientation,
     return scrollbar->widget;
 }
 
+SDLGuiTK_Adjustment *SDLGuiTK_scrollbar_get_adjustment(SDLGuiTK_Scrollbar *scrollbar)
+{
+    return scrollbar->adjustment;
+}
 

@@ -130,6 +130,9 @@ void MySDL_CreateRGBSurface( MySDL_Surface *surface,
                                          0x000000FF
 #endif
                                        );
+    if(!surface->srf) {
+        SDL_Log("SDL_CreateRGBSurface() failed: %s", SDL_GetError());
+    }
 #if DEBUG_LEVEL >= 3
     surfaces_counter++;
     printf("<surfaces_counter:%d> MySDL_CreateRGBSurface()\n",surfaces_counter);

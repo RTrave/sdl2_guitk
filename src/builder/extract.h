@@ -23,6 +23,7 @@
 
 
 SDLGuiTK_Object * Extract_Adjustment(xmlNode * node);
+SDLGuiTK_Widget * Extract_ProgressBar(xmlNode * node);
 SDLGuiTK_Widget * Extract_Scrollbar(xmlNode * node);
 SDLGuiTK_Widget * Extract_Entry(xmlNode * node);
 SDLGuiTK_Widget * Extract_SpinButton(xmlNode * node);

@@ -19,9 +19,10 @@
 
 */
 
-#ifndef _SDLguitk_scrollbar_h
-#define _SDLguitk_scrollbar_h
+#ifndef _SDLguitk_progressbar_h
+#define _SDLguitk_progressbar_h
 
+//#include <SDL/SDL.h>
 #include "SDL_guitk.h"
 
 /* Set up for C function definitions, even when using C++ */
@@ -29,31 +30,34 @@
 extern "C" {
 #endif
 
-  /* SDLGuiTK_Scrollbar structure definition */
-  typedef struct SDLGuiTK_Scrollbar SDLGuiTK_Scrollbar;
+
+  /* SDLGuiTK_ProgressBar structure definition */
+  typedef struct SDLGuiTK_ProgressBar SDLGuiTK_ProgressBar;
 
   extern DECLSPEC
-  SDLGuiTK_Scrollbar *SDLGuiTK_SCROLLBAR( SDLGuiTK_Widget *widget );
+  SDLGuiTK_ProgressBar *SDLGuiTK_PROGRESSBAR( SDLGuiTK_Widget *widget );
 
-
-  /* Orientation of widget */
-#define SDLGUITK_ORIENTATION_HORIZONTAL      ((int) 1)
-#define SDLGUITK_ORIENTATION_VERTICAL        ((int) 2)
-
-
-  /* ops. on SDLGuiTK_Scrollbar objects */
-  extern DECLSPEC
-  SDLGuiTK_Widget *SDLGuiTK_scrollbar_new(int orientation,
-                                          SDLGuiTK_Adjustment *adjustment);
 
   extern DECLSPEC
-  SDLGuiTK_Adjustment *SDLGuiTK_scrollbar_get_adjustment(SDLGuiTK_Scrollbar *scrollbar);
+  SDLGuiTK_Widget *SDLGuiTK_progress_bar_new();
+
+  extern DECLSPEC
+  void SDLGuiTK_progress_bar_set_orientation (SDLGuiTK_ProgressBar *pbar,
+                                              int orientation);
+
+  extern DECLSPEC
+  void SDLGuiTK_progress_bar_set_fraction (SDLGuiTK_ProgressBar *pbar,
+                                           double fraction);
+
+  extern DECLSPEC
+  double SDLGuiTK_progress_bar_get_fraction (SDLGuiTK_ProgressBar *pbar);
+
 
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
 };
 #endif
 
-#endif /* _SDLguitk_scrollbar_h */
+#endif /* _SDLguitk_progressbar_h */
 
 

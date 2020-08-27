@@ -37,10 +37,10 @@ struct SDLGuiTK_Scrollbar {
     SDLGuiTK_Adjustment *adjustment;
 
     /* "private" data */
-    int mousein;
-    int buttonOn;
-    int mbutton_x, mbutton_y;
-    MySDL_Surface  *srf;
+    int             mousein;
+    int             buttonOn;
+    int             mbutton_x, mbutton_y;
+    MySDL_Surface * srf;
     SDL_Rect        area;
     SDL_Rect        button_area;
     SDL_Rect        button_act_area;

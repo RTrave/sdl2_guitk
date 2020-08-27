@@ -33,7 +33,10 @@ extern "C" {
   /* SDLGuiTK_Button structure definition */
   typedef struct SDLGuiTK_Adjustment SDLGuiTK_Adjustment;
 
-    /*  */
+  extern DECLSPEC
+  SDLGuiTK_Object *SDLGuiTK_ADJUSTMENT( SDLGuiTK_Adjustment *adjustment );
+
+  /*  */
   extern DECLSPEC
   SDLGuiTK_Adjustment * SDLGuiTK_adjustment_new(double value,
                                                 double lower,
@@ -44,6 +47,13 @@ extern "C" {
   extern DECLSPEC
   void SDLGuiTK_adjustment_set_value(SDLGuiTK_Adjustment *adjustment,
                                      double               value);
+
+  extern DECLSPEC
+  double SDLGuiTK_adjustment_get_value(SDLGuiTK_Adjustment *adjustment);
+
+  extern DECLSPEC
+  double SDLGuiTK_adjustment_get_fraction(SDLGuiTK_Adjustment *adjustment);
+
 
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus

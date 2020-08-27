@@ -24,6 +24,7 @@ libguitk_la_SOURCES = xmalloc.c getopt.c getopt.h \
 	viewport.c viewport_prot.h \
 	adjustment.c adjustment_prot.h \
 	scrollbar.c scrollbar_prot.h \
-	wmwidget.c wmwidget.h
+	wmwidget.c wmwidget.h \
+	progressbar.c progressbar_prot.h
 
 libguitk_la_LDFLAGS = $(GUI_LDFLAGS)

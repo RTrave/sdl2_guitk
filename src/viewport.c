@@ -138,7 +138,7 @@ static void * Viewport_DrawUpdate( SDLGuiTK_Widget * widget )
 
 static double Adjustment_ratio(SDLGuiTK_Adjustment *adjustment)
 {
-    return (adjustment->value/(adjustment->upper-adjustment->lower));
+    return ((adjustment->value-adjustment->lower)/(adjustment->upper-adjustment->lower));
 }
 
 static void * Viewport_DrawBlit( SDLGuiTK_Widget * widget )
@@ -193,9 +193,9 @@ static void Viewport_Move(SDLGuiTK_Viewport *viewport, int x, int y)
     if(viewport->bin->child->req_area.w>widget->container->children_area.w)
         mdiff = x-viewport->mbutton_x;
     if(mdiff!=0) {
-        double value = Adjustment_ratio (viewport->hadjustment) -
+        double fraction = Adjustment_ratio (viewport->hadjustment) -
                 (((double)mdiff) / ((double)viewport->bin->child->req_area.w-(double)widget->container->children_area.w));
-        PROT__adjustment_set_ratio(viewport->hadjustment, value);
+        PROT__adjustment_set_fraction(viewport->hadjustment, fraction);
         //scrollbar->button_area.x += mdiff;
         //scrollbar->button_act_area.x += mdiff;
         viewport->mbutton_x += mdiff;
@@ -204,9 +204,9 @@ static void Viewport_Move(SDLGuiTK_Viewport *viewport, int x, int y)
     if(viewport->bin->child->req_area.h>widget->container->children_area.h)
         mdiff = y-viewport->mbutton_y;
     if(mdiff!=0) {
-        double value = Adjustment_ratio (viewport->vadjustment) -
+        double fraction = Adjustment_ratio (viewport->vadjustment) -
                 (((double)mdiff) / ((double)viewport->bin->child->req_area.h-(double)widget->container->children_area.h));
-        PROT__adjustment_set_ratio(viewport->vadjustment, value);
+        PROT__adjustment_set_fraction(viewport->vadjustment, fraction);
         //scrollbar->button_area.x += mdiff;
         //scrollbar->button_act_area.x += mdiff;
         viewport->mbutton_y += mdiff;

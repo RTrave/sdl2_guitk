@@ -63,6 +63,11 @@ void PROT__adjustment_detach(SDLGuiTK_Adjustment *adjustment,
 }
 
 
+SDLGuiTK_Object *SDLGuiTK_ADJUSTMENT( SDLGuiTK_Adjustment *adjustment )
+{
+    return adjustment->object;
+}
+
 SDLGuiTK_Adjustment * SDLGuiTK_adjustment_new(double value,
                                               double lower,
                                               double upper,
@@ -106,11 +111,22 @@ void SDLGuiTK_adjustment_set_value(SDLGuiTK_Adjustment *adjustment,
     }
 }
 
-void PROT__adjustment_set_ratio(SDLGuiTK_Adjustment *adjustment,
-                                   double               ratio)
+double SDLGuiTK_adjustment_get_value(SDLGuiTK_Adjustment *adjustment)
+{
+    return adjustment->value;
+}
+
+double SDLGuiTK_adjustment_get_fraction(SDLGuiTK_Adjustment *adjustment)
+{
+    return (adjustment->value-adjustment->lower) /
+        (adjustment->upper-adjustment->lower);
+}
+
+void PROT__adjustment_set_fraction(SDLGuiTK_Adjustment *adjustment,
+                                   double               fraction)
 {
     double value;
-    value = (adjustment->lower + ratio*(adjustment->upper-adjustment->lower));
+    value = (adjustment->lower + fraction*(adjustment->upper-adjustment->lower));
     if(value<adjustment->lower)
         value = adjustment->lower;
     if(value>adjustment->upper)

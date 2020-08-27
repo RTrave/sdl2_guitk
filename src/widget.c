@@ -156,6 +156,7 @@ static SDLGuiTK_Widget * Widget_create()
     new_widget->entry = NULL;
     new_widget->menushell = NULL;
     new_widget->scrollbar = NULL;
+    new_widget->progressbar = NULL;
 
     new_widget->width_request = -1;
     new_widget->height_request = -1;

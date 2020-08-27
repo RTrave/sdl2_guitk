@@ -28,11 +28,12 @@ struct SDLGuiTK_Widget {
     SDLGuiTK_Object * object;              /* referent object and herits from */
 
     /* herited */
-    SDLGuiTK_Misc       * misc;
-    SDLGuiTK_Container  * container;
-    SDLGuiTK_Entry      * entry;
-    SDLGuiTK_MenuShell  * menushell;
-    SDLGuiTK_Scrollbar  * scrollbar;
+    SDLGuiTK_Misc         * misc;
+    SDLGuiTK_Container    * container;
+    SDLGuiTK_Entry        * entry;
+    SDLGuiTK_MenuShell    * menushell;
+    SDLGuiTK_Scrollbar    * scrollbar;
+    SDLGuiTK_ProgressBar  * progressbar;
 
     /* "public" data */
     SDL_bool              visible;

@@ -1,5 +1,5 @@
 /*
-   SDL_guitk - GUI toolkit designed for SDL environnements.
+   SDL_guitk - GUI toolkit designed for SDL environnements (GTK-style).
 
    Copyright (C) 2020 Trave Roman
 
@@ -22,28 +22,23 @@
 #pragma once
 
 #include <SDL2/SDL_guitk.h>
+#include "mysdl.h"
 
+static int PROGRESSBAR_SIZE=10;
 
-/* SDLGuiTK_ScrolledWindow structure definition */
-struct SDLGuiTK_Adjustment {
-    SDLGuiTK_Object * object;     /* referent object */
+/* SDLGuiTK_ProgressBar structure definition */
+struct SDLGuiTK_ProgressBar {
+    SDLGuiTK_Object * object;       /* referent object */
 
-  /* "public" data */
-    SDLGuiTK_Widget *parent[5];
-    int parent_nb;
-    double value;
-    double lower;
-    double upper;
-    double step_increment;
+    SDLGuiTK_Widget * widget;       /* herits from */
 
-  /* "private" data */
+    /* "public" data */
+    int orientation;
+    double fraction;
+
+    /* "private" data */
+    MySDL_Surface  *srf;
+    SDL_Rect        area;
 };
 
-extern
-void PROT__adjustment_attach(SDLGuiTK_Adjustment *adjustment,
-                             SDLGuiTK_Widget *parent);
-
-extern
-void PROT__adjustment_set_fraction(SDLGuiTK_Adjustment *adjustment,
-                                   double               fraction);
 
