@@ -927,3 +927,139 @@ SDLGuiTK_Widget * Extract_Box(xmlNode * node)
 }
 
 
+static void Extract_Grid_packing(xmlNode * node, SDLGuiTK_Widget *grid,
+                                 SDLGuiTK_Widget *gridchild)
+{
+    int left = 0;
+    int top = 0;
+    int width = 1;
+    int height = 1;
+    SDLGUITK_LOG ("Extract Grid packing ..\n");
+    xmlNode * child = node->children;
+    while(child)
+    {
+        if(propcmp(child, "name", "left_attach"))
+        {
+            SDLGUITK_LOG ("Extract Grid_packing property: left_attach\n");
+            left = atoi(contentget(child));
+        }
+        else if(propcmp(child, "name", "top_attach"))
+        {
+            SDLGUITK_LOG ("Extract Grid_packing property: top_attach\n");
+            top = atoi(contentget(child));
+        }
+        else if(propcmp(child, "name", "width"))
+        {
+            SDLGUITK_LOG ("Extract Grid_packing property: width\n");
+            width = atoi(contentget(child));
+        }
+        else if(propcmp(child, "name", "height"))
+        {
+            SDLGUITK_LOG ("Extract Grid_packing property: height\n");
+            height = atoi(contentget(child));
+        }
+        else if(isnode(child))
+        {
+            SDLGUITK_ERROR("Node Grid_packing property unknown: ");
+            SDLGUITK_ERROR2(propget(child,"name"));
+        }
+        child = child->next;
+    }
+    if(gridchild!=NULL)
+        SDLGuiTK_grid_attach(SDLGuiTK_GRID(grid), gridchild,
+                             left, top, width, height);
+    else
+        SDLGUITK_ERROR("gridchild is NULL\n");
+}
+
+static void Extract_Grid_children(xmlNode * node, SDLGuiTK_Widget *grid)
+{
+    SDLGuiTK_Widget *gridchild = NULL;
+    xmlNode * child;
+    SDLGUITK_LOG ("Extract Grid children ..\n");
+    child = node->children;
+    while(child)
+    {
+        if(namecmp(child,"object"))
+            gridchild = Extract_object(child);
+        else if(namecmp(child,"packing"))
+            Extract_Grid_packing(child, grid, gridchild);
+        else if (isnode(child)) {
+            SDLGUITK_ERROR("Node Grid_children name unknown: ");
+            SDLGUITK_ERROR2(nameget(child));
+        }
+        child = child->next;
+    }
+}
+
+static void Extract_Grid_property(xmlNode * node, SDLGuiTK_Widget * grid)
+{
+    if(propcmp(node, "name", "visible"))
+    {
+        SDLGUITK_LOG ("Extract Grid property: visible\n");
+        if(contentcmp(node, "True"))
+            SDLGuiTK_widget_show (grid);
+    }
+    else if(propcmp(node, "name", "column_spacing"))
+    {
+        SDLGUITK_LOG ("Extract Grid property: column_spacing\n");
+        SDLGuiTK_grid_set_column_spacing (SDLGuiTK_GRID(grid),
+                                          atoi(contentget(node)));
+    }
+    else if(propcmp(node, "name", "row_spacing"))
+    {
+        SDLGUITK_LOG ("Extract Grid property: row_spacing\n");
+        SDLGuiTK_grid_set_row_spacing (SDLGuiTK_GRID(grid),
+                                       atoi(contentget(node)));
+    }
+    else if(propcmp(node, "name", "column_homogeneous"))
+    {
+        SDLGUITK_LOG ("Extract Grid property: column_homogeneous\n");
+        if(contentcmp(node, "True"))
+            SDLGuiTK_grid_set_column_homogeneous (SDLGuiTK_GRID(grid),
+                                                  SDL_TRUE);
+        else
+            SDLGuiTK_grid_set_column_homogeneous (SDLGuiTK_GRID(grid),
+                                                  SDL_FALSE);
+    }
+    else if(propcmp(node, "name", "row_homogeneous"))
+    {
+        SDLGUITK_LOG ("Extract Grid property: row_homogeneous\n");
+        if(contentcmp(node, "True"))
+            SDLGuiTK_grid_set_row_homogeneous (SDLGuiTK_GRID(grid),
+                                               SDL_TRUE);
+        else
+            SDLGuiTK_grid_set_row_homogeneous (SDLGuiTK_GRID(grid),
+                                               SDL_FALSE);
+    }
+    else if(isnode(node))
+    {
+        SDLGUITK_ERROR("Node Grid property unknown: ");
+        SDLGUITK_ERROR2(propget(node,"name"));
+    }
+}
+
+SDLGuiTK_Widget * Extract_Grid(xmlNode * node)
+{
+    SDLGuiTK_Widget *grid;
+    xmlNode * child;
+    SDLGUITK_LOG ("Extract Grid ..\n");
+    grid = SDLGuiTK_grid_new ();
+    child = node->children;
+    while(child)
+    {
+        if(namecmp(child,"property"))
+            Extract_Grid_property(child, grid);
+        else if(namecmp(child,"child"))
+            Extract_Grid_children (child, grid);
+        else if(isnode(child))
+        {
+            SDLGUITK_ERROR("Node Grid name unknown: ");
+            SDLGUITK_ERROR2(nameget(child));
+        }
+        child = child->next;
+    }
+    return grid;
+}
+
+

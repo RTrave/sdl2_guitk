@@ -235,6 +235,13 @@ void SDLGuiTK_radio_button_join_group(SDLGuiTK_RadioButton * radiobutton,
     }
     radiobutton->group = group_source->group;
     SDLGuiTK_list_append (group_source->group, (SDLGuiTK_Object *)radiobutton);
+#if DEBUG_LEVEL > 1
+    char tmplog[256];
+    sprintf( tmplog, "_radio_button_join_group():  %s joins %s group\n",
+             radiobutton->object->name, group_source->object->name );
+    SDLGUITK_LOG( tmplog );
+#endif
+
     PROT__signal_push( radiobutton->object, SDLGUITK_SIGNAL_TYPE_GROUPCHANGED );
 }
 

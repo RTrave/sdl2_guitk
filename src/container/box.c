@@ -235,11 +235,12 @@ static void * Box_DrawBlit( SDLGuiTK_Widget * widget )
     printf("    current_w=%d current_h=%d\n", current_w, current_h);
 #endif
 
+/* DONE in Container drawblit
     box->container->children_area.w = \
                                       widget->req_area.w - 2*box->container->border_width;
     box->container->children_area.h = \
                                       widget->req_area.h - 2*box->container->border_width;
-
+*/
     PROT__container_DrawBlit( box->container );
 
     //if( !widget->top ) {

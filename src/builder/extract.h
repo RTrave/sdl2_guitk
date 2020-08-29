@@ -41,5 +41,6 @@ SDLGuiTK_Widget * Extract_MenuItem(xmlNode * node);
 SDLGuiTK_Widget * Extract_Menu(xmlNode * node);
 SDLGuiTK_Widget * Extract_Window(xmlNode * node);
 SDLGuiTK_Widget * Extract_Box(xmlNode * node);
+SDLGuiTK_Widget * Extract_Grid(xmlNode * node);
 
 

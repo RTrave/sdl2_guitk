@@ -77,6 +77,8 @@ SDLGuiTK_Widget * Extract_object(xmlNode * node)
         widget = Extract_MenuItem(node);
     else if(propcmp(node, "class", "GtkBox"))
         widget = Extract_Box(node);
+    else if(propcmp(node, "class", "GtkGrid"))
+        widget = Extract_Grid(node);
     else if(propcmp(node, "class", "GtkProgressBar"))
         widget = Extract_ProgressBar(node);
     else if(propcmp(node, "class", "GtkScrollbar"))

@@ -43,6 +43,7 @@
 
 #include "bin_prot.h"
 #include "container/box_prot.h"
+#include "container/grid_prot.h"
 
 
 static SDL_bool SDLGuiTK_IS_CONTAINER( SDLGuiTK_Widget * widget )
@@ -74,6 +75,7 @@ static SDLGuiTK_Container * Container_create()
 
     new_container->bin = NULL;
     new_container->box = NULL;
+    new_container->grid = NULL;
     new_container->menu = NULL;
 
     new_container->border_width = 0;
@@ -104,6 +106,10 @@ void SDLGuiTK_container_add( SDLGuiTK_Container * container,\
         SDLGUITK_ERROR( "SDLGuiTK_container_add(): use _box_pack_start for boxes!\n" );
         return;
     }
+    if( container->grid ) {
+        SDLGUITK_ERROR( "SDLGuiTK_container_add(): use _grid_attach for grids!\n" );
+        return;
+    }
     if( container->menu ) {
         SDLGUITK_ERROR( "SDLGuiTK_container_add(): use _menu_shell_append for menus!\n" );
         return;
@@ -121,6 +127,11 @@ void SDLGuiTK_container_remove( SDLGuiTK_Container * container, \
 
     if( container->box ) {
         PROT__box_remove( container->box, widget );
+        return;
+    }
+
+    if( container->grid ) {
+        PROT__grid_remove( container->grid, widget );
         return;
     }
 
@@ -160,6 +171,8 @@ void PROT__container_set_top( SDLGuiTK_Container *container, SDLGuiTK_Widget *to
         PROT__bin_set_top (container->bin, top);
     else if(container->box)
         PROT__box_set_top (container->box, top);
+    else if(container->grid)
+        PROT__grid_set_top (container->grid, top);
     // Menu ?
 }
 
@@ -173,8 +186,10 @@ SDLGuiTK_List *SDLGuiTK_container_get_children( SDLGuiTK_Container *container )
             children = SDLGuiTK_list_new();
             SDLGuiTK_list_append( children, container->bin->child->object );
         }
-    } else if( container->box!=NULL ) {
+    } else if( container->box ) {
         children = SDLGuiTK_list_copy( container->box->children );
+    } else if( container->grid ) {
+        children = SDLGuiTK_list_copy( container->grid->children );
     }
 
     return children;

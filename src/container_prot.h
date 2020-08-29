@@ -31,6 +31,7 @@ struct SDLGuiTK_Container {
 
     SDLGuiTK_Bin  * bin;            /* herited */
     SDLGuiTK_Box  * box;            /* herited */
+    SDLGuiTK_Grid * grid;           /* herited */
     SDLGuiTK_Menu * menu;           /* herited */
 
     int border_width;               /* "public" data */
