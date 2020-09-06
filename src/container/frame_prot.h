@@ -1,7 +1,7 @@
-/* 
+/*
    SDL_guitk - GUI toolkit designed for SDL environnements (GTK-style).
 
-   Copyright (C) 2003 Trave Roman
+   Copyright (C) 2020 Trave Roman
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -15,27 +15,28 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
+   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
-
 #pragma once
 
 #include <SDL2/SDL_guitk.h>
-#include "../wmwidget.h"
+#include "../mysdl.h"
 
-/* SDLGuiTK_Window structure definition */
-struct SDLGuiTK_Window {
+
+/* SDLGuiTK_Frame structure definition */
+struct SDLGuiTK_Frame {
     SDLGuiTK_Object * object;     /* referent object */
 
     SDLGuiTK_Bin      * bin;      /* herits from */
-    SDLGuiTK_WMWidget * wm_widget;/* herits from */
 
   /* "public" data */
-    int  position;
+    int   	shadow_type;
 
   /* "private" data */
-    MySDL_Surface * srf;
-    SDL_Rect        area;
+    MySDL_Surface     * srf;
+    SDL_Rect            area;
+    SDLGuiTK_Widget   * label_widget;
+    SDL_Rect            label_area;
 };
 
 

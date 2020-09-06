@@ -244,10 +244,12 @@ static void Container_DrawSurface( SDLGuiTK_Container * container )
 
 void PROT__container_DrawBlit(   SDLGuiTK_Container * container )
 {
-    container->children_area.w =
-        container->widget->req_area.w - 2*(container->border_width);
-    container->children_area.h =
-        container->widget->req_area.h - 2*(container->border_width);
+    if(!SDLGuiTK_IS_FRAME (container->widget)) {
+        container->children_area.w =
+            container->widget->req_area.w - 2*(container->border_width);
+        container->children_area.h =
+            container->widget->req_area.h - 2*(container->border_width);
+    }
 
     PROT__widget_DrawBlit( container->widget );
 

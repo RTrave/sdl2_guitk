@@ -9,6 +9,7 @@ libcontainer_la_SOURCES = \
 	box.c box_prot.h \
 	gridchild.c gridchild.h \
 	grid.c grid_prot.h \
-	scrolledwindow.c scrolledwindow_prot.h
+	scrolledwindow.c scrolledwindow_prot.h \
+	frame.c frame_prot.h
 
 libcontainer_la_LDFLAGS = $(GUI_LDFLAGS)

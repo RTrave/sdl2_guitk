@@ -35,6 +35,8 @@ SDLGuiTK_Widget * Extract_MenuButton(xmlNode * node);
 SDLGuiTK_Widget * Extract_Label(xmlNode * node);
 SDLGuiTK_Widget * Extract_Image(xmlNode * node);
 
+SDLGuiTK_Widget * Extract_Alignment(xmlNode * node);
+SDLGuiTK_Widget * Extract_Frame(xmlNode * node);
 SDLGuiTK_Widget * Extract_Viewport(xmlNode * node);
 SDLGuiTK_Widget * Extract_ScrolledWindow(xmlNode * node);
 SDLGuiTK_Widget * Extract_MenuItem(xmlNode * node);

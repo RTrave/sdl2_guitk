@@ -541,6 +541,126 @@ SDLGuiTK_Widget * Extract_Image(xmlNode * node)
 
 
 
+static void Extract_Alignment_children(xmlNode * node, SDLGuiTK_Widget *alignment)
+{
+    SDLGuiTK_Widget *alignmentchild = NULL;
+    xmlNode * child;
+    SDLGUITK_LOG ("Extract Alignment children ..\n");
+    child = node->children;
+    while(child)
+    {
+        if(namecmp(child,"object"))
+            alignmentchild = Extract_object(child);
+        else if (isnode(child)) {
+            SDLGUITK_ERROR("Node Alignment name unknown: ");
+            SDLGUITK_ERROR2(nameget(child));
+        }
+        child = child->next;
+    }
+    if(alignmentchild)
+        SDLGuiTK_container_add (SDLGuiTK_CONTAINER (alignment), alignmentchild);
+}
+
+static void Extract_Alignment_property(xmlNode * node, SDLGuiTK_Widget * alignment)
+{
+    SDLGUITK_LOG ("Extract Alignment property ..\n");
+    if(propcmp(node, "name", "visible")) {
+        SDLGUITK_LOG ("Extract Alignment property: visible\n");
+        if(contentcmp(node, "True"))
+            SDLGuiTK_widget_show (alignment);
+    }
+    else {
+        SDLGUITK_ERROR("Node Alignment property unknown: ");
+        SDLGUITK_ERROR2(propget(node,"name"));
+    }
+}
+
+SDLGuiTK_Widget * Extract_Alignment(xmlNode * node)
+{
+    SDLGuiTK_Widget *alignment;
+    xmlNode * child;
+    SDLGUITK_LOG ("Extract Alignment ..\n");
+    alignment = SDLGuiTK_alignment_new (0.5, 0.5, 1.0, 1.0);
+    child = node->children;
+    while(child)
+    {
+        if(namecmp(child,"property"))
+            Extract_Alignment_property(child, alignment);
+        else if(namecmp(child,"child")) {
+            Extract_Alignment_children(child, alignment);
+        }
+        else if (isnode(child)) {
+            SDLGUITK_ERROR("Node Alignment name unknown: ");
+            SDLGUITK_ERROR2(nameget(child));
+        }
+        child = child->next;
+    }
+    return alignment;
+}
+
+
+
+static void Extract_Frame_children(xmlNode * node, SDLGuiTK_Widget *frame)
+{
+    SDLGuiTK_Widget *framechild = NULL;
+    xmlNode * child;
+    SDLGUITK_LOG ("Extract Frame children ..\n");
+    child = node->children;
+    while(child)
+    {
+        if(namecmp(child,"object"))
+            framechild = Extract_object(child);
+        else if (isnode(child)) {
+            SDLGUITK_ERROR("Node Frame name unknown: ");
+            SDLGUITK_ERROR2(nameget(child));
+        }
+        child = child->next;
+    }
+    if(SDLGuiTK_LABEL(framechild))
+        SDLGuiTK_frame_set_label_widget(SDLGuiTK_FRAME(frame), framechild);
+    else if(framechild)
+        SDLGuiTK_container_add (SDLGuiTK_CONTAINER (frame), framechild);
+}
+
+static void Extract_Frame_property(xmlNode * node, SDLGuiTK_Widget * frame)
+{
+    SDLGUITK_LOG ("Extract Frame property ..\n");
+    if(propcmp(node, "name", "visible")) {
+        SDLGUITK_LOG ("Extract Frame property: visible\n");
+        if(contentcmp(node, "True"))
+            SDLGuiTK_widget_show (frame);
+    }
+    else {
+        SDLGUITK_ERROR("Node Frame property unknown: ");
+        SDLGUITK_ERROR2(propget(node,"name"));
+    }
+}
+
+SDLGuiTK_Widget * Extract_Frame(xmlNode * node)
+{
+    SDLGuiTK_Widget *frame;
+    xmlNode * child;
+    SDLGUITK_LOG ("Extract Frame ..\n");
+    frame = SDLGuiTK_frame_new ();
+    child = node->children;
+    while(child)
+    {
+        if(namecmp(child,"property"))
+            Extract_Frame_property(child, frame);
+        else if(namecmp(child,"child")) {
+            Extract_Frame_children(child, frame);
+        }
+        else if (isnode(child)) {
+            SDLGUITK_ERROR("Node Frame name unknown: ");
+            SDLGUITK_ERROR2(nameget(child));
+        }
+        child = child->next;
+    }
+    return frame;
+}
+
+
+
 static void Extract_Viewport_children(xmlNode * node, SDLGuiTK_Widget *viewport)
 {
     SDLGuiTK_Widget *viewportchild = NULL;

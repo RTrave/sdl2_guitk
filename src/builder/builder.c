@@ -101,6 +101,10 @@ SDLGuiTK_Widget * Extract_object(xmlNode * node)
         widget = Extract_Label(node);
     else if(propcmp(node, "class", "GtkImage"))
         widget = Extract_Image(node);
+    else if(propcmp(node, "class", "GtkAlignment"))
+        widget = Extract_Alignment(node);
+    else if(propcmp(node, "class", "GtkFrame"))
+        widget = Extract_Frame(node);
     else if(propcmp(node, "class", "GtkViewport"))
         widget = Extract_Viewport(node);
     else if(propcmp(node, "class", "GtkScrolledWindow"))

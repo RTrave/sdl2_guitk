@@ -98,6 +98,8 @@ static void Alignment_destroy( SDLGuiTK_Alignment * alignment )
 
 static void * Alignment_DrawUpdate( SDLGuiTK_Widget * widget )
 {
+    PROT__widget_reset_req_area( widget );
+
     PROT__bin_DrawUpdate( widget->container->bin );
 
     return (void *) NULL;

@@ -110,6 +110,8 @@ static void * Box_DrawUpdate( SDLGuiTK_Widget * widget )
     box->container->children_area.w = 0;
     box->container->children_area.h = 0;
 
+    PROT__widget_reset_req_area( widget );
+
     /* START CHILDREN UPDATE */
     //SDLGuiTK_list_lock( box->children );
 
