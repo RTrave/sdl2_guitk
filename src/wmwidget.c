@@ -254,3 +254,23 @@ void WMWidget_set_title( SDLGuiTK_WMWidget * wm_widget,\
     strcpy( wm_widget->title, title );
     wm_widget->title_shown = 1;
 }
+
+SDLGuiTK_WMWidget * WMWidget_is_entered( SDLGuiTK_WMWidget * wm_widget, int x, int y)
+{
+    SDLGuiTK_WMWidget * current, * child;
+    current = (SDLGuiTK_WMWidget *) SDLGuiTK_list_ref_init (wm_widget->children);
+    while(current) {
+        child = WMWidget_is_entered(current, x, y);
+        if(child) {
+            SDLGuiTK_list_ref_reset (wm_widget->children);
+            return child;
+        }
+        current = (SDLGuiTK_WMWidget *) SDLGuiTK_list_ref_next (wm_widget->children);
+    }
+    if(x>=(wm_widget->area.x) &&
+       x<=(wm_widget->area.x+wm_widget->area.w) &&
+       y>=(wm_widget->area.y) &&
+       y<=(wm_widget->area.y+wm_widget->area.h) )
+        return wm_widget;
+    return NULL;
+}

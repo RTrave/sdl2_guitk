@@ -29,33 +29,32 @@ typedef struct SDLGuiTK_WMWidget SDLGuiTK_WMWidget;
 
 /* SDLGuiTK_WMWidget structure definition */
 struct SDLGuiTK_WMWidget {
-    SDLGuiTK_Object    * object;      /* referent widget */
+    SDLGuiTK_Object    * object;        /* referent widget */
 
-    SDLGuiTK_Widget * widget;         /* herits from */
+    SDLGuiTK_Widget * widget;           /* herits from */
 
-    SDLGuiTK_List * children;
-    SDLGuiTK_Render * render;         /* Render of WMWirget if MULTI mode */
-    int               is_wmchild;      /* 0 if top, 1 if have a parent */
-    SDLGuiTK_Widget * parent;
+    SDLGuiTK_List     * children;
+    SDL_bool            is_wmchild;     /* FALSE if top, TRUE if have a parent */
+    SDLGuiTK_Widget   * parent;
     SDLGuiTK_WMWidget * wmparent;
 
     /* "public" data */
-    int               border_width;
-    int               title_shown;
-    char              title[256];
-    MySDL_Surface     * title_srf;
-    SDL_Rect          title_area;
-
+    SDL_bool            enter;
+    SDL_bool            moving;
+    int                 border_width;
+    SDL_Rect            area;
+    SDLGuiTK_Render   * render;         /* Render associated if MULTI mode */
 
     /* "private" data */
-    int                 enter;
-    int                 moving;
-    MySDL_Surface     * srf;
-    SDL_Rect            area;
-    SDL_Rect            child_area;     /* (w,h) setted in DrawUpdate() window,menushell,..
-                                     * (x,y) setted in self DrawUpdate*/
-    SDLGuiTK_Surface2D * surface2D;
-    int                  surface2D_flag;
+    MySDL_Surface       * srf;
+    SDL_Rect              child_area;    /* (w,h) setted in DrawUpdate() window,menushell,..
+                                            * (x,y) setted in self DrawUpdate*/
+    SDL_bool              title_shown;
+    char                  title[256];
+    MySDL_Surface       * title_srf;
+    SDL_Rect              title_area;
+    SDLGuiTK_Surface2D  * surface2D;
+    SDL_bool              surface2D_flag;
 };
 
 
@@ -78,3 +77,7 @@ extern void                 WMWidget_DrawBlit( SDLGuiTK_WMWidget * wm_widget,
 // Set title
 void WMWidget_set_title( SDLGuiTK_WMWidget * wm_widget,\
                          const char *title );
+
+// Is mouse entered in WMWidget or its childs
+SDLGuiTK_WMWidget * WMWidget_is_entered( SDLGuiTK_WMWidget * wm_widget,
+                                         int x, int y);

@@ -366,10 +366,10 @@ SDLGuiTK_Object * SDLGuiTK_list_refrv_next( SDLGuiTK_List * list )
   return list->refrv->object;
 }
 
-void PROT_List_ref_reinit( SDLGuiTK_List * list ) {
+void SDLGuiTK_list_ref_reset( SDLGuiTK_List * list ) {
   list->ref = NULL;
 }
 
-void PROT_List_refrv_reinit( SDLGuiTK_List * list ) {
+void SDLGuiTK_list_refrv_reset( SDLGuiTK_List * list ) {
   list->refrv = NULL;
 }

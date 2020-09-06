@@ -8,7 +8,7 @@ noinst_LTLIBRARIES = libguitk.la
 
 libguitk_la_SOURCES = xmalloc.c getopt.c getopt.h \
 	main.c \
-	context.c context_prot.h \
+	context.c contextevent.c context_prot.h \
 	debug.c debug.h \
 	mysdl.c mysdl.h \
 	myttf.c myttf.h \

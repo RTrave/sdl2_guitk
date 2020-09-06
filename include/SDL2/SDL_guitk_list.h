@@ -87,16 +87,19 @@ extern "C" {
   /* First elem return by seq_refelem_init(), next by seq_refelem_next() */
   /* You have to be sure List is locked. */
   extern DECLSPEC
-  SDLGuiTK_Object *SDLGuiTK_list_ref_init( SDLGuiTK_List *list );
+  SDLGuiTK_Object * SDLGuiTK_list_ref_init( SDLGuiTK_List *list );
   extern DECLSPEC
-  SDLGuiTK_Object *SDLGuiTK_list_ref_next( SDLGuiTK_List *list );
-
+  SDLGuiTK_Object * SDLGuiTK_list_ref_next( SDLGuiTK_List *list );
+  extern DECLSPEC
+  void              SDLGuiTK_list_ref_reset( SDLGuiTK_List * list );
 
   /* Same but from last to first */
   extern DECLSPEC
-  SDLGuiTK_Object *SDLGuiTK_list_refrv_init( SDLGuiTK_List *list );
+  SDLGuiTK_Object * SDLGuiTK_list_refrv_init( SDLGuiTK_List *list );
   extern DECLSPEC
-  SDLGuiTK_Object *SDLGuiTK_list_refrv_next( SDLGuiTK_List *list );
+  SDLGuiTK_Object * SDLGuiTK_list_refrv_next( SDLGuiTK_List *list );
+  extern DECLSPEC
+  void              SDLGuiTK_list_refrv_reset( SDLGuiTK_List * list );
 
 
 /* Ends C function definitions when using C++ */

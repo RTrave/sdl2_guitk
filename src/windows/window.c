@@ -310,6 +310,7 @@ static void * Window_Map( SDLGuiTK_Signal * signal, void * data )
     Window_UpdatePosition( window );
     Window_DrawUpdate( signal->object->widget );
     Window_DrawBlit( signal->object->widget );
+    MyWM_UpdateFocused();
     return (void *) NULL;
 }
 
@@ -332,7 +333,7 @@ static void * Window_ChildNotify( SDLGuiTK_Signal * signal, void * data )
 {
     Window_DrawUpdate( signal->object->widget );
     Window_DrawBlit( signal->object->widget );
-    PROT_MyWM_checkactive( signal->object->widget ); //TODO: is coherent here ?
+    //PROT_MyWM_checkactive( signal->object->widget ); //TODO: is coherent here ?
 
     return (void *) NULL;
 }

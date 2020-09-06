@@ -86,13 +86,14 @@ static void MenuShell_Destroy( struct SDLGuiTK_MenuShell * menushell ) {
     free( menushell );
 }
 
+/*
 static void MenuShell_UpdatePosition( SDLGuiTK_MenuShell * menushell ) {
     SDLGuiTK_Widget * widget=menushell->object->widget;
     widget->abs_area.x = menushell->menu->object->widget->abs_area.x+3;
     widget->abs_area.y = menushell->menu->object->widget->abs_area.y+3;
 
 }
-
+*/
 
 static void * MenuShell_DrawUpdate( SDLGuiTK_Widget * widget )
 {
@@ -103,7 +104,7 @@ static void * MenuShell_DrawUpdate( SDLGuiTK_Widget * widget )
     widget->req_area.w = 0;
     widget->req_area.h = 0;
 
-    SDLGuiTK_list_lock( menushell->children );
+    //SDLGuiTK_list_lock( menushell->children );
     current = (SDLGuiTK_Widget *) SDLGuiTK_list_ref_init( menushell->children );
     while( current!=NULL ) {
         (*current->DrawUpdate)( current );
@@ -178,7 +179,7 @@ static void * MenuShell_DrawBlit( SDLGuiTK_Widget * widget )
     widget->act_area.w = widget->abs_area.w;
     widget->act_area.h = widget->abs_area.h;
 
-    SDLGuiTK_list_unlock( menushell->children );
+    //SDLGuiTK_list_unlock( menushell->children );
 
     menushell->wm_widget->is_wmchild = 1;
     menushell->wm_widget->parent = menushell->menu->object->widget->top;
@@ -193,20 +194,20 @@ static SDLGuiTK_Widget * MenuShell_RecursiveEntering( SDLGuiTK_Widget *widget, \
     struct SDLGuiTK_MenuShell * menushell=widget->menushell;
     SDLGuiTK_Widget   * current, *active;
 
-    SDLGuiTK_list_lock( menushell->children );
+    //SDLGuiTK_list_lock( menushell->children );
 
     current = (SDLGuiTK_Widget *) SDLGuiTK_list_ref_init( menushell->children );
     while( current!=NULL ) {
         active = PROT__widget_is_entering( current, x, y );
         if( active!=NULL ) {
-            PROT_List_ref_reinit( menushell->children );
-            SDLGuiTK_list_unlock( menushell->children );
+            SDLGuiTK_list_ref_reset( menushell->children );
+            //SDLGuiTK_list_unlock( menushell->children );
             return active;
         }
         current = (SDLGuiTK_Widget *) SDLGuiTK_list_ref_next( menushell->children );
     }
 
-    SDLGuiTK_list_unlock( menushell->children );
+    //SDLGuiTK_list_unlock( menushell->children );
 
     return NULL;
 }
@@ -266,7 +267,8 @@ static void * MenuShell_Map( SDLGuiTK_Signal * signal, void * data )
 {
     MenuShell_DrawUpdate( signal->object->widget );
     MenuShell_DrawBlit( signal->object->widget );
-    PROT_MyWM_checkactive( signal->object->widget );
+    //PROT_MyWM_checkactive( signal->object->widget );
+    MyWM_UpdateFocused();
     return (void *) NULL;
 }
 

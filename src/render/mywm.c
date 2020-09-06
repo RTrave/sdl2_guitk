@@ -35,13 +35,14 @@
 #endif
 
 
-#include "mywm.h"
+#include "../debug.h"
 #include "../object_prot.h"
 #include "../widget_prot.h"
 #include "../wmwidget.h"
 #include "../signal.h"
 #include "../list.h"
 #include "../context_prot.h"
+#include "mywm.h"
 
 
 static SDLGuiTK_Widget    * focused_widget=NULL;
@@ -81,7 +82,6 @@ void MyWM_unset_mouse_focus(SDLGuiTK_Widget * widget)
 {
     if(mouse_focus!=widget) return;
     mouse_focus = NULL;
-    PROT_MyWM_checkactive( widget );
 }
 
 
@@ -94,13 +94,18 @@ void MyWM_start_textinput()
 void MyWM_stop_textinput()
 {
     if(is_textinput && !keyboard_focus)
-        SDL_StartTextInput();
+        SDL_StopTextInput();
 }
 
-static void CheckFocus( int x, int y )
+static void WidgetFocus( int x, int y )
 {
     SDLGuiTK_Widget * current, * parent;
 
+    if(current_context->focused &&
+       (x==0 || y==0 ||
+        x==current_context->focused->srf->srf->w ||
+        y==current_context->focused->srf->srf->h))
+        return; // inhibit first pixel borders coords
     if( focused_widget ) {
         current=PROT__widget_is_entering(focused_widget,x,y);
         if( !current ) {
@@ -127,9 +132,26 @@ static void CheckFocus( int x, int y )
 
 }
 
-static void UnFocus( SDLGuiTK_WMWidget * wm_widget )
+void MyWM_WidgetFocus()
+{
+    int x, y;
+    SDL_GetMouseState( &x, &y );
+    WidgetFocus( x, y );
+}
+
+void MyWM_WidgetUnFocus()
 {
     SDLGuiTK_Widget * current, * parent=NULL;
+
+    if(current_context->focused) {
+        current_context->focused->enter = SDL_FALSE;
+        current_context->focused = NULL;
+    }
+    mouse_focus = NULL;
+    if(keyboard_focus) {
+        MyWM_unset_keyboard_focus (keyboard_focus);
+        MyWM_stop_textinput ();
+    }
 
     current = focused_widget;
     while( current!=NULL ) {
@@ -137,254 +159,155 @@ static void UnFocus( SDLGuiTK_WMWidget * wm_widget )
         current->has_focus = SDL_FALSE;
         PROT__signal_push( current->object, \
                            SDLGUITK_SIGNAL_TYPE_LEAVE );
-        if( current==parent ) return;
+        if( current==parent ) {
+            focused_widget = NULL;
+            return;
+        }
         current = parent;
     }
 }
 
-static int Is_MOUSEMOTION_in( SDLGuiTK_WMWidget * wm_widget, int x, int y ) {
-    if(current_context->type==SDLGUITK_CONTEXT_MODE_MULTIPLE)
-        if (wm_widget->render!=current_context->active_render &&
-            !(wm_widget->is_wmchild &&
-             wm_widget->wmparent->render==current_context->active_render))
+
+static void Focused_IsMoving( int xrel, int yrel )
+{
+    SDLGuiTK_WMWidget * focused=current_context->focused;
+    focused->area.x += xrel;
+    focused->area.y += yrel;
+    focused->widget->abs_area.x += xrel;
+    focused->widget->abs_area.y += yrel;
+}
+
+
+// Inhibition of mouse motion in MODE_MULTIPLES if mouse is not on focused
+static SDL_bool inhibit_mousemotion=SDL_FALSE;
+void MyWM_inhibit_mousemotion(SDL_bool is_inhibit)
+{
+    inhibit_mousemotion = is_inhibit;
+}
+
+static int UpdateFocused(int x, int y)
+{
+    SDLGuiTK_WMWidget *focused;
+    if(current_context->type==SDLGUITK_CONTEXT_MODE_MULTIPLE) {
+        if(inhibit_mousemotion)
             return 0;
-    if( ( x>=wm_widget->area.x &&
-            x<=(wm_widget->area.x+wm_widget->area.w) ) &&
-            ( y>=wm_widget->area.y &&
-              y<=(wm_widget->area.y+wm_widget->area.h) ) )
-    {
-        return 1;
-    }
-    return 0;
-}
-static int Is_MOUSEMOTION_enter( int x, int y,				\
-                                 SDLGuiTK_WMWidget * wm_widget )
-{
-    if(current_context->type==SDLGUITK_CONTEXT_MODE_MULTIPLE)
-        if (wm_widget->render!=current_context->active_render &&
-            !(wm_widget->is_wmchild &&
-             wm_widget->wmparent->render==current_context->active_render))
-            return 0;
-    if( Is_MOUSEMOTION_in( wm_widget, x, y )==1 )
-    {
-        if( wm_widget->enter==0 ) {
-            if(current_context->focused!=wm_widget ) {
-                if( current_context->focused ) {
-                    UnFocus( current_context->focused );
-                    focused_widget = NULL;
-                    current_context->focused->enter = 0;
-                }
-            }
-            current_context->focused = wm_widget;
-            wm_widget->enter = 1;
-            CheckFocus( x, y );
-        } else {
-            CheckFocus( x, y );
+        if(current_context->active_wmwidget) {
+            current_context->focused =
+                WMWidget_is_entered (current_context->active_wmwidget, x, y);
+            if(current_context->focused)
+                WidgetFocus (x, y);
         }
         return 1;
-    } else {
-        wm_widget->enter = 0;
-        CheckFocus( x, y );
     }
-    return 0;
-}
-
-static int Is_MOUSEMOTION_moving( SDL_Event * event )
-{
-    SDLGuiTK_WMWidget * active=current_context->focused;
-
-    if( active->moving==1 ) {
-        active->area.x += event->motion.xrel;
-        active->area.y += event->motion.yrel;
-        active->widget->abs_area.x += event->motion.xrel;
-        active->widget->abs_area.y += event->motion.yrel;
-        return 1;
-    }
-
-    return 0;
-}
-
-static int Is_MOUSEBUTTONDOWN_move_start( SDL_Event * event, \
-        SDLGuiTK_WMWidget * window )
-{
-    if( event->button.x>=window->area.x && \
-            event->button.x<=window->area.x+window->area.w && \
-            event->button.y>=window->area.y && \
-            event->button.y<=window->area.y+window->area.h )
-    {
-        window->moving = 1;
-        return 1;
-    }
-    return 0;
-}
-
-static int Is_MOUSEBUTTONDOWN_move_stop( SDLGuiTK_WMWidget * window )
-{
-    if( window->moving==1 ) {
-        window->moving = 0;
-        return 1;
-    }
-    return 0;
-}
-
-static void LeaveAll() {
-
-    if( focused_widget ) {
-        focused_widget->has_focus = SDL_FALSE;
-        PROT__signal_push( focused_widget->object,
-                           SDLGUITK_SIGNAL_TYPE_LEAVE );
-        while(focused_widget->parent!=focused_widget  ) {
-            focused_widget = focused_widget->parent;
-            focused_widget->has_focus = SDL_FALSE;
-            PROT__signal_push( focused_widget->object,
-                               SDLGUITK_SIGNAL_TYPE_LEAVE );
-        }
-        focused_widget = NULL;
-    }
-    if( current_context->focused ) {
-        current_context->focused->enter = 0;
-        current_context->focused = NULL;
-    }
-}
-
-int MyWM_push_MOUSEMOTION_in( int x, int y )
-{
-    SDLGuiTK_WMWidget * current=NULL;
-
-    SDLGuiTK_list_lock( current_context->activables );
-
-    if( current_context->focused ) {
-        current = (SDLGuiTK_WMWidget *)
-                  SDLGuiTK_list_refrv_init( current_context->activables );
-        while( current!=NULL && current!=current_context->focused ) {
-            if(current->render==current_context->active_render ||
-               (current->is_wmchild &&
-                current->wmparent->render==current_context->active_render))
-            {
-                if( Is_MOUSEMOTION_enter(x,y,current)==1 ) {
-                    current_context->focused = current;
-                    CheckFocus (x, y);
-                    PROT_List_refrv_reinit( current_context->activables );
-                    SDLGuiTK_list_unlock( current_context->activables );
-                    return 1;
-                }
-            }
-            current = (SDLGuiTK_WMWidget *) \
-                      SDLGuiTK_list_refrv_next( current_context->activables );
-        }
-
-        if( Is_MOUSEMOTION_enter(x,y,current_context->focused)==0 ) {
-            current_context->focused->enter = 0;
-            current_context->focused = NULL;
-            CheckFocus( x, y );
-        } else {
-        }
-    }
-
-    PROT_List_refrv_reinit( current_context->activables );
-
-    current = (SDLGuiTK_WMWidget *) \
+    SDLGuiTK_WMWidget * current;
+    current = (SDLGuiTK_WMWidget *)
               SDLGuiTK_list_refrv_init( current_context->activables );
-
-    while( current!=NULL ) {
-        if( Is_MOUSEMOTION_enter(x,y,current)==1 ) {
-            current_context->focused = current;
-            CheckFocus( x, y );
-            PROT_List_refrv_reinit( current_context->activables );
-            SDLGuiTK_list_unlock( current_context->activables );
+    while( current ) {
+        focused = WMWidget_is_entered (current, x, y);
+        if(focused && focused==current_context->focused) {
+            SDLGuiTK_list_refrv_reset( current_context->activables );
+            WidgetFocus (x, y);
             return 1;
         }
-        current = (SDLGuiTK_WMWidget *) \
+        if(focused && focused!=current_context->focused) {
+            if(current_context->focused) {
+#if DEBUG_LEVEL >= 2
+                printf("Leaving WMWidget %s\n", current_context->focused->object->name);
+#endif
+                MyWM_WidgetUnFocus();
+            }
+            current_context->focused = focused;
+            current_context->focused->enter = SDL_TRUE;
+#if DEBUG_LEVEL >= 2
+            printf("Entering WMWidget %s\n", current_context->focused->object->name);
+#endif
+            SDLGuiTK_list_refrv_reset( current_context->activables );
+            WidgetFocus (x, y);
+            return 1;
+        }
+        current = (SDLGuiTK_WMWidget *)
                   SDLGuiTK_list_refrv_next( current_context->activables );
     }
-
-    SDLGuiTK_list_unlock( current_context->activables );
+    if(current_context->focused) {
+#if DEBUG_LEVEL >= 2
+        printf("Leaving WMWidget %s\n", current_context->focused->object->name);
+#endif
+        MyWM_WidgetUnFocus();
+        return 0;
+    }
     return 0;
 }
 
-void PROT_MyWM_leaveall()
+void MyWM_UpdateFocused()
 {
-    LeaveAll();
-}
-
-void PROT_MyWM_checkactive( SDLGuiTK_Widget * widget )
-{
-    if(mouse_focus) {
-        //int x, y;
-        //SDL_GetMouseState( &x, &y );
-        //(*mouse_focus->RecursiveEntering) (mouse_focus, x, y );
-        return;
-    }
-   int x, y;
+    int x, y;
     SDL_GetMouseState( &x, &y );
-    MyWM_push_MOUSEMOTION_in( x, y );
+    UpdateFocused( x, y );
 }
 
-int MyWM_push_MOUSEMOTION( SDL_Event *event )
+int MyWM_MOUSEMOTION( SDL_Event *event )
 {
-    if(mouse_focus &&
-       (current_context->focused && current_context->focused->widget!=mouse_focus))
-    {
-        int x, y;
-        SDL_GetMouseState( &x, &y );
-        (*mouse_focus->RecursiveEntering) (mouse_focus, x, y );
+    // A widget have grab mouse focus: interact with it
+    if(mouse_focus) {
+        (*mouse_focus->RecursiveEntering) (mouse_focus,
+                                           event->motion.x, event->motion.y );
         return 1;
     }
-    SDLGuiTK_list_lock( current_context->activables );
-    if( current_context->focused ) {
-
-        if( Is_MOUSEMOTION_moving(event)==1 ) {
-            SDLGuiTK_list_unlock( current_context->activables );
-            return 1;
+    // A WMwidget have focus, did it interact (move, resize, ..) ?
+    if(current_context->type!=SDLGUITK_CONTEXT_MODE_MULTIPLE) {
+        if(current_context->focused) {
+            if(current_context->focused->moving) {
+                Focused_IsMoving (event->motion.xrel, event->motion.yrel);
+                return 1;
+            }
         }
-
     }
-    SDLGuiTK_list_unlock( current_context->activables );
-    return MyWM_push_MOUSEMOTION_in( event->motion.x, event->motion.y );
+    return UpdateFocused(event->motion.x, event->motion.y);
 }
 
-int MyWM_push_MOUSEBUTTONDOWN( SDL_Event *event )
+int MyWM_MOUSEBUTTONDOWN( SDL_Event *event )
 {
-    if( focused_widget ) {
-        PROT__signal_push( focused_widget->object,
-                           SDLGUITK_SIGNAL_TYPE_PRESSED );
+    if(focused_widget) {
+        PROT__signal_push(focused_widget->object,
+                          SDLGUITK_SIGNAL_TYPE_PRESSED);
         return 1;
     }
 
-    SDLGuiTK_list_lock( current_context->activables );
-    SDLGuiTK_list_remove( current_context->activables, \
-                          (SDLGuiTK_Object *) current_context->focused );
-    SDLGuiTK_list_append( current_context->activables, \
-                          (SDLGuiTK_Object *) current_context->focused );
-    SDLGuiTK_list_unlock( current_context->activables );
+    SDLGuiTK_list_remove(current_context->activables,
+                         (SDLGuiTK_Object *) current_context->focused);
+    SDLGuiTK_list_append(current_context->activables,
+                         (SDLGuiTK_Object *) current_context->focused);
 
-
-    if( Is_MOUSEBUTTONDOWN_move_start(event,current_context->focused)==1 )
-    {
-        PROT__signal_push( current_context->focused->object,
-                           SDLGUITK_SIGNAL_TYPE_PRESSED );
+    if(current_context->type!=SDLGUITK_CONTEXT_MODE_MULTIPLE &&
+       current_context->focused) {
+        PROT__signal_push(current_context->focused->object,
+                          SDLGUITK_SIGNAL_TYPE_PRESSED);
+        SDLGUITK_LOG("Start moving WMWidget\n");
+        current_context->focused->moving = SDL_TRUE;
         return 1;
-    }
-
-    return 0;
-}
-
-int MyWM_push_MOUSEBUTTONUP( SDL_Event *event )
-{
-    if( focused_widget ) {
-        PROT__signal_push( focused_widget->object, \
-                           SDLGUITK_SIGNAL_TYPE_RELEASED );
-        return 1;
-    }
-    if( current_context->focused ) {
-        PROT__signal_push( current_context->focused->widget->object, \
-                           SDLGUITK_SIGNAL_TYPE_RELEASED );
-        return Is_MOUSEBUTTONDOWN_move_stop( current_context->focused );
     }
     return 0;
 }
 
-int MyWM_push_TEXTINPUT( SDL_Event *event )
+int MyWM_MOUSEBUTTONUP( SDL_Event *event )
+{
+    if(focused_widget) {
+        PROT__signal_push(focused_widget->object,
+                          SDLGUITK_SIGNAL_TYPE_RELEASED);
+        return 1;
+    }
+    if(current_context->type!=SDLGUITK_CONTEXT_MODE_MULTIPLE &&
+       current_context->focused &&  current_context->focused->moving) {
+        PROT__signal_push(current_context->focused->widget->object,
+                          SDLGUITK_SIGNAL_TYPE_RELEASED);
+        SDLGUITK_LOG("Stop moving WMWidget\n");
+        current_context->focused->moving = SDL_FALSE;
+        return 1;
+    }
+    return 0;
+}
+
+int MyWM_TEXTINPUT( SDL_Event *event )
 {
     if( keyboard_focus ) {
         PROT__signal_push_event( keyboard_focus->object, \
@@ -401,7 +324,7 @@ int MyWM_push_TEXTINPUT( SDL_Event *event )
     return 0;
 }
 
-int MyWM_push_KEYDOWN( SDL_Event *event )
+int MyWM_KEYDOWN( SDL_Event *event )
 {
     if( keyboard_focus ) {
         PROT__signal_push_event( keyboard_focus->object, \
@@ -418,115 +341,6 @@ int MyWM_push_KEYDOWN( SDL_Event *event )
     return 0;
 }
 
-int MyWM_push_WINDOWEVENT( SDL_Event *event )
-{
-    switch (event->window.event) {
-    case SDL_WINDOWEVENT_SHOWN:
-#if DEBUG_LEVEL >= 3
-        SDL_Log("Window %d shown", event->window.windowID);
-#endif
-        break;
-    case SDL_WINDOWEVENT_HIDDEN:
-#if DEBUG_LEVEL >= 3
-        SDL_Log("Window %d hidden", event->window.windowID);
-#endif
-        break;
-    case SDL_WINDOWEVENT_EXPOSED:
-#if DEBUG_LEVEL >= 3
-        SDL_Log("Window %d exposed", event->window.windowID);
-#endif
-        break;
-    case SDL_WINDOWEVENT_MOVED:
-        //SDL_Log("Window %d moved to %d,%d",
-        //        event->window.windowID, event->window.data1,
-        //        event->window.data2);
-        break;
-    case SDL_WINDOWEVENT_RESIZED:
-#if DEBUG_LEVEL >= 3
-        SDL_Log("Window %d resized to %dx%d",
-                event->window.windowID, event->window.data1,
-                event->window.data2);
-#endif
-        break;
-    case SDL_WINDOWEVENT_SIZE_CHANGED:
-#if DEBUG_LEVEL >= 3
-        SDL_Log("Window %d size changed to %dx%d",
-                event->window.windowID, event->window.data1,
-                event->window.data2);
-#endif
-        break;
-    case SDL_WINDOWEVENT_MINIMIZED:
-#if DEBUG_LEVEL >= 3
-        SDL_Log("Window %d minimized", event->window.windowID);
-#endif
-        break;
-    case SDL_WINDOWEVENT_MAXIMIZED:
-#if DEBUG_LEVEL >= 3
-        SDL_Log("Window %d maximized", event->window.windowID);
-#endif
-        break;
-    case SDL_WINDOWEVENT_RESTORED:
-#if DEBUG_LEVEL >= 3
-        SDL_Log("Window %d restored", event->window.windowID);
-#endif
-        break;
-    case SDL_WINDOWEVENT_ENTER:
-#if DEBUG_LEVEL >= 3
-        SDL_Log("Mouse entered window %d",
-                event->window.windowID);
-#endif
-        break;
-    case SDL_WINDOWEVENT_LEAVE:
-        if(mouse_focus && focused_widget) {
-            PROT__signal_push( focused_widget->object,
-                               SDLGUITK_SIGNAL_TYPE_RELEASED );
-            focused_widget = NULL;
-            LeaveAll ();
-        }
-#if DEBUG_LEVEL >= 3
-        SDL_Log("Mouse left window %d", event->window.windowID);
-#endif
-        break;
-    case SDL_WINDOWEVENT_FOCUS_GAINED:
-#if DEBUG_LEVEL >= 3
-        SDL_Log("Window %d gained keyboard focus",
-                event->window.windowID);
-#endif
-        break;
-    case SDL_WINDOWEVENT_FOCUS_LOST:
-#if DEBUG_LEVEL >= 3
-        SDL_Log("Window %d lost keyboard focus",
-                event->window.windowID);
-#endif
-        break;
-    case SDL_WINDOWEVENT_CLOSE:
-#if DEBUG_LEVEL >= 3
-       SDL_Log("Window %d closed", event->window.windowID);
-#endif
-        break;
-#if SDL_VERSION_ATLEAST(2, 0, 5)
-    case SDL_WINDOWEVENT_TAKE_FOCUS:
-#if DEBUG_LEVEL >= 3
-        SDL_Log("Window %d is offered a focus (%d activables)",
-                event->window.windowID,
-                SDLGuiTK_list_length (current_context->activables));
-#endif
-        break;
-    case SDL_WINDOWEVENT_HIT_TEST:
- #if DEBUG_LEVEL >= 3
-       SDL_Log("Window %d has a special hit test", event->window.windowID);
-#endif
-       break;
-#endif
-    }
-    /* if( active_widget!=NULL ) { */
-    /*     PROT__signal_pushkey( active_widget->object, \ */
-    /*                           SDLGUITK_SIGNAL_TYPE_KEYBOARD, \ */
-    /*                           &event->key ); */
-    /*     return 1; */
-    /* } */
-    return 0;
-}
 
 void * MyWM_blitsurface( SDLGuiTK_WMWidget * wm_widget )
 {

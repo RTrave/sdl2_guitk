@@ -29,7 +29,16 @@
 void MyWM_Init();
 void MyWM_Uninit();
 
-// Keyboard focus handling
+// Check widget focus, or leave all focuses
+void MyWM_WidgetFocus();
+// Leave all focuses
+void MyWM_WidgetUnFocus();
+// Inhibition of mouse motion in MODE_MULTIPLES if mouse is not on focused
+void MyWM_inhibit_mousemotion(SDL_bool is_inhibit);
+// Check WMWidget current_context->focused
+void MyWM_UpdateFocused();
+
+// Mouse grab and Keyboard focus handling
 void MyWM_set_keyboard_focus(SDLGuiTK_Widget * widget);
 void MyWM_unset_keyboard_focus(SDLGuiTK_Widget * widget);
 void MyWM_set_mouse_focus(SDLGuiTK_Widget * widget);
@@ -38,18 +47,12 @@ void MyWM_start_textinput();
 void MyWM_stop_textinput();
 
 // Context callbacks for events
-int MyWM_push_MOUSEMOTION( SDL_Event *event );
-int MyWM_push_MOUSEBUTTONDOWN( SDL_Event *event );
-int MyWM_push_MOUSEBUTTONUP( SDL_Event *event );
-int MyWM_push_TEXTINPUT( SDL_Event *event );
-int MyWM_push_KEYDOWN( SDL_Event *event );
-int MyWM_push_WINDOWEVENT( SDL_Event *event );
+int MyWM_MOUSEMOTION( SDL_Event *event );
+int MyWM_MOUSEBUTTONDOWN( SDL_Event *event );
+int MyWM_MOUSEBUTTONUP( SDL_Event *event );
+int MyWM_TEXTINPUT( SDL_Event *event );
+int MyWM_KEYDOWN( SDL_Event *event );
 
 // Blit a WMWidget on main surface
 void * MyWM_blitsurface( SDLGuiTK_WMWidget * wm_widget );
-
-// Release all active WMWidget
-void PROT_MyWM_leaveall();
-// Check if Widget is active
-void PROT_MyWM_checkactive( SDLGuiTK_Widget * widget );
 

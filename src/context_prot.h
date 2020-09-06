@@ -46,16 +46,17 @@ struct SDLGuiTK_Context {
   int opengl;               /* SDL setting: OpenGL enabled */
   int resizable;            /* SDL setting: resizing ability */
 
-  SDLGuiTK_Render *main_render;   /* main render in SELF and EMBED modes */
-  SDLGuiTK_Render *active_render; /* current active render in MULTIPLE mode */
+  SDLGuiTK_Render   * main_render;      /* main render in SELF and EMBED modes */
+  //SDLGuiTK_Render   * active_render;    /* current active render in MULTIPLE mode */
+  SDLGuiTK_WMWidget * active_wmwidget;  /* current active WMWidget in MULTIPLE mode */
   /* Shared list of actives objects */
   /* They are added in fifo: ref->activables->unref */
-  SDLGuiTK_List   * activables;  /* activables WMWidgets */
-  SDLGuiTK_List   * ref;         /* WMWidget's Surface2D for creation */
-  SDLGuiTK_List   * unref;       /* WMWidget's Surface2D for destruction */
+  SDLGuiTK_List     * activables;  /* activables WMWidgets */
+  SDLGuiTK_List     * ref;         /* WMWidget's push in render list */
+  SDLGuiTK_List     * unref;       /* WMWidget's Surface2D for destruction */
 
   /* Current active window. */
-  SDLGuiTK_WMWidget * focused;
+  SDLGuiTK_WMWidget * focused;    /* handled by render/mywm.c */
 };
 
 

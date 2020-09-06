@@ -89,7 +89,7 @@ GridChild * GridChild_remove( SDLGuiTK_Grid * grid, SDLGuiTK_Widget * widget )
         current = current_child->child;
         if( current==widget ) {
             SDLGuiTK_list_remove( grid->children, (SDLGuiTK_Object *) current_child );
-            PROT_List_refrv_reinit( grid->children );
+            SDLGuiTK_list_refrv_reset( grid->children );
             return current_child;
         }
         current_child = (GridChild *) SDLGuiTK_list_refrv_next( grid->children );

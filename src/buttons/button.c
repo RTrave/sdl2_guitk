@@ -356,9 +356,9 @@ static void * Button_MouseReleased( SDLGuiTK_Signal * signal, void * data )
     if( button->pressed_flag==1 ) {
         button->pressed_flag = 0;
         PROT__signal_push( signal->object, SDLGUITK_SIGNAL_TYPE_CLICKED );
+        if(button->togglebutton)
+            PROT__togglebutton_clicked (button->togglebutton);
     }
-    if(button->togglebutton)
-        PROT__togglebutton_clicked (button->togglebutton);
     return (void *) NULL;
 }
 

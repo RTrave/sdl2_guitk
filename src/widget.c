@@ -42,7 +42,7 @@
 #include "signal.h"
 #include "render/surface2d.h"
 #include "render/mywm.h"
-#include "wmwidget.h"
+//#include "wmwidget.h"
 #include "context_prot.h"
 
 #include "misc_prot.h"

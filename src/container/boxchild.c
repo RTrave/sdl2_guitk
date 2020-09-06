@@ -88,7 +88,7 @@ BoxChild * BoxChild_remove( SDLGuiTK_Box * box, SDLGuiTK_Widget * widget )
         current = current_child->child;
         if( current==widget ) {
             SDLGuiTK_list_remove( box->children, (SDLGuiTK_Object *) current_child );
-            PROT_List_refrv_reinit( box->children );
+            SDLGuiTK_list_refrv_reset( box->children );
             return current_child;
         }
         current_child = (BoxChild *) SDLGuiTK_list_refrv_next( box->children );

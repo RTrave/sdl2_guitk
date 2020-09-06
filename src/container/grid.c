@@ -404,8 +404,8 @@ static SDLGuiTK_Widget * Grid_RecursiveEntering( SDLGuiTK_Widget * widget, \
         if( child->visible ) {
             active = PROT__widget_is_entering( child, x, y );
             if( active!=NULL ) {
-                PROT_List_ref_reinit( grid->children );
-                SDLGuiTK_list_unlock( grid->children );
+                SDLGuiTK_list_ref_reset( grid->children );
+                //SDLGuiTK_list_unlock( grid->children );
                 return active;
             }
         }

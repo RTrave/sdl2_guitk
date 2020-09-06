@@ -49,5 +49,5 @@ struct SDLGuiTK_List_Element {
     SDLGuiTK_List_Element * previous; /* previous element */
 };
 
-extern void PROT_List_ref_reinit( SDLGuiTK_List * list );
-extern void PROT_List_refrv_reinit( SDLGuiTK_List * list );
+//extern void PROT_List_ref_reinit( SDLGuiTK_List * list );
+//extern void PROT_List_refrv_reinit( SDLGuiTK_List * list );

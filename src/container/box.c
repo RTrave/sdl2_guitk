@@ -329,8 +329,8 @@ static SDLGuiTK_Widget * Box_RecursiveEntering( SDLGuiTK_Widget * widget, \
         if( child->visible ) {
             active = PROT__widget_is_entering( child, x, y );
             if( active!=NULL ) {
-                PROT_List_ref_reinit( box->children );
-                SDLGuiTK_list_unlock( box->children );
+                SDLGuiTK_list_ref_reset( box->children );
+                //SDLGuiTK_list_unlock( box->children );
                 return active;
             }
         }
