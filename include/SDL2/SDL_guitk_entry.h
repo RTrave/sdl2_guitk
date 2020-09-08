@@ -35,6 +35,8 @@ extern "C" {
   typedef struct SDLGuiTK_Entry SDLGuiTK_Entry;
 
   extern DECLSPEC
+  SDL_bool SDLGuiTK_IS_ENTRY( SDLGuiTK_Widget * widget );
+  extern DECLSPEC
   SDLGuiTK_Entry *SDLGuiTK_ENTRY( SDLGuiTK_Widget *widget );
 
 

@@ -46,20 +46,22 @@
 #include "scrollbar_prot.h"
 
 
-static SDL_bool SDLGuiTK_IS_SCROLLBAR( SDLGuiTK_Widget * widget )
+SDL_bool SDLGuiTK_IS_SCROLLBAR( SDLGuiTK_Widget * widget )
 {
     if( widget!=NULL ) {
         if( widget->scrollbar!=NULL ) {
             return SDL_TRUE;
         }
     }
-    SDLGUITK_ERROR( "SDLGuiTK_IS_SCROLLBAR(): widget is not a scrollbar\n" );
     return SDL_FALSE;
 }
 
 SDLGuiTK_Scrollbar * SDLGuiTK_SCROLLBAR( SDLGuiTK_Widget * widget )
 {
-    if( !SDLGuiTK_IS_SCROLLBAR(widget) ) return NULL;
+    if( !SDLGuiTK_IS_SCROLLBAR(widget) ) {
+        SDLGUITK_ERROR( "SDLGuiTK_IS_SCROLLBAR(): widget is not a scrollbar\n" );
+        return NULL;
+    }
     return widget->scrollbar;
 }
 

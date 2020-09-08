@@ -319,23 +319,6 @@ void SDLGuiTK_blitsurfaces()
 }
 
 
-static SDLGuiTK_WMWidget * Context_getwmwidget_withwindowid(int id)
-{
-    SDLGuiTK_WMWidget * current=NULL;
-    current = (SDLGuiTK_WMWidget *) \
-                  SDLGuiTK_list_refrv_init( current_context->activables );
-    while(current) {
-        if(SDL_GetWindowID(current->render->window)==id) {
-            return current;
-        }
-        current = (SDLGuiTK_WMWidget *) \
-                  SDLGuiTK_list_refrv_next( current_context->activables );
-    }
-    SDLGUITK_ERROR ("No WMWidget found corresponding to window\n");
-    return NULL;
-}
-
-
 void PROT__context_ref_tooltip( SDLGuiTK_Widget * widget )
 {
     if(!widget->has_tooltip) return;

@@ -36,6 +36,8 @@ extern "C" {
   typedef struct SDLGuiTK_Grid SDLGuiTK_Grid;
 
   extern DECLSPEC
+  SDL_bool SDLGuiTK_IS_GRID( SDLGuiTK_Widget * widget );
+  extern DECLSPEC
   SDLGuiTK_Grid *SDLGuiTK_GRID( SDLGuiTK_Widget *widget );
 
   /*  */

@@ -34,6 +34,8 @@ extern "C" {
   /* SDLGuiTK_Image structure definition */
   typedef struct SDLGuiTK_Image SDLGuiTK_Image;
 
+  extern DECLSPEC
+  SDL_bool SDLGuiTK_IS_IMAGE( SDLGuiTK_Widget * widget );
   extern DECLSPEC 
   SDLGuiTK_Image *SDLGuiTK_IMAGE( SDLGuiTK_Widget *widget );
 

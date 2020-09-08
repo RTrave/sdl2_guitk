@@ -42,20 +42,22 @@
 
 
 
-static SDL_bool SDLGuiTK_IS_MISC( SDLGuiTK_Widget * widget )
+SDL_bool SDLGuiTK_IS_MISC( SDLGuiTK_Widget * widget )
 {
     if( widget!=NULL ) {
         if( widget->misc!=NULL ) {
             return SDL_TRUE;
         }
     }
-    SDLGUITK_ERROR( "SDLGuiTK_IS_MISC(): widget is not a misc\n" );
     return SDL_FALSE;
 }
 
 SDLGuiTK_Misc * SDLGuiTK_MISC( SDLGuiTK_Widget * widget )
 {
-    if( !SDLGuiTK_IS_MISC(widget) ) return NULL;
+    if( !SDLGuiTK_IS_MISC(widget) ) {
+        SDLGUITK_ERROR( "SDLGuiTK_IS_MISC(): widget is not a misc\n" );
+        return NULL;
+    }
     return widget->misc;
 }
 

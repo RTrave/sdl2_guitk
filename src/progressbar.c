@@ -45,20 +45,22 @@
 #include "progressbar_prot.h"
 
 
-static SDL_bool SDLGuiTK_IS_PROGRESSBAR( SDLGuiTK_Widget * widget )
+SDL_bool SDLGuiTK_IS_PROGRESSBAR( SDLGuiTK_Widget * widget )
 {
     if( widget!=NULL ) {
         if( widget->progressbar!=NULL ) {
             return SDL_TRUE;
         }
     }
-    SDLGUITK_ERROR( "SDLGuiTK_IS_PROGRESSBAR(): widget is not a progressbar\n" );
     return SDL_FALSE;
 }
 
 SDLGuiTK_ProgressBar * SDLGuiTK_PROGRESSBAR( SDLGuiTK_Widget * widget )
 {
-    if( !SDLGuiTK_IS_PROGRESSBAR(widget) ) return NULL;
+    if( !SDLGuiTK_IS_PROGRESSBAR(widget) ) {
+        SDLGUITK_ERROR( "SDLGuiTK_IS_PROGRESSBAR(): widget is not a progressbar\n" );
+        return NULL;
+    }
     return widget->progressbar;
 }
 

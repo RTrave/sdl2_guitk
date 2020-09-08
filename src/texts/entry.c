@@ -51,20 +51,22 @@
 
 
 
-static SDL_bool SDLGuiTK_IS_ENTRY( SDLGuiTK_Widget * widget )
+SDL_bool SDLGuiTK_IS_ENTRY( SDLGuiTK_Widget * widget )
 {
     if( widget!=NULL ) {
         if( widget->entry!=NULL ) {
             return SDL_TRUE;
         }
     }
-    SDLGUITK_ERROR( "SDLGuiTK_IS_ENTRY(): widget is not an entry\n" );
     return SDL_FALSE;
 }
 
 SDLGuiTK_Entry * SDLGuiTK_ENTRY( SDLGuiTK_Widget * widget )
 {
-    if( !SDLGuiTK_IS_ENTRY(widget) ) return NULL;
+    if( !SDLGuiTK_IS_ENTRY(widget) ) {
+        SDLGUITK_ERROR( "SDLGuiTK_IS_ENTRY(): widget is not an entry\n" );
+        return NULL;
+    }
     return widget->entry;
 }
 

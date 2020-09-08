@@ -51,7 +51,7 @@
 #include "spinbutton_prot.h"
 
 
-static SDL_bool SDLGuiTK_IS_SPINBUTTON( SDLGuiTK_Widget * widget )
+SDL_bool SDLGuiTK_IS_SPINBUTTON( SDLGuiTK_Widget * widget )
 {
     if( widget!=NULL ) {
         if( widget->entry!=NULL ) {
@@ -60,13 +60,15 @@ static SDL_bool SDLGuiTK_IS_SPINBUTTON( SDLGuiTK_Widget * widget )
             }
         }
     }
-    SDLGUITK_ERROR( "SDLGuiTK_IS_SPINBUTTON(): widget is not an spinbutton\n" );
     return SDL_FALSE;
 }
 
 SDLGuiTK_SpinButton * SDLGuiTK_SPINBUTTON( SDLGuiTK_Widget * widget )
 {
-    if( !SDLGuiTK_IS_SPINBUTTON(widget) ) return NULL;
+    if( !SDLGuiTK_IS_SPINBUTTON(widget) ) {
+        SDLGUITK_ERROR( "SDLGuiTK_IS_SPINBUTTON(): widget is not an spinbutton\n" );
+        return NULL;
+    }
     return widget->entry->spinbutton;
 }
 

@@ -45,7 +45,7 @@
 #include "bin_prot.h"
 
 
-static SDL_bool SDLGuiTK_IS_BIN( SDLGuiTK_Widget * widget )
+SDL_bool SDLGuiTK_IS_BIN( SDLGuiTK_Widget * widget )
 {
     if( widget!=NULL ) {
         if( widget->container!=NULL ) {
@@ -54,13 +54,15 @@ static SDL_bool SDLGuiTK_IS_BIN( SDLGuiTK_Widget * widget )
             }
         }
     }
-    SDLGUITK_ERROR( "SDLGuiTK_IS_BIN(): widget is not a bin\n" );
     return SDL_FALSE;
 }
 
 SDLGuiTK_Bin * SDLGuiTK_BIN( SDLGuiTK_Widget * widget )
 {
-    if( !SDLGuiTK_IS_BIN(widget) ) return NULL;
+    if( !SDLGuiTK_IS_BIN(widget) ) {
+        SDLGUITK_ERROR( "SDLGuiTK_IS_BIN(): widget is not a bin\n" );
+        return NULL;
+    }
     return widget->container->bin;
 }
 

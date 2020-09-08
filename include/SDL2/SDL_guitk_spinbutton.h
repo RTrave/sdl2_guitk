@@ -34,6 +34,8 @@ extern "C" {
   typedef struct SDLGuiTK_SpinButton SDLGuiTK_SpinButton;
 
   extern DECLSPEC
+  SDL_bool SDLGuiTK_IS_SPINBUTTON( SDLGuiTK_Widget * widget );
+  extern DECLSPEC
   SDLGuiTK_SpinButton *SDLGuiTK_SPINBUTTON( SDLGuiTK_Widget *widget );
 
 

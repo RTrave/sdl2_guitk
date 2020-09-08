@@ -49,7 +49,7 @@
 #include "image_prot.h"
 
 
-static SDL_bool SDLGuiTK_IS_IMAGE( SDLGuiTK_Widget * widget )
+SDL_bool SDLGuiTK_IS_IMAGE( SDLGuiTK_Widget * widget )
 {
     if( widget!=NULL ) {
         if( widget->misc!=NULL ) {
@@ -58,13 +58,15 @@ static SDL_bool SDLGuiTK_IS_IMAGE( SDLGuiTK_Widget * widget )
             }
         }
     }
-    SDLGUITK_ERROR( "SDLGuiTK_IS_IMAGE(): widget is not an image\n" );
     return SDL_FALSE;
 }
 
 SDLGuiTK_Image * SDLGuiTK_IMAGE( SDLGuiTK_Widget * widget )
 {
-    if( !SDLGuiTK_IS_IMAGE(widget) ) return NULL;
+    if( !SDLGuiTK_IS_IMAGE(widget) ) {
+        SDLGUITK_ERROR( "SDLGuiTK_IS_IMAGE(): widget is not an image\n" );
+        return NULL;
+    }
     return widget->misc->image;
 }
 

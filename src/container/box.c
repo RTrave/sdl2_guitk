@@ -44,7 +44,7 @@
 
 
 
-static SDL_bool SDLGuiTK_IS_BOX( SDLGuiTK_Widget * widget )
+SDL_bool SDLGuiTK_IS_BOX( SDLGuiTK_Widget * widget )
 {
     if( widget!=NULL ) {
         if( widget->container!=NULL ) {
@@ -53,13 +53,15 @@ static SDL_bool SDLGuiTK_IS_BOX( SDLGuiTK_Widget * widget )
             }
         }
     }
-    SDLGUITK_ERROR( "SDLGuiTK_IS_BOX(): widget is not a box\n" );
     return SDL_FALSE;
 }
 
 SDLGuiTK_Box * SDLGuiTK_BOX( SDLGuiTK_Widget * widget )
 {
-    if( !SDLGuiTK_IS_BOX(widget) ) return NULL;
+    if( !SDLGuiTK_IS_BOX(widget) ) {
+        SDLGUITK_ERROR( "SDLGuiTK_IS_BOX(): widget is not a box\n" );
+        return NULL;
+    }
     return widget->container->box;
 }
 

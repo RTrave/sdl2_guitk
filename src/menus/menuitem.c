@@ -55,7 +55,7 @@
 
 
 
-static SDL_bool SDLGuiTK_IS_MENUITEM( SDLGuiTK_Widget * widget )
+SDL_bool SDLGuiTK_IS_MENUITEM( SDLGuiTK_Widget * widget )
 {
     if( widget!=NULL ) {
         if( widget->container!=NULL ) {
@@ -66,13 +66,15 @@ static SDL_bool SDLGuiTK_IS_MENUITEM( SDLGuiTK_Widget * widget )
             }
         }
     }
-    SDLGUITK_ERROR( "SDLGuiTK_IS_MENUITEM(): widget is not a menuitem\n" );
     return SDL_FALSE;
 }
 
 SDLGuiTK_MenuItem * SDLGuiTK_MENUITEM( SDLGuiTK_Widget * widget )
 {
-    if( !SDLGuiTK_IS_MENUITEM(widget) ) return NULL;
+    if( !SDLGuiTK_IS_MENUITEM(widget) ) {
+        SDLGUITK_ERROR( "SDLGuiTK_IS_MENUITEM(): widget is not a menuitem\n" );
+        return NULL;
+    }
     return widget->container->bin->menuitem;
 }
 

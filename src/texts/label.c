@@ -47,7 +47,7 @@
 #include "label_prot.h"
 
 
-static SDL_bool SDLGuiTK_IS_LABEL( SDLGuiTK_Widget * widget )
+SDL_bool SDLGuiTK_IS_LABEL( SDLGuiTK_Widget * widget )
 {
     if( widget!=NULL ) {
         if( widget->misc!=NULL ) {
@@ -56,13 +56,15 @@ static SDL_bool SDLGuiTK_IS_LABEL( SDLGuiTK_Widget * widget )
             }
         }
     }
-    SDLGUITK_ERROR( "SDLGuiTK_IS_LABEL(): widget is not a label\n" );
     return SDL_FALSE;
 }
 
 SDLGuiTK_Label * SDLGuiTK_LABEL( SDLGuiTK_Widget * widget )
 {
-    if( !SDLGuiTK_IS_LABEL(widget) ) return NULL;
+    if( !SDLGuiTK_IS_LABEL(widget) ) {
+        SDLGUITK_ERROR( "SDLGuiTK_IS_LABEL(): widget is not a label\n" );
+        return NULL;
+    }
     return widget->misc->label;
 }
 

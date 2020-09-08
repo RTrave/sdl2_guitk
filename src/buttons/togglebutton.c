@@ -49,7 +49,7 @@
 #include "checkbutton_prot.h"
 
 
-static SDL_bool SDLGuiTK_IS_TOGGLE_BUTTON( SDLGuiTK_Widget * widget )
+SDL_bool SDLGuiTK_IS_TOGGLE_BUTTON( SDLGuiTK_Widget * widget )
 {
     if( widget!=NULL ) {
         if( widget->container!=NULL ) {
@@ -62,13 +62,15 @@ static SDL_bool SDLGuiTK_IS_TOGGLE_BUTTON( SDLGuiTK_Widget * widget )
             }
         }
     }
-    SDLGUITK_ERROR( "SDLGuiTK_IS_TOGGLE_BUTTON(): widget is not a toggle button\n" );
     return SDL_FALSE;
 }
 
 SDLGuiTK_ToggleButton * SDLGuiTK_TOGGLE_BUTTON( SDLGuiTK_Widget * widget )
 {
-    if( !SDLGuiTK_IS_TOGGLE_BUTTON(widget) ) return NULL;
+    if( !SDLGuiTK_IS_TOGGLE_BUTTON(widget) ) {
+        SDLGUITK_ERROR( "SDLGuiTK_IS_TOGGLE_BUTTON(): widget is not a toggle button\n" );
+        return NULL;
+    }
     return widget->container->bin->button->togglebutton;
 }
 

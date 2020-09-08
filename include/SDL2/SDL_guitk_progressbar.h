@@ -35,6 +35,8 @@ extern "C" {
   typedef struct SDLGuiTK_ProgressBar SDLGuiTK_ProgressBar;
 
   extern DECLSPEC
+  SDL_bool SDLGuiTK_IS_PROGRESSBAR( SDLGuiTK_Widget * widget );
+  extern DECLSPEC
   SDLGuiTK_ProgressBar *SDLGuiTK_PROGRESSBAR( SDLGuiTK_Widget *widget );
 
 

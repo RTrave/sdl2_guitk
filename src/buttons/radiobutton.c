@@ -50,7 +50,7 @@
 #include "radiobutton_prot.h"
 
 
-static SDL_bool SDLGuiTK_IS_RADIO_BUTTON( SDLGuiTK_Widget * widget )
+SDL_bool SDLGuiTK_IS_RADIO_BUTTON( SDLGuiTK_Widget * widget )
 {
     if( widget!=NULL ) {
         if( widget->container!=NULL ) {
@@ -67,13 +67,15 @@ static SDL_bool SDLGuiTK_IS_RADIO_BUTTON( SDLGuiTK_Widget * widget )
             }
         }
     }
-    SDLGUITK_ERROR( "SDLGuiTK_IS_RADIO_BUTTON(): widget is not a radio button\n" );
     return SDL_FALSE;
 }
 
 SDLGuiTK_RadioButton * SDLGuiTK_RADIO_BUTTON( SDLGuiTK_Widget * widget )
 {
-    if( !SDLGuiTK_IS_RADIO_BUTTON(widget) ) return NULL;
+    if( !SDLGuiTK_IS_RADIO_BUTTON(widget) ) {
+        SDLGUITK_ERROR( "SDLGuiTK_IS_RADIO_BUTTON(): widget is not a radio button\n" );
+        return NULL;
+    }
     return widget->container->bin->button->togglebutton->checkbutton->radiobutton;
 }
 

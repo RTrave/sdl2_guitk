@@ -34,6 +34,8 @@ extern "C" {
   typedef struct SDLGuiTK_Panel SDLGuiTK_Panel;
 
   extern DECLSPEC
+  SDL_bool SDLGuiTK_IS_PANEL( SDLGuiTK_Widget * widget );
+  extern DECLSPEC
   SDLGuiTK_Panel *SDLGuiTK_PANEL( SDLGuiTK_Widget *widget );
 
 

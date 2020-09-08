@@ -46,20 +46,22 @@
 #include "container/grid_prot.h"
 
 
-static SDL_bool SDLGuiTK_IS_CONTAINER( SDLGuiTK_Widget * widget )
+SDL_bool SDLGuiTK_IS_CONTAINER( SDLGuiTK_Widget * widget )
 {
     if( widget!=NULL ) {
         if( widget->container!=NULL ) {
             return SDL_TRUE;
         }
     }
-    SDLGUITK_ERROR( "SDLGuiTK_IS_CONTAINER(): widget is not a container\n" );
     return SDL_FALSE;
 }
 
 SDLGuiTK_Container * SDLGuiTK_CONTAINER( SDLGuiTK_Widget * widget )
 {
-    if( !SDLGuiTK_IS_CONTAINER(widget) ) return NULL;
+    if( !SDLGuiTK_IS_CONTAINER(widget) ) {
+        SDLGUITK_ERROR( "SDLGuiTK_IS_CONTAINER(): widget is not a container\n" );
+        return NULL;
+    }
     return widget->container;
 }
 

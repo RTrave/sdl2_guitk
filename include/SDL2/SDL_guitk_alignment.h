@@ -34,7 +34,8 @@ extern "C" {
   /* SDLGuiTK_Alignment structure definition */
   /*  */
   typedef struct SDLGuiTK_Alignment SDLGuiTK_Alignment;
-
+  extern DECLSPEC
+  SDL_bool SDLGuiTK_IS_ALIGNMENT( SDLGuiTK_Widget * widget );
   extern DECLSPEC 
   SDLGuiTK_Alignment *SDLGuiTK_ALIGNMENT( SDLGuiTK_Widget *widget );
   

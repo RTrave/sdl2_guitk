@@ -54,7 +54,7 @@
 #include "../viewport_prot.h"
 #include "scrolledwindow_prot.h"
 
-static SDL_bool SDLGuiTK_IS_SCROLLEDWINDOW( SDLGuiTK_Widget * widget )
+SDL_bool SDLGuiTK_IS_SCROLLEDWINDOW( SDLGuiTK_Widget * widget )
 {
     if( widget!=NULL ) {
         if( widget->container!=NULL ) {
@@ -65,13 +65,15 @@ static SDL_bool SDLGuiTK_IS_SCROLLEDWINDOW( SDLGuiTK_Widget * widget )
             }
         }
     }
-    SDLGUITK_ERROR( "SDLGuiTK_IS_SCROLLEDWINDOW(): widget is not a scrolledwindow\n" );
     return SDL_FALSE;
 }
 
 SDLGuiTK_ScrolledWindow * SDLGuiTK_SCROLLEDWINDOW( SDLGuiTK_Widget * widget )
 {
-    if( !SDLGuiTK_IS_SCROLLEDWINDOW(widget) ) return NULL;
+    if( !SDLGuiTK_IS_SCROLLEDWINDOW(widget) ) {
+        SDLGUITK_ERROR( "SDLGuiTK_IS_SCROLLEDWINDOW(): widget is not a scrolledwindow\n" );
+        return NULL;
+    }
     return widget->container->bin->scrolledwindow;
 }
 

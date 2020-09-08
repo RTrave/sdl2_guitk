@@ -54,7 +54,7 @@
 #include "menuitem_prot.h"
 
 
-static SDL_bool SDLGuiTK_IS_MENU( SDLGuiTK_Widget * widget )
+SDL_bool SDLGuiTK_IS_MENU( SDLGuiTK_Widget * widget )
 {
     if( widget!=NULL ) {
         if( widget->container!=NULL ) {
@@ -63,13 +63,15 @@ static SDL_bool SDLGuiTK_IS_MENU( SDLGuiTK_Widget * widget )
             }
         }
     }
-    SDLGUITK_ERROR( "SDLGuiTK_IS_MENU(): widget is not a menu\n" );
     return SDL_FALSE;
 }
 
 SDLGuiTK_Menu * SDLGuiTK_MENU( SDLGuiTK_Widget * widget )
 {
-    if( !SDLGuiTK_IS_MENU(widget) ) return NULL;
+    if( !SDLGuiTK_IS_MENU(widget) ) {
+        SDLGUITK_ERROR( "SDLGuiTK_IS_MENU(): widget is not a menu\n" );
+        return NULL;
+    }
     return widget->container->menu;
 }
 

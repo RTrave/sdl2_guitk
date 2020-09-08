@@ -49,7 +49,7 @@
 #include "viewport_prot.h"
 
 
-static SDL_bool SDLGuiTK_IS_VIEWPORT( SDLGuiTK_Widget * widget )
+SDL_bool SDLGuiTK_IS_VIEWPORT( SDLGuiTK_Widget * widget )
 {
     if( widget!=NULL ) {
         if( widget->container!=NULL ) {
@@ -60,13 +60,15 @@ static SDL_bool SDLGuiTK_IS_VIEWPORT( SDLGuiTK_Widget * widget )
             }
         }
     }
-  SDLGUITK_ERROR( "SDLGuiTK_IS_VIEWPORT(): widget is not a viewport\n" );
   return SDL_FALSE;
 }
 
 SDLGuiTK_Viewport * SDLGuiTK_VIEWPORT( SDLGuiTK_Widget * widget )
 {
-    if( !SDLGuiTK_IS_VIEWPORT(widget) ) return NULL;
+    if( !SDLGuiTK_IS_VIEWPORT(widget) ) {
+        SDLGUITK_ERROR( "SDLGuiTK_IS_VIEWPORT(): widget is not a viewport\n" );
+        return NULL;
+    }
     return widget->container->bin->viewport;
 }
 

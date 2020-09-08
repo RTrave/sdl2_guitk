@@ -38,7 +38,11 @@ extern "C" {
   typedef struct SDLGuiTK_MenuItem SDLGuiTK_MenuItem;
 
   extern DECLSPEC
+  SDL_bool SDLGuiTK_IS_MENU( SDLGuiTK_Widget * widget );
+  extern DECLSPEC
   SDLGuiTK_Menu *SDLGuiTK_MENU( SDLGuiTK_Widget *widget );
+  extern DECLSPEC
+  SDL_bool SDLGuiTK_IS_MENUITEM( SDLGuiTK_Widget * widget );
   extern DECLSPEC
   SDLGuiTK_MenuItem *SDLGuiTK_MENUITEM( SDLGuiTK_Widget *widget );
 

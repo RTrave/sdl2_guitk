@@ -31,7 +31,8 @@ extern "C" {
 
   /* SDLGuiTK_Scrollbar structure definition */
   typedef struct SDLGuiTK_Scrollbar SDLGuiTK_Scrollbar;
-
+  extern DECLSPEC
+  SDL_bool SDLGuiTK_IS_SCROLLBAR( SDLGuiTK_Widget * widget );
   extern DECLSPEC
   SDLGuiTK_Scrollbar *SDLGuiTK_SCROLLBAR( SDLGuiTK_Widget *widget );
 

@@ -36,6 +36,8 @@ extern "C" {
   typedef struct SDLGuiTK_Bin SDLGuiTK_Bin;
 
   extern DECLSPEC
+  SDL_bool SDLGuiTK_IS_BIN( SDLGuiTK_Widget * widget );
+  extern DECLSPEC
   SDLGuiTK_Bin *SDLGuiTK_BIN( SDLGuiTK_Widget *widget );
 
 

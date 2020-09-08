@@ -56,7 +56,7 @@
 #define WINDOW_BORDER_SIZE ((int) 2)
 
 
-static SDL_bool SDLGuiTK_IS_WINDOW( SDLGuiTK_Widget * widget )
+SDL_bool SDLGuiTK_IS_WINDOW( SDLGuiTK_Widget * widget )
 {
     if( widget!=NULL ) {
         if( widget->container!=NULL ) {
@@ -67,13 +67,15 @@ static SDL_bool SDLGuiTK_IS_WINDOW( SDLGuiTK_Widget * widget )
             }
         }
     }
-    SDLGUITK_ERROR( "SDLGuiTK_IS_WINDOW(): widget is not a window\n" );
     return SDL_FALSE;
 }
 
 SDLGuiTK_Window * SDLGuiTK_WINDOW( SDLGuiTK_Widget * widget )
 {
-    if( !SDLGuiTK_IS_WINDOW(widget) ) return NULL;
+    if( !SDLGuiTK_IS_WINDOW(widget) ) {
+        SDLGUITK_ERROR( "SDLGuiTK_IS_WINDOW(): widget is not a window\n" );
+        return NULL;
+    }
     return widget->container->bin->window;
 }
 

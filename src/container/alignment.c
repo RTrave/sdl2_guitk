@@ -42,7 +42,7 @@
 #include "alignment_prot.h"
 
 
-static SDL_bool SDLGuiTK_IS_ALIGNMENT( SDLGuiTK_Widget * widget )
+SDL_bool SDLGuiTK_IS_ALIGNMENT( SDLGuiTK_Widget * widget )
 {
     if( widget!=NULL ) {
         if( widget->container!=NULL ) {
@@ -53,13 +53,15 @@ static SDL_bool SDLGuiTK_IS_ALIGNMENT( SDLGuiTK_Widget * widget )
             }
         }
     }
-    SDLGUITK_ERROR( "SDLGuiTK_IS_ALIGNMENT(): widget is not an alignment\n" );
     return SDL_FALSE;
 }
 
 SDLGuiTK_Alignment * SDLGuiTK_ALIGNMENT( SDLGuiTK_Widget * widget )
 {
-    if( !SDLGuiTK_IS_ALIGNMENT(widget) ) return NULL;
+    if( !SDLGuiTK_IS_ALIGNMENT(widget) ) {
+        SDLGUITK_ERROR( "SDLGuiTK_IS_ALIGNMENT(): widget is not an alignment\n" );
+        return NULL;
+    }
     return widget->container->bin->alignment;
 }
 

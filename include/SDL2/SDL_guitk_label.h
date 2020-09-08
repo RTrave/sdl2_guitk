@@ -34,6 +34,8 @@ extern "C" {
   /* SDLGuiTK_Label structure definition */
   typedef struct SDLGuiTK_Label SDLGuiTK_Label;
 
+  extern DECLSPEC
+  SDL_bool SDLGuiTK_IS_LABEL( SDLGuiTK_Widget * widget );
   extern DECLSPEC 
   SDLGuiTK_Label *SDLGuiTK_LABEL( SDLGuiTK_Widget *widget );
 

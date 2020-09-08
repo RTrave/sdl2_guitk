@@ -34,6 +34,8 @@ extern "C" {
   typedef struct SDLGuiTK_Button SDLGuiTK_Button;
 
   extern DECLSPEC 
+  SDL_bool SDLGuiTK_IS_BUTTON( SDLGuiTK_Widget * widget );
+  extern DECLSPEC
   SDLGuiTK_Button *SDLGuiTK_BUTTON( SDLGuiTK_Widget *widget );
 
 
@@ -55,6 +57,8 @@ extern "C" {
   typedef struct SDLGuiTK_ToggleButton SDLGuiTK_ToggleButton;
 
   extern DECLSPEC
+  SDL_bool SDLGuiTK_IS_TOGGLE_BUTTON( SDLGuiTK_Widget * widget );
+  extern DECLSPEC
   SDLGuiTK_ToggleButton *SDLGuiTK_TOGGLE_BUTTON( SDLGuiTK_Widget *widget );
 
   /*  */
@@ -74,6 +78,8 @@ extern "C" {
   typedef struct SDLGuiTK_CheckButton SDLGuiTK_CheckButton;
 
   extern DECLSPEC
+  SDL_bool SDLGuiTK_IS_CHECK_BUTTON( SDLGuiTK_Widget * widget );
+  extern DECLSPEC
   SDLGuiTK_CheckButton *SDLGuiTK_CHECK_BUTTON( SDLGuiTK_Widget *widget );
 
   /*  */
@@ -86,6 +92,8 @@ extern "C" {
   /* SDLGuiTK_RadioButton structure definition */
   typedef struct SDLGuiTK_RadioButton SDLGuiTK_RadioButton;
 
+  extern DECLSPEC
+  SDL_bool SDLGuiTK_IS_RADIO_BUTTON( SDLGuiTK_Widget * widget );
   extern DECLSPEC
   SDLGuiTK_RadioButton *SDLGuiTK_RADIO_BUTTON( SDLGuiTK_Widget *widget );
 

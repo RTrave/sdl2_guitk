@@ -32,7 +32,8 @@ extern "C" {
 
   /* SDLGuiTK_Window structure definition */
   typedef struct SDLGuiTK_ScrolledWindow SDLGuiTK_ScrolledWindow;
-
+  extern DECLSPEC
+  SDL_bool SDLGuiTK_IS_SCROLLEDWINDOW( SDLGuiTK_Widget * widget );
   extern DECLSPEC
   SDLGuiTK_ScrolledWindow *SDLGuiTK_SCROLLEDWINDOW( SDLGuiTK_Widget *widget );
 
