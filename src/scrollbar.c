@@ -89,6 +89,7 @@ static SDLGuiTK_Scrollbar * Scrollbar_create()
 
 static void Scrollbar_destroy( SDLGuiTK_Scrollbar * scrollbar )
 {
+    PROT__adjustment_detach (scrollbar->adjustment, scrollbar->widget);
     MySDL_Surface_free (scrollbar->srf);
     PROT__widget_destroy( scrollbar->widget );
     free( scrollbar );

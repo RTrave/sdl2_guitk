@@ -106,6 +106,8 @@ static SDLGuiTK_ScrolledWindow * ScrolledWindow_create()
 
 static void ScrolledWindow_destroy( SDLGuiTK_ScrolledWindow * scrolledwindow )
 {
+    SDLGuiTK_widget_destroy (scrolledwindow->hscrollbar);
+    SDLGuiTK_widget_destroy (scrolledwindow->vscrollbar);
     MySDL_Surface_free( scrolledwindow->srf );
 
     PROT__bin_destroy( scrolledwindow->bin );

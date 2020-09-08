@@ -104,6 +104,7 @@ static SDLGuiTK_SpinButton * SpinButton_create()
 
 static void SpinButton_destroy( SDLGuiTK_SpinButton * spinbutton )
 {
+    PROT__adjustment_detach (spinbutton->adjustment, spinbutton->object->widget);
     MySDL_Surface_free( spinbutton->active_srf );
     MySDL_Surface_free( spinbutton->controlD_srf );
     MySDL_Surface_free( spinbutton->controlU_srf );

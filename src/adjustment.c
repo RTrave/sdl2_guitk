@@ -52,14 +52,39 @@ static int current_id=0;
 void PROT__adjustment_attach(SDLGuiTK_Adjustment *adjustment,
                              SDLGuiTK_Widget *parent)
 {
-    adjustment->parent[adjustment->parent_nb] = parent;
-    adjustment->parent_nb++;
+    SDLGuiTK_list_append (adjustment->parents,
+                          (SDLGuiTK_Object *)parent);
+#if DEBUG_LEVEL >= 2
+    SDLGUITK_LOG ("__adjustment_attach(): ");
+    printf("%s attached to %s\n",
+           adjustment->object->name, parent->object->name);
+#endif
+
 }
 
 void PROT__adjustment_detach(SDLGuiTK_Adjustment *adjustment,
                              SDLGuiTK_Widget *parent)
 {
-    //adjustment->parent = parent;
+    SDLGuiTK_Widget *current;
+    current =   (SDLGuiTK_Widget *)
+                SDLGuiTK_list_remove(adjustment->parents,
+                                   (SDLGuiTK_Object *)parent);
+    if(current) {
+#if DEBUG_LEVEL >= 2
+        SDLGUITK_LOG ("__adjustment_detach(): ");
+        printf("%s detached from %s\n",
+               adjustment->object->name, parent->object->name);
+#endif
+    } else
+        SDLGUITK_ERROR("__adjustment_detach(): widget not found!\n");
+    if(SDLGuiTK_list_length (adjustment->parents)==0) {
+#if DEBUG_LEVEL >= 2
+        SDLGUITK_LOG ("__adjustment_detach(): last parent .. free adjustment\n");
+#endif
+        SDLGuiTK_list_destroy (adjustment->parents);
+        PROT__object_destroy (adjustment->object);
+        free(adjustment);
+    }
 }
 
 
@@ -80,9 +105,7 @@ SDLGuiTK_Adjustment * SDLGuiTK_adjustment_new(double value,
     new_adjustment->object->adjustment = new_adjustment;
     sprintf( new_adjustment->object->name, "adjustment%d", ++current_id );
 
-    for(int i=0; i<=4; i++)
-        new_adjustment->parent[i] = NULL;
-    new_adjustment->parent_nb = 0;
+    new_adjustment->parents = SDLGuiTK_list_new ();
     new_adjustment->value = value;
     new_adjustment->lower = lower;
     new_adjustment->upper = upper;
@@ -94,20 +117,22 @@ SDLGuiTK_Adjustment * SDLGuiTK_adjustment_new(double value,
 void SDLGuiTK_adjustment_set_value(SDLGuiTK_Adjustment *adjustment,
                                    double               value)
 {
-    //value = (adjustment->lower + value*(adjustment->upper-adjustment->lower));
     if(value<adjustment->lower)
         value = adjustment->lower;
     if(value>adjustment->upper)
         value = adjustment->upper;
     adjustment->value = value;
-    //printf("Adjustment value=%f\n", value);
     PROT__signal_push(adjustment->object,
                       SDLGUITK_SIGNAL_TYPE_VALUECHANGED );
-    for(int i=0; i<=adjustment->parent_nb; i++){
-        if( adjustment->parent[i] ) {
-            PROT__signal_push ( adjustment->parent[i]->object,
-                                SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY);
-        }
+
+    SDLGuiTK_Widget * current;
+    current = (SDLGuiTK_Widget*)
+        SDLGuiTK_list_ref_init (adjustment->parents);
+    while(current) {
+        PROT__signal_push ( current->object,
+                            SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY);
+        current = (SDLGuiTK_Widget*)
+            SDLGuiTK_list_ref_next (adjustment->parents);
     }
 }
 
@@ -132,14 +157,17 @@ void PROT__adjustment_set_fraction(SDLGuiTK_Adjustment *adjustment,
     if(value>adjustment->upper)
         value = adjustment->upper;
     adjustment->value = value;
-    //printf("Adjustment value=%f\n", value);
     PROT__signal_push(adjustment->object,
                       SDLGUITK_SIGNAL_TYPE_VALUECHANGED );
-    for(int i=0; i<=adjustment->parent_nb; i++){
-        if( adjustment->parent[i] ) {
-            PROT__signal_push ( adjustment->parent[i]->object,
-                                SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY);
-        }
+
+    SDLGuiTK_Widget * current;
+    current = (SDLGuiTK_Widget*)
+        SDLGuiTK_list_ref_init (adjustment->parents);
+    while(current) {
+        PROT__signal_push ( current->object,
+                            SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY);
+        current = (SDLGuiTK_Widget*)
+            SDLGuiTK_list_ref_next (adjustment->parents);
     }
 }
 

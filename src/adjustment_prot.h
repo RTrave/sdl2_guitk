@@ -28,22 +28,21 @@
 struct SDLGuiTK_Adjustment {
     SDLGuiTK_Object * object;     /* referent object */
 
-  /* "public" data */
-    SDLGuiTK_Widget *parent[5];
-    int parent_nb;
-    double value;
-    double lower;
-    double upper;
-    double step_increment;
+    /* "public" data */
+    SDLGuiTK_List     * parents;
+    double              value;
+    double              lower;
+    double              upper;
+    double              step_increment;
 
   /* "private" data */
 };
 
-extern
 void PROT__adjustment_attach(SDLGuiTK_Adjustment *adjustment,
                              SDLGuiTK_Widget *parent);
+void PROT__adjustment_detach(SDLGuiTK_Adjustment *adjustment,
+                             SDLGuiTK_Widget *parent);
 
-extern
 void PROT__adjustment_set_fraction(SDLGuiTK_Adjustment *adjustment,
                                    double               fraction);
 

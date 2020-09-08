@@ -109,7 +109,8 @@ static SDLGuiTK_Viewport * Viewport_create()
 static void Viewport_destroy( SDLGuiTK_Viewport * viewport )
 {
     //MySDL_Surface_free( viewport->srf );
-
+    PROT__adjustment_detach( viewport->vadjustment, viewport->object->widget);
+    PROT__adjustment_detach( viewport->hadjustment, viewport->object->widget);
     PROT__bin_destroy( viewport->bin );
     //WMWidget_Delete( viewport->wm_widget );
     free( viewport );
@@ -329,7 +330,9 @@ static void * Viewport_MousePressed( SDLGuiTK_Signal * signal, void * data )
     SDLGuiTK_Viewport * viewport=widget->container->bin->viewport;
     int x, y;
     if( SDL_GetMouseState( &x, &y) ) {
+#if DEBUG_LEVEL >= 2
         printf( "Mouse pressed on viewport: x=%d y=%d\n", x, y );
+#endif
         viewport->mbutton_x = x;
         viewport->mbutton_y = y;
         viewport->is_moving = SDL_TRUE;
@@ -343,9 +346,11 @@ static void * Viewport_MouseReleased( SDLGuiTK_Signal * signal, void * data )
     SDLGuiTK_Widget * widget=signal->object->widget;
     SDLGuiTK_Viewport * viewport=widget->container->bin->viewport;
    int x, y;
+#if DEBUG_LEVEL >= 2
     if( SDL_GetMouseState( &x, &y) ) {
         printf( "Mouse released on viewport: x=%d y=%d\n", x, y );
     }
+#endif
     viewport->is_moving = SDL_FALSE;
     //Viewport_DrawUpdate( widget );
     //Viewport_DrawBlit( widget );
