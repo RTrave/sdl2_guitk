@@ -139,7 +139,7 @@ static void SpinButton_MakeActiveSrf(SDLGuiTK_SpinButton * spinbutton)
     Uint32 bdcolor2;
     MySDL_CreateRGBSurface(  spinbutton->active_srf,
                              spinbutton->controlD_area.w+4,
-                             spinbutton->object->widget->abs_area.h-4 );
+                             24 );
     bdcolor2 = SDL_MapRGBA( spinbutton->active_srf->srf->format,
                             255, 255, 255, 255 );
     MySDL_FillRect( spinbutton->active_srf, NULL, bdcolor2 );
@@ -204,12 +204,13 @@ void PROT__spinbutton_DrawBlit(SDLGuiTK_SpinButton * spinbutton)
     MySDL_FillRect( widget->srf, &fg_area, bgcolor );
 
     // Draw controls
+    int hdiffc = (widget->abs_area.h/2)-10;
     spinbutton->controlD_area.x = widget->abs_area.w-42;
-    spinbutton->controlD_area.y = 4;
+    spinbutton->controlD_area.y = hdiffc;
     MySDL_BlitSurface(  spinbutton->controlD_srf, NULL,
                         widget->srf, &spinbutton->controlD_area );
     spinbutton->controlU_area.x = widget->abs_area.w-21;
-    spinbutton->controlU_area.y = 4;
+    spinbutton->controlU_area.y = hdiffc;
     MySDL_BlitSurface(  spinbutton->controlU_srf, NULL,
                         widget->srf, &spinbutton->controlU_area );
 
@@ -242,10 +243,11 @@ static void SpinButton_ControlDOWN(SDLGuiTK_SpinButton * spinbutton)
     widget->active_alpha = 0.15;
     spinbutton->active_alpha_mod = -0.005;
     widget->active_srf = spinbutton->active_srf;
+    int hdiffc = (widget->abs_area.h/2)-10;
     widget->active_area.x = widget->abs_area.x + spinbutton->controlD_area.x -2;
-    widget->active_area.y = widget->abs_area.y+2;
-    widget->active_area.w = spinbutton->controlD_area.w;
-    widget->active_area.h = spinbutton->controlD_area.h;
+    widget->active_area.y = widget->abs_area.y+hdiffc-3;
+    widget->active_area.w = 24; //spinbutton->controlD_area.w;
+    widget->active_area.h = 24; //spinbutton->controlD_area.h;
     spinbutton->active_cflag = 1;
 }
 
@@ -256,10 +258,11 @@ static void SpinButton_ControlUP(SDLGuiTK_SpinButton * spinbutton)
     widget->active_alpha = 0.15;
     spinbutton->active_alpha_mod = -0.005;
     widget->active_srf = spinbutton->active_srf;
+    int hdiffc = (widget->abs_area.h/2)-10;
     widget->active_area.x = widget->abs_area.x + spinbutton->controlU_area.x-2;
-    widget->active_area.y = widget->abs_area.y + 2;
-    widget->active_area.w = spinbutton->controlU_area.w;
-    widget->active_area.h = spinbutton->controlU_area.h;
+    widget->active_area.y = widget->abs_area.y + hdiffc-3;
+    widget->active_area.w = 24;//spinbutton->controlU_area.w;
+    widget->active_area.h = 24;//spinbutton->controlU_area.h;
     spinbutton->active_cflag = 1;
 }
 
@@ -278,10 +281,11 @@ void PROT__spinbutton_RecursiveEntering(SDLGuiTK_SpinButton * spinbutton,
     SDLGuiTK_Widget * widget = spinbutton->object->widget;
 
     if(!spinbutton->mouseOn) return;
+    int hdiffc = (widget->abs_area.h/2)-10;
     if( x>(widget->abs_area.x+spinbutton->controlD_area.x) &&
         x<(widget->abs_area.x+spinbutton->controlD_area.x+spinbutton->controlD_area.w) &&
-        y>(widget->abs_area.y+2) &&
-        y<(widget->abs_area.y+2+spinbutton->controlD_area.h) )
+        y>(widget->abs_area.y+hdiffc) &&
+        y<(widget->abs_area.y+hdiffc+spinbutton->controlD_area.h) )
         {
             if(!spinbutton->controlD_flag) {
                 spinbutton->controlD_flag = SDL_TRUE;
@@ -297,8 +301,8 @@ void PROT__spinbutton_RecursiveEntering(SDLGuiTK_SpinButton * spinbutton,
         }
     if( x>(widget->abs_area.x+spinbutton->controlU_area.x) &&
         x<(widget->abs_area.x+spinbutton->controlU_area.x+spinbutton->controlU_area.w) &&
-        y>(widget->abs_area.y+2) &&
-        y<(widget->abs_area.y+2+spinbutton->controlU_area.h) )
+        y>(widget->abs_area.y+hdiffc) &&
+        y<(widget->abs_area.y+hdiffc+spinbutton->controlU_area.h) )
         {
             if(!spinbutton->controlU_flag) {
                 spinbutton->controlU_flag = SDL_TRUE;

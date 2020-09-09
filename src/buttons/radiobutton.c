@@ -155,8 +155,9 @@ void PROT__radiobutton_DrawBlit(SDLGuiTK_RadioButton * radiobutton)
                            150 );
     PROT__theme_unlock( theme );
 */
+    int hdiff = (button->bin->child->rel_area.h/2)-14;
     radiobutton->indicator_area.x = 0;
-    radiobutton->indicator_area.y = 0;
+    radiobutton->indicator_area.y = hdiff;
     radiobutton->indicator_area.w = 28;
     radiobutton->indicator_area.h = 28;
     MySDL_BlitSurface(  radiobutton->indicator_srf, NULL, \

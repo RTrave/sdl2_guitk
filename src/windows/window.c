@@ -209,6 +209,8 @@ static void * Window_DrawBlit( SDLGuiTK_Widget * widget )
     Uint32 bgcolor;
     SDLGuiTK_Theme * theme;
 
+    PROT__bin_DrawBlit( window->bin );
+
     if( window->bin->child!=NULL ) {
 
         wdiff = widget->abs_area.w - (2*widget->container->border_width) \
@@ -228,7 +230,7 @@ static void * Window_DrawBlit( SDLGuiTK_Widget * widget )
         }
     }
 
-    PROT__bin_DrawBlit( window->bin );
+    //PROT__bin_DrawBlit( window->bin );
 
     theme = PROT__theme_get_and_lock();
     bgcolor = SDL_MapRGBA( widget->srf->srf->format, \

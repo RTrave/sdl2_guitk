@@ -100,15 +100,13 @@ void PROT__context_quit()
 {
     SDLGuiTK_WMWidget * rest=NULL;
 
-    SDLGuiTK_list_lock( current_context->activables );
     rest = (SDLGuiTK_WMWidget *) \
            SDLGuiTK_list_ref_init( current_context->activables );
-    while( rest!=NULL ) {
+    while( rest && !rest->is_wmchild ) {
         SDLGuiTK_widget_destroy( rest->widget );
         rest = (SDLGuiTK_WMWidget *) \
                SDLGuiTK_list_ref_next( current_context->activables );
     }
-    SDLGuiTK_list_unlock( current_context->activables );
 
     PROT__signal_check();
     SDL_Delay( 200 );

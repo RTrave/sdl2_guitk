@@ -180,10 +180,9 @@ static void Grid_Child_WidthHomogeneous(SDLGuiTK_Grid * grid)
 
     //printf("WidthHomogeneous OPTI:%d\n", max_width);
 
-    /*int * Delta=calloc(grid->columns, sizeof(int));
-    for(int i=0; i<grid->columns; i++) {
-        Delta[i] =
-    }*/
+    for(int i=0; i<=grid->columns; i++) {
+        grid->gx[i] = i * max_width;
+    }
 }
 
 static void Update_gy(SDLGuiTK_Grid * grid, int n, int value)
@@ -231,6 +230,10 @@ static void Grid_Child_HeightHomogeneous(SDLGuiTK_Grid * grid)
         current_child = (GridChild *) SDLGuiTK_list_ref_next( grid->children );
     }
     max_height -= min_delta;
+
+    for(int i=0; i<=grid->rows; i++) {
+        grid->gy[i] = i * max_height;
+    }
 
     //printf("HeightHomogeneous OPTI:%d\n", max_height);
 }
@@ -289,10 +292,10 @@ static void * Grid_DrawUpdate( SDLGuiTK_Widget * widget )
             grid->gx[i] -= grid->column_spacing;
     }
     grid->gx[grid->columns] -= grid->column_spacing;
-    for(i=grid->columns-1; i>=0; i--) {
+    /*for(i=grid->columns-1; i>=0; i--) {
         if(grid->gx[i]>grid->gx[grid->columns])
             grid->gx[i] -= grid->column_spacing;
-    }
+    }*/
     //for(i=0; i<=grid->columns; i++) {
     //    printf("Gx[%d]=%d\n", i, grid->gx[i]);
     //}
@@ -301,10 +304,10 @@ static void * Grid_DrawUpdate( SDLGuiTK_Widget * widget )
             grid->gy[i] -= grid->row_spacing;
     }
     grid->gy[grid->rows] -= grid->row_spacing;
-    for(i=grid->rows-1; i>=0; i--) {
+    /*for(i=grid->rows-1; i>=0; i--) {
         if(grid->gy[i]>grid->gy[grid->rows])
             grid->gy[i] -= grid->row_spacing;
-    }
+    }*/
     //for(i=0; i<=grid->rows; i++) {
     //    printf("Gy[%d]=%d\n", i, grid->gy[i]);
     //}
@@ -356,23 +359,23 @@ static void * Grid_DrawBlit( SDLGuiTK_Widget * widget )
         return 0;
     }
 
+    PROT__container_DrawBlit( grid->container );
+
     //Expand Grid size if necessary
     if(grid->base_width<(widget->req_area.w-2*grid->container->border_width)) {
         expand = ((widget->req_area.w-2*grid->container->border_width)-grid->base_width) /
             grid->columns;
-        for(i=1; i<grid->columns; i++)
-            grid->gx[i] += expand;
+        for(i=1; i<=grid->columns; i++)
+            grid->gx[i] += ((int)expand*i);
         grid->gx[grid->columns] = (widget->req_area.w-2*grid->container->border_width);
     }
     if(grid->base_height<(widget->req_area.h-2*grid->container->border_width)) {
         expand = ((widget->req_area.h-2*grid->container->border_width)-grid->base_height) /
             grid->rows;
-        for(i=1; i<grid->rows; i++)
-            grid->gy[i] += expand;
+        for(i=1; i<=grid->rows; i++)
+            grid->gy[i] += ((int)expand*i);
         grid->gy[grid->rows] = (widget->req_area.h-2*grid->container->border_width);
     }
-
-    PROT__container_DrawBlit( grid->container );
 
     current_child = (GridChild *) SDLGuiTK_list_ref_init( grid->children );
     while( current_child ) {

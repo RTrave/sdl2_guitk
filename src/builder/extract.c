@@ -95,7 +95,8 @@ SDLGuiTK_Object * Extract_Adjustment(xmlNode * node)
 
 static SDL_bool Is_Widget_Property(char * name)
 {
-    if(strcmp(name,"visible")==0 || strcmp(name,"tooltip_text")==0)
+    if(strcmp(name,"visible")==0 || strcmp(name,"tooltip_text")==0 ||
+       strcmp(name,"width_request")==0 || strcmp(name,"height_request")==0)
         return SDL_TRUE;
     return SDL_FALSE;
 }
@@ -117,6 +118,16 @@ static void Extract_Widget_properties(SDLGuiTK_Widget *widget,
                 SDLGUITK_LOG ("Extract Widget property: tooltip_text\n");
                 SDLGuiTK_widget_set_tooltip_text(widget,
                                                  contentget(child));
+            }
+            else if(propcmp(child, "name", "width_request")) {
+                SDLGUITK_LOG ("Extract Widget property: width_request\n");
+                SDLGuiTK_widget_set_size_request(widget,
+                                                 atoi(contentget(child)), 0);
+            }
+            else if(propcmp(child, "name", "height_request")) {
+                SDLGUITK_LOG ("Extract Widget property: height_request\n");
+                SDLGuiTK_widget_set_size_request(widget,
+                                                 0, atoi(contentget(child)));
             }
         }
         child = child->next;
@@ -480,6 +491,7 @@ SDLGuiTK_Widget * Extract_MenuButton(xmlNode * node)
     return menubutton;
 }
 
+
 SDLGuiTK_Widget * Extract_Label(xmlNode * node)
 {
     SDLGuiTK_Widget *label = NULL;
@@ -569,7 +581,7 @@ static void Extract_Alignment_property(xmlNode * node, SDLGuiTK_Widget * alignme
         if(contentcmp(node, "True"))
             SDLGuiTK_widget_show (alignment);
     }
-    else {
+    else if(!Is_Widget_Property (propget (node, "name"))) {
         SDLGUITK_ERROR("Node Alignment property unknown: ");
         SDLGUITK_ERROR2(propget(node,"name"));
     }
@@ -595,6 +607,8 @@ SDLGuiTK_Widget * Extract_Alignment(xmlNode * node)
         }
         child = child->next;
     }
+    if(alignment)
+        Extract_Widget_properties (alignment, node);
     return alignment;
 }
 
@@ -630,7 +644,7 @@ static void Extract_Frame_property(xmlNode * node, SDLGuiTK_Widget * frame)
         if(contentcmp(node, "True"))
             SDLGuiTK_widget_show (frame);
     }
-    else {
+    else if(!Is_Widget_Property (propget (node, "name"))) {
         SDLGUITK_ERROR("Node Frame property unknown: ");
         SDLGUITK_ERROR2(propget(node,"name"));
     }
@@ -656,6 +670,8 @@ SDLGuiTK_Widget * Extract_Frame(xmlNode * node)
         }
         child = child->next;
     }
+    if(frame)
+        Extract_Widget_properties (frame, node);
     return frame;
 }
 
@@ -689,7 +705,7 @@ static void Extract_Viewport_property(xmlNode * node, SDLGuiTK_Widget * viewport
         if(contentcmp(node, "True"))
             SDLGuiTK_widget_show (viewport);
     }
-    else {
+    else if(!Is_Widget_Property (propget (node, "name"))) {
         SDLGUITK_ERROR("Node Viewport property unknown: ");
         SDLGUITK_ERROR2(propget(node,"name"));
     }
@@ -715,6 +731,8 @@ SDLGuiTK_Widget * Extract_Viewport(xmlNode * node)
         }
         child = child->next;
     }
+    if(viewport)
+        Extract_Widget_properties (viewport, node);
     return viewport;
 }
 
@@ -747,7 +765,7 @@ static void Extract_ScrolledWindow_property(xmlNode * node, SDLGuiTK_Widget * sc
         if(contentcmp(node, "True"))
             SDLGuiTK_widget_show (scrolledwindow);
     }
-    else {
+    else if(!Is_Widget_Property (propget (node, "name"))) {
         SDLGUITK_ERROR("Node ScrolledWindow property unknown: ");
         SDLGUITK_ERROR2(propget(node,"name"));
     }
@@ -773,6 +791,8 @@ SDLGuiTK_Widget * Extract_ScrolledWindow(xmlNode * node)
         }
         child = child->next;
     }
+    if(scrolledwindow)
+        Extract_Widget_properties (scrolledwindow, node);
     return scrolledwindow;
 }
 
@@ -831,7 +851,7 @@ static void Extract_Menu_property(xmlNode * node, SDLGuiTK_Widget * menu)
         if(contentcmp(node, "True"))
             SDLGuiTK_widget_show (menu);
     }
-    else {
+    else if(!Is_Widget_Property (propget (node, "name"))) {
         SDLGUITK_ERROR("Node Menu property unknown: ");
         SDLGUITK_ERROR2(propget(node,"name"));
     }
@@ -865,6 +885,8 @@ SDLGuiTK_Widget * Extract_Menu(xmlNode * node)
         }
         child = child->next;
     }
+    if(menu)
+        Extract_Widget_properties (menu, node);
     return menu;
 }
 
@@ -902,7 +924,7 @@ static void Extract_Window_property(xmlNode * node, SDLGuiTK_Widget * window)
         SDLGUITK_LOG ("Extract Window property: title\n");
         SDLGuiTK_window_set_title (window, contentget(node));
     }
-    else {
+    else if(!Is_Widget_Property (propget (node, "name"))) {
         SDLGUITK_ERROR("Node Window property unknown: ");
         SDLGUITK_ERROR2(propget(node,"name"));
     }
@@ -928,6 +950,8 @@ SDLGuiTK_Widget * Extract_Window(xmlNode * node)
         }
         child = child->next;
     }
+    if(window)
+        Extract_Widget_properties (window, node);
     return window;
 }
 
@@ -1016,7 +1040,7 @@ static void Extract_Box_property(xmlNode * node, SDLGuiTK_Widget * box)
         else
             SDLGuiTK_box_set_homogeneous (SDLGuiTK_BOX(box), SDL_FALSE);
     }
-    else if(isnode(node))
+    else if(isnode(node) && !Is_Widget_Property (propget (node, "name")))
     {
         SDLGUITK_ERROR("Node Box property unknown: ");
         SDLGUITK_ERROR2(propget(node,"name"));
@@ -1043,6 +1067,8 @@ SDLGuiTK_Widget * Extract_Box(xmlNode * node)
         }
         child = child->next;
     }
+    if(box)
+        Extract_Widget_properties (box, node);
     return box;
 }
 
@@ -1152,7 +1178,7 @@ static void Extract_Grid_property(xmlNode * node, SDLGuiTK_Widget * grid)
             SDLGuiTK_grid_set_row_homogeneous (SDLGuiTK_GRID(grid),
                                                SDL_FALSE);
     }
-    else if(isnode(node))
+    else if(isnode(node) && !Is_Widget_Property (propget (node, "name")))
     {
         SDLGUITK_ERROR("Node Grid property unknown: ");
         SDLGUITK_ERROR2(propget(node,"name"));
@@ -1179,6 +1205,8 @@ SDLGuiTK_Widget * Extract_Grid(xmlNode * node)
         }
         child = child->next;
     }
+    if(grid)
+        Extract_Widget_properties (grid, node);
     return grid;
 }
 

@@ -162,8 +162,9 @@ void PROT__checkbutton_DrawBlit(SDLGuiTK_CheckButton * checkbutton)
                            150 );
     PROT__theme_unlock( theme );
 */
+    int hdiff = (button->bin->child->rel_area.h/2)-14;
     checkbutton->indicator_area.x = 0;
-    checkbutton->indicator_area.y = 0;
+    checkbutton->indicator_area.y = hdiff;
     checkbutton->indicator_area.w = 28;
     checkbutton->indicator_area.h = 28;
     MySDL_BlitSurface(  checkbutton->indicator_srf, NULL, \

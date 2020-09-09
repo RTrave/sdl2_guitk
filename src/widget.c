@@ -439,11 +439,20 @@ void PROT__widget_destroypending()
 void SDLGuiTK_widget_set_size_request( SDLGuiTK_Widget * widget, \
                                        int width, int height )
 {
-    widget->width_request = width;
-    widget->height_request = height;
+    int flag = 0;
+    if(width!=0) {
+        widget->width_request = width;
+        flag = 1;
+    }
+    if(height!=0) {
+        widget->height_request = height;
+        flag = 1;
+    }
 
-    if( widget->parent && widget->parent!=widget ) {
-        PROT__signal_push( widget->parent->object, SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY );
+    if( flag==1 &&
+        widget->parent ) {  // && widget->parent!=widget
+        PROT__signal_push(widget->parent->object,
+                          SDLGUITK_SIGNAL_TYPE_CHILDNOTIFY );
     }
 }
 
