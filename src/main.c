@@ -205,6 +205,7 @@ void SDLGuiTK_init_with_window( SDL_Window * window, SDL_Renderer * renderer )
 
 void SDLGuiTK_main_quit()
 {
+    SDLGuiTK_Context * current_context = PROT__context_current ();
     SDLGUITK_LOG( " SDLGuiTK_main_quit()\n" );
 
     SDL_mutexP( main_loop_mutex );

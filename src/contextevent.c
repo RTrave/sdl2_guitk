@@ -46,6 +46,7 @@
 static SDLGuiTK_WMWidget * Context_getwmwidget_withwindowid(int id)
 {
     SDLGuiTK_WMWidget * current=NULL;
+    SDLGuiTK_Context * current_context = PROT__context_current ();
     current = (SDLGuiTK_WMWidget *) \
                   SDLGuiTK_list_refrv_init( current_context->activables );
     while(current) {
@@ -65,6 +66,7 @@ static SDLGuiTK_WMWidget * Context_getwmwidget_withwindowid(int id)
 
 int  SDLGuiTK_pushevent( SDL_Event *event )
 {
+    SDLGuiTK_Context * current_context = PROT__context_current ();
     int flag=0;
 
     SDL_mutexP( current_context->mutex );
@@ -159,7 +161,7 @@ int  SDLGuiTK_pushevent( SDL_Event *event )
             return flag;
         default:
             SDL_mutexV( current_context->mutex );
-            return 0;
+            return 1;
         }
     }
 

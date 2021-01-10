@@ -159,6 +159,7 @@ SDLGuiTK_Render * WMWidget_getrender( SDLGuiTK_WMWidget * wm_widget )
 SDL_Window * WMWidget_getwindow( SDLGuiTK_WMWidget * wm_widget )
 {
     SDLGuiTK_Render * render;
+    SDLGuiTK_Context * current_context = PROT__context_current ();
     if(current_context->type==SDLGUITK_CONTEXT_MODE_MULTIPLE)
         render = WMWidget_getrender(wm_widget);
     else
@@ -168,6 +169,7 @@ SDL_Window * WMWidget_getwindow( SDLGuiTK_WMWidget * wm_widget )
 
 void WMWidget_DrawUpdate( SDLGuiTK_WMWidget * wm_widget )
 {
+    SDLGuiTK_Context * current_context = PROT__context_current ();
     /*   SDLGuiTK_Widget * widget=wm_widget->widget; */
 
     wm_widget->child_area.x = wm_widget->border_width;
@@ -239,7 +241,8 @@ void                 WMWidget_DrawBlit( SDLGuiTK_WMWidget * wm_widget,
                                         MySDL_Surface * surface)
 {
     WMWidget_Clean( wm_widget );
-    if(wm_widget->title_shown && current_context->type!=SDLGUITK_CONTEXT_MODE_MULTIPLE) {
+    if(wm_widget->title_shown &&
+       PROT__context_current()->type!=SDLGUITK_CONTEXT_MODE_MULTIPLE) {
         WMWidget_DrawTitleSurface (wm_widget);
     }
 

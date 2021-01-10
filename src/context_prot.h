@@ -60,9 +60,6 @@ struct SDLGuiTK_Context {
 };
 
 
-/* Current session context */
-SDLGuiTK_Context * current_context;
-
 
 /* Create and destroy context */
 void PROT__context_new( int type, SDL_Window * window, SDL_Renderer * renderer );
@@ -70,6 +67,9 @@ void PROT__context_new( int type, SDL_Window * window, SDL_Renderer * renderer )
 void PROT__context_quit();
 
 void PROT__context_uninit();
+
+/* Get active current context */
+SDLGuiTK_Context * PROT__context_current();
 
 /* Add and remove WMWidget in current_context->activables */
 void PROT__context_ref_wmwidget( SDLGuiTK_WMWidget * wm_widget );

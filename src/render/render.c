@@ -143,7 +143,7 @@ SDLGuiTK_Render * Render_create()
         main_render->width = mode.w;
         main_render->height = mode.h;
     }
-    if(current_context->type==SDLGUITK_CONTEXT_MODE_MULTIPLE)
+    if(PROT__context_current()->type==SDLGUITK_CONTEXT_MODE_MULTIPLE)
         SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);

@@ -100,6 +100,7 @@ void MyWM_stop_textinput()
 static void WidgetFocus( int x, int y )
 {
     SDLGuiTK_Widget * current, * parent;
+    SDLGuiTK_Context * current_context = PROT__context_current ();
 
     if(current_context->focused &&
        (x==0 || y==0 ||
@@ -142,6 +143,7 @@ void MyWM_WidgetFocus()
 void MyWM_WidgetUnFocus()
 {
     SDLGuiTK_Widget * current, * parent=NULL;
+    SDLGuiTK_Context * current_context = PROT__context_current ();
 
     if(current_context->focused) {
         current_context->focused->enter = SDL_FALSE;
@@ -170,7 +172,7 @@ void MyWM_WidgetUnFocus()
 
 static void Focused_IsMoving( int xrel, int yrel )
 {
-    SDLGuiTK_WMWidget * focused=current_context->focused;
+    SDLGuiTK_WMWidget * focused=PROT__context_current()->focused;
     focused->area.x += xrel;
     focused->area.y += yrel;
     focused->widget->abs_area.x += xrel;
@@ -188,6 +190,7 @@ void MyWM_inhibit_mousemotion(SDL_bool is_inhibit)
 static int UpdateFocused(int x, int y)
 {
     SDLGuiTK_WMWidget *focused;
+    SDLGuiTK_Context * current_context = PROT__context_current ();
     if(current_context->type==SDLGUITK_CONTEXT_MODE_MULTIPLE) {
         if(inhibit_mousemotion)
             return 0;
@@ -247,6 +250,7 @@ void MyWM_UpdateFocused()
 
 int MyWM_MOUSEMOTION( SDL_Event *event )
 {
+    SDLGuiTK_Context * current_context = PROT__context_current ();
     // A widget have grab mouse focus: interact with it
     if(mouse_focus) {
         (*mouse_focus->RecursiveEntering) (mouse_focus,
@@ -267,6 +271,7 @@ int MyWM_MOUSEMOTION( SDL_Event *event )
 
 int MyWM_MOUSEBUTTONDOWN( SDL_Event *event )
 {
+    SDLGuiTK_Context * current_context = PROT__context_current ();
     if(focused_widget) {
         PROT__signal_push(focused_widget->object,
                           SDLGUITK_SIGNAL_TYPE_PRESSED);
@@ -291,6 +296,7 @@ int MyWM_MOUSEBUTTONDOWN( SDL_Event *event )
 
 int MyWM_MOUSEBUTTONUP( SDL_Event *event )
 {
+    SDLGuiTK_Context * current_context = PROT__context_current ();
     if(focused_widget) {
         PROT__signal_push(focused_widget->object,
                           SDLGUITK_SIGNAL_TYPE_RELEASED);

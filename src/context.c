@@ -75,6 +75,9 @@ static void Context_destroy( SDLGuiTK_Context * context )
 }
 
 
+static SDLGuiTK_Context * current_context=NULL;
+
+
 void PROT__context_new( int type, SDL_Window * window, SDL_Renderer * renderer )
 {
     SDLGuiTK_Render * new_render;
@@ -119,6 +122,10 @@ void PROT__context_uninit()
     MyWM_Uninit ();
 }
 
+SDLGuiTK_Context * PROT__context_current()
+{
+    return current_context;
+}
 
 void PROT__context_ref_wmwidget( SDLGuiTK_WMWidget * wm_widget )
 {
